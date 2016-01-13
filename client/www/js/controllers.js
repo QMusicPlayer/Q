@@ -76,22 +76,33 @@ angular.module('Q.controllers', [
 
   $scope.createRoom = function(){
     console.log("create room:", $scope.roomname);
-    socket.emit("join room", $scope.roomname);
-    socket.on('hello', function(roomname){
-      console.log(roomname);
+
+    socket.emit("create room", $scope.roomname);
+    socket.on('room created', function(roomname){
+      console.log('controller side room created', roomname);
+      socket.emit('newGuest')
     });
+
     Playlist.makeHost();
     $state.go('playlist');
   };
 
   $scope.joinRoom = function(){
-    console.log("Join Room:", $scope.roomname);
-    socket.emit("join room", $scope.roomname);
-    socket.on('hello', function(roomname){
-      console.log(roomname);
+    console.log("join Room:", $scope.enteredRoomName);
+    socket.emit("join room", $scope.enteredRoomName);
+
+    socket.on('room joined', function(roomname){
+      console.log('roomjoined...', roomname);
+      if(roomname){
+        console.log('succesfful room join')
+        socket.emit('newGuest')
+        Playlist.makeGuest();
+        $state.go('playlist');
+      } else {
+        alert('cant log in')
+      }
+
     });
-    Playlist.makeGuest();
-    $state.go('playlist');
   };
 
   $scope.makeGuest = function(){

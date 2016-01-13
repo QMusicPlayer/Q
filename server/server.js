@@ -34,6 +34,10 @@ userModel.remove({}, function() {
 // io.configure(function () {  
 // });
 
+var rooms ={
+
+}
+
 io.on('connection', function (socket) {
   // console.log(socket);
 
@@ -43,11 +47,32 @@ io.on('connection', function (socket) {
   // User.getQueue(function(queue) {
   //   socket.emit('getQueue', queue);
   // });
+  socket.on("create room", function(roomname){
+    console.log('create room roomname', roomname);
+    //set roomname
+    rooms[roomname] = roomname;
+    //join room
+    console.log('new room joined', roomname);
+    socket.room = rooms[roomname]
+    console.log('socketedroom', socket.room)
+    socket.join(socket.room);
+    socket.broadcast.to(roomname).emit('room created', 'SERVER', roomname + ' has connected to this room');
+    // io.to(roomname).emit('hello', roomname);
+  });
+
 
   socket.on("join room", function(roomname){
-    console.log(roomname);
-    socket.join(roomname);
-    io.to(roomname).emit('hello', roomname);
+    console.log('joining room..',roomname);
+    if(rooms[roomname]){
+      console.log('roomed to join', roomname)
+      socket.room = rooms[roomname]
+      socket.join(socket.room);
+      socket.broadcast.to(rooms[roomname]).emit('room joined', 'SERVER', roomname + ' has connected to this room');
+    } else {
+      console.log('else..');
+      socket.emit('room joined', null);
+    }
+    // io.to(roomname).emit('hello', roomname);
 
   });
 
