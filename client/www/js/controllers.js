@@ -27,7 +27,8 @@ angular.module('Q.controllers', [
                             title: tracks[i].title,
                             artist: tracks[i].user.permalink,
                             url: tracks[i].stream_url + "?client_id=f270bdc572dc8380259d38d8015bdbe7",
-                            waveform: tracks[i].waveform_url
+                            waveform: tracks[i].waveform_url,
+                            votes: 0
                         };
           if(tracks[i].artwork_url === null){
               track.image = '../img/notavailable.png';

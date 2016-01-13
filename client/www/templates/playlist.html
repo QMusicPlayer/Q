@@ -35,7 +35,7 @@
         <!-- mp: had some weidr behavior. sometimes couldn't delete. changed to li elements -->
         <div class="col-90">
           <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'">
-          {{ song.title }} by {{song.artist}}
+          {{ song.title }} by {{song.artist}} votes: {{song.votes}} 
           </div>
         </div>
         <div ng-show="isHost()">
@@ -61,7 +61,7 @@
       <div class='row' ng-repeat="song in playlist">
         <div class="col-90">
           <div ng-class="currentPlaying.id === song.id ? 'button button-positive button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'">
-          {{ song.title }} by {{song.artist}}
+          {{ song.title }} by {{song.artist}} votes: {{song.votes}}
           </div>
         </div>
       </div>
