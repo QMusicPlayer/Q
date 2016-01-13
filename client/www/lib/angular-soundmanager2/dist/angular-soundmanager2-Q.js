@@ -4644,6 +4644,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                         socket.emit('addSong', track);
                         $rootScope.$broadcast('player:playlist', playlist);
                     //check to make sure track url isn't dead before adding it
+                    
                     // $.get(track.url, function() {
                     //     this.addToPlaylist(track);
                         
@@ -4673,6 +4674,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 //remove from playlist
                 
                 //once all done then broadcast
+                console.log('line 4676: removed song,', song, 'removed index', index)
                 socket.emit('deleteSong', {song: song, index: index});
                 
             },
@@ -4685,6 +4687,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 }
                 //play it
                 soundManager.play(trackId);
+                console.log('line 4689: initplay, track id', trackId)
                 $rootScope.$broadcast('track:id', trackId);
                 //set as playing
                 isPlaying = true;
@@ -4983,7 +4986,7 @@ ngSoundManager.directive('musicPlayer', ['angularPlayer', '$log',
 
 ngSoundManager.factory('socketFactory', ['angularPlayer', '$log', function (angularPlayer, $log) {
     soundManager.socket().on('getQueue', function(queue){
-        $log.log(queue);
+        $log.log('socket fact, queue', queue);
         for(var i = 0; i < queue.length; i++) {
             addTrack(queue[i]);
         }

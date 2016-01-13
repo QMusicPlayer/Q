@@ -25,13 +25,14 @@
 <ion-content class="has-header has-footer has-subheader" ng-show="isHost()">
   <div style="height:70%; margin-right:auto; margin-left:auto; width:80%">
     <div class="row card" ng-show="playlist.length === 0">
-    <center>
-      <h3>There are no songs currently in your playlist.</h3>
-      <h4>Use the search bar at the top to search for songs and add to the playlist.</h4>
-    </center>
+      <center>
+        <h3>There are no songs currently in your playlist.</h3>
+        <h4>Use the search bar at the top to search for songs and add to the playlist.</h4>
+      </center>
     </div>
     <ul>
-      <div class='row' ng-repeat="song in playlist">
+      <li class='row' ng-repeat="song in playlist"> 
+        <!-- mp: had some weidr behavior. sometimes couldn't delete. changed to li elements -->
         <div class="col-90">
           <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'">
           {{ song.title }} by {{song.artist}}
@@ -42,7 +43,7 @@
             <i class="ion-close-round"></i>
           </a>
         </div>
-      </div>
+      </li>
     </ul>
     </div>
 </ion-content>

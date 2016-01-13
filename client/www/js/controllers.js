@@ -6,19 +6,22 @@ angular.module('Q.controllers', [
 ])
 
 .controller('playlistController', function($scope, $rootScope, $location, Playlist) {
- $rootScope.songs= [];
- $rootScope.customPlaylist;
-  window.socket.emit('newGuest');
+  $rootScope.songs= [];  //why root scope??
+  $rootScope.customPlaylist;
+  // console.log('dustom playlist', $rootScope.customePlayList)
 
-$scope.searchSong = function (){
+  window.socket.emit('newGuest'); // ???
+
+  $scope.searchSong = function (){
     $rootScope.songs= [];
+  
     if($scope.query === ''){
       return;
     } else{
       return Playlist.searchSongs($scope.query).then(function(tracks){
-        console.log(tracks)
+        // console.log('tracks', tracks)
         for(var i = 0;i<tracks.length;i++){
-          console.log(tracks[i].artwork_url)
+          // console.log('track', tracks[i])
           var track = {
                             id: tracks[i].id,
                             title: tracks[i].title,
@@ -31,14 +34,18 @@ $scope.searchSong = function (){
           } else {
               track.image = tracks[i].artwork_url
           }
-          $rootScope.$apply(function(){
+
+          $rootScope.$apply(function(){  // ??? why root scope?
             $rootScope.songs.push(track);
           })
+         // console.log('rootscope songs', $rootScope.songs) ???
+         
         }
+
       })
 
     }
-
+    
   }
 
   $scope.clearResults = function (){
@@ -92,6 +99,6 @@ $scope.searchSong = function (){
     $state.go('playlist');
   }
 
-  $scope.attemptHost = false;
-  $scope.createRoomPassword;
+  $scope.attemptHost = false; //??
+  $scope.createRoomPassword; //??
 })
