@@ -67,6 +67,26 @@ $scope.searchSong = function (){
     }
   }
 
+  $scope.createRoom = function(){
+    console.log("create room:", $scope.roomname);
+    socket.emit("join room", $scope.roomname);
+    socket.on('hello', function(roomname){
+      console.log(roomname);
+    });
+    Playlist.makeHost();
+    $state.go('playlist');
+  };
+
+  $scope.joinRoom = function(){
+    console.log("Join Room:", $scope.roomname);
+    socket.emit("join room", $scope.roomname);
+    socket.on('hello', function(roomname){
+      console.log(roomname);
+    });
+    Playlist.makeGuest();
+    $state.go('playlist');
+  };
+
   $scope.makeGuest = function(){
     Playlist.makeGuest();
     $state.go('playlist');

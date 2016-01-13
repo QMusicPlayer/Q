@@ -34,7 +34,6 @@ userModel.remove({}, function() {
 // io.configure(function () {  
 // });
 
-
 io.on('connection', function (socket) {
   console.log(socket);
 
@@ -44,6 +43,13 @@ io.on('connection', function (socket) {
   // User.getQueue(function(queue) {
   //   socket.emit('getQueue', queue);
   // });
+
+  socket.on("join room", function(roomname){
+    console.log(roomname);
+    socket.join(roomname);
+    io.to(roomname).emit('hello', roomname);
+
+  });
 
   socket.on('newGuest', function() {
     User.getQueue(function(queue) {

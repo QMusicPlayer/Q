@@ -17,19 +17,19 @@
 	</div>
 
 <!-- Show Create Room Button without functionality -->
-	<div class="list list-inset" ng-show="!attemptHost">
+<!-- 	<div class="list list-inset" ng-show="!attemptHost">
 		<a ng-click="attemptHost = true" class="button button-block button-positive">Create Room</a>
-	</div>
+	</div> -->
 
 <!-- Show Create Room Button with functionality and Password to Enter if someone is attempting to be the host -->
-	<div ng-show="attemptHost">
+	<div>
 		<div class="list list-inset">
-			<a ng-click="makeHost()" class="button button-block button-positive">Create Room</a>
+			<a ng-click="createRoom()" class="button button-block button-positive">Create Room</a>
 		</div>
 		<div class="list list-inset">
 			<form ng-submit="makeHost()">
 		  	<label class="item item-input">
-		    	<input type="password" placeholder="Sorry for this demo creating rooms is password protected" ng-model="createRoomPassword">
+		    	<input type="text" placeholder="Room Name" ng-model="roomname">
 		  	</label>
 		  </form>
 		</div>
