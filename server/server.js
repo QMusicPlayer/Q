@@ -74,7 +74,6 @@ io.on('connection', function (socket) {
         socket.room = roomname;
         console.log(socket.room);
         console.log("room joined");
-        // io.sockets.in(roomname).emit('roomjoined', socket.room);
         io.to(socket.id).emit('roomjoined', socket.room);
 
       }
