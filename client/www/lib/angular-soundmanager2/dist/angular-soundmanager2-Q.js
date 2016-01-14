@@ -4965,8 +4965,8 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                     });
                 });
                 scope.$on('voted', function(event, data) {
-                    console.log('song data: ' + data.title);
-                    //socket.emit('updateVotes', data);
+                    console.log('song data after vote: ' + data);
+                    socket.emit('updateVotes', data);
                 })
             }
         };
