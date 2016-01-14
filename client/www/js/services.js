@@ -47,10 +47,6 @@ angular.module('Q.services', [
     isHostData = true;
   }
 
-  var songLike = function(song) {
-    console.log('trying to like');
-  }
-
   var makeGuest = function(){
     isHostData = false;
   }

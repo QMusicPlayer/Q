@@ -49,11 +49,6 @@ angular.module('Q.controllers', [
     
   }
 
-  $scope.likeSong = function(i) {
-    console.log('tried to vote');
-    return Playlist.likeSong(i);
-
-  }
 
   $scope.clearResults = function (){
     $scope.query = '';
