@@ -63,9 +63,10 @@ io.on('connection', function (socket) {
   });
   socket.on("join room", function(roomname){
     console.log(roomname);
-    // io.to(socket.room).emit('hello', "Hello");
     User.getRoom(roomname, function(err, result){
       if(err || result === null){
+        console.log(err, result);
+        console.log("no room");
         socket.emit('roomjoined', null);
       } else {
         socket.leave(socket.room);
@@ -73,7 +74,9 @@ io.on('connection', function (socket) {
         socket.room = roomname;
         console.log(socket.room);
         console.log("room joined");
-        io.sockets.in(roomname).emit('roomjoined', socket.room);
+        // io.sockets.in(roomname).emit('roomjoined', socket.room);
+        io.to(socket.id).emit('roomjoined', socket.room);
+
       }
     });
   });
@@ -90,6 +93,7 @@ io.on('connection', function (socket) {
     User.addSong(socket.room, newSong, function() {
       // socket.emit('newSong', newSong);
       // socket.broadcast.emit('newSong', newSong);
+      io.to(socket.room).emit('newSong', newSong);
       // User.getQueue(function(queue) {
       // });
     });

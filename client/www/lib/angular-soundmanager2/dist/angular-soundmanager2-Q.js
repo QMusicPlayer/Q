@@ -4599,6 +4599,8 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 }
             },
             addToPlaylist: function(track) {
+                console.log("add to playlist");
+                console.log(playlist);
                 playlist.push(track);
                 //broadcast playlist
                 $rootScope.$broadcast('player:playlist', playlist);
@@ -4876,7 +4878,10 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 var socket = angularPlayer.socket();
 
                 socket.on('getQueue', function (queue) {
-                    console.log('queue from server', queue)
+                    console.log('queue from server', queue);
+                    angularPlayer.clearPlaylist(function(bool){
+                      console.log(bool);
+                    });
                     queue.forEach(function(song) {
                         angularPlayer.addToPlaylist(song);
                     });
