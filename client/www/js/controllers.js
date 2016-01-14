@@ -64,7 +64,17 @@ angular.module('Q.controllers', [
   console.log(Playlist.isHost());
 })
 
-.controller('landingPageController', function($scope, $location, $state, Playlist){
+.controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout){
+  $scope.showAlert = function(alertMessage){
+    var alertPopup = $ionicPopup.alert({
+      title: 'sorry...',
+      template: alertMessage
+    });
+    alertPopup.then(function(res){
+      console.log('thanks for trying')
+    });
+  }
+
   $scope.makeHost = function(){
 
     // Note: this is a temporary fix for the demo, and should not be used as actual authentication
@@ -81,7 +91,7 @@ angular.module('Q.controllers', [
       $state.go('playlist');
     } else {
       console.log("Error creating room");
-      alert("Error creating room");
+      $scope.showAlert("Room already exists");
     }
   });
 
@@ -93,7 +103,7 @@ angular.module('Q.controllers', [
       $state.go('playlist');
     } else {
       console.log("no such room");
-      alert('cant log in');
+      $scope.showAlert('Room does not exist');
       return
     }
   });
@@ -101,7 +111,7 @@ angular.module('Q.controllers', [
   $scope.createRoom = function(){
     // console.log("create room:", $scope.roomname);
     socket.emit("create room", $scope.roomname);
- 
+
   };
 
   $scope.joinRoom = function(){

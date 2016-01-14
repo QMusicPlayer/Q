@@ -18,17 +18,20 @@ var port = process.env.PORT || 8000;
 server.listen(port);
 console.log('listening on port...', port)
 // This empties the database and seeds the database with one user with an empty queue (no multi-user functionality yet)
+
+
 // userModel.remove({}, function() {
-  // new userModel({
-  //   //to check with Harun and Spener
-  //   queue: []
-  // }).save(function(err) {
-  //   if (err) console.error("error seeding database", err);
-  //   else {
-  //     console.log('saved new user');
-  //   }
-  // });
+//   new userModel({
+//     //to check with Harun and Spener
+//     queue: []
+//   }).save(function(err) {
+//     if (err) console.error("error seeding database", err);
+//     else {
+//       console.log('saved new user');
+//     }
+//   });
 // });
+
 
 // io.configure(function () {  
 // });
@@ -45,16 +48,17 @@ io.on('connection', function (socket) {
   // });
 
   socket.on("create room", function(roomname){
-    console.log(roomname);
+    // console.log(roomname);
     // io.to(socket.room).emit('hello', "Hello");
     User.addUser(roomname, function(err,result){
       if(err){
-        console.log(err);
+        // console.log(err);
         socket.emit('roomcreated', null);
       } else {
-        socket.leave(socket.room);
+        // socket.leave(socket.room);
         socket.join(roomname);
         socket.room = roomname;
+        // console.log('room created on socket.rom:', socket.room)
         io.sockets.in(roomname).emit('roomcreated', socket.room);
 
       }
@@ -62,26 +66,32 @@ io.on('connection', function (socket) {
 
   });
   socket.on("join room", function(roomname){
+
     console.log(roomname);
+
     User.getRoom(roomname, function(err, result){
       if(err || result === null){
         console.log(err, result);
         console.log("no room");
         socket.emit('roomjoined', null);
       } else {
+        console.log('whole socket', socket.id)
+
         socket.leave(socket.room);
         socket.join(roomname);
         socket.room = roomname;
+
         console.log(socket.room);
         console.log("room joined");
         io.to(socket.id).emit('roomjoined', socket.room);
+
 
       }
     });
   });
 
   socket.on('newGuest', function() {
-    console.log("newGuest", socket.room);
+    // console.log("newGuest", socket.room);
     User.getQueue(socket.room, function(err, queue) {
       socket.emit('getQueue', queue);
       console.log(queue);
@@ -89,7 +99,9 @@ io.on('connection', function (socket) {
   });
 
   socket.on('addSong', function (newSong) {
+    console.log('addsong: socket room', socket.room)
     User.addSong(socket.room, newSong, function() {
+
       // socket.emit('newSong', newSong);
       // socket.broadcast.emit('newSong', newSong);
       io.to(socket.room).emit('newSong', newSong);
@@ -99,6 +111,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('deleteSong', function (target, roomname) {
+
     User.deleteSong(socket.room, target.song, function() {
       socket.to(roomname).emit('deleteSong', target);
       socket.broadcast.emit('deleteSong', target);
