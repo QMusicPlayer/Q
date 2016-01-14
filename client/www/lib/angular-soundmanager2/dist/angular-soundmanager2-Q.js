@@ -4434,8 +4434,8 @@ ngSoundManager.filter('humanTime', function () {
         };
     });
 
-ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
-    function($rootScope, $log) {
+ngSoundManager.factory('angularPlayer', ['$rootScope', '$log', '$http',
+    function($rootScope, $log, $http) {  //add http
         
         var currentTrack = null,
             repeat = false,
@@ -4599,8 +4599,6 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 }
             },
             addToPlaylist: function(track) {
-                console.log("add to playlist");
-                console.log(playlist);
                 playlist.push(track);
                 //broadcast playlist
                 $rootScope.$broadcast('player:playlist', playlist);
@@ -4626,45 +4624,105 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
             },
             addTrack: function(track) {
                 //check if track itself is valid and if its url is playable
+                console.log('add track', track)
                 if (!this.isTrackValid) {
                     return null;
                 }
 
                 //check if song already does not exists then add to playlist
-                var inArrayKey = this.isInArray(this.getPlaylist(), track.id);
-                if(inArrayKey === false) {
-                    //$log.debug('song does not exists in playlist');
-                    //add to playlist
+                // console.log('thisinarray:', this)
+                // var inArrayKey = this.isInArray(this.getPlaylist(), track.id);
+                // if(inArrayKey === false) {
+                //     // $log.debug('song does not exists in playlist');
+                //     //add to playlist
 
-                        this.addToPlaylist(track);
+                //         // this.addToPlaylist(track);
                     
-                        //add to sound manager
-                        soundManager.createSound({
-                            id: track.id,
-                            url: track.url
-                        });
-                        socket.emit('addSong', track);
-                        $rootScope.$broadcast('player:playlist', playlist);
-                    //check to make sure track url isn't dead before adding it
+                //         // //add to sound manager
+                //         // soundManager.createSound({
+                //         //     id: track.id,
+                //         //     url: track.url
+                //         // });
+                //         // socket.emit('addSong', track);
+                //         // $rootScope.$broadcast('player:playlist', playlist);
+                //     //check to make sure track url isn't dead before adding it
                     
-                    // $.get(track.url, function() {
-                    //     this.addToPlaylist(track);
+                //     //v2
+                //         //    $.get(track.url, function() {
+                //         //     this.addToPlaylist(track);
+                            
+                //         //     //add to sound manager
+                //         //     soundManager.createSound({
+                //         //         id: track.id,
+                //         //         url: track.url
+                //         //     });
+                //         //     socket.emit('addSong', track);
+                //         //     $rootScope.$broadcast('player:playlist', playlist);
+                //         // }.bind(this)).error(function() {
+                //         //     // $('<div>Track url is dead!</div>').insertBefore('.nowplaying').delay(3000).fadeOut();
+                //         //     console.log('track not found');
+                //         // });
+
+               //     //v3
+
+
+                $.get(track.url, function() {
+                    alert('success')
+                    console.time('get')
+
+                    this.addToPlaylist(track);
+                    
+                    //add to sound manager
+                    soundManager.createSound({
+                        id: track.id,
+                        url: track.url
+                    });
+
+                    socket.emit('addSong', track);
+                    $rootScope.$broadcast('player:playlist', playlist);
+
+                    console.log('success')
+                    console.timeEnd('get')
+                }.bind(this)).error(function() {
+                    console.log('error')
+                    console.timeEnd('get')
+
+                    // $('<div>Track url is dead!</div>').insertBefore('.nowplaying').delay(3000).fadeOut();
+                   alert('track not found');
+                });
+
+                // }
+
+                //v3
+                // var that = this;
+                //  $http({
+                //         method: 'GET',
+                //         url: track.url
+                //     }).then(function successCallback(res){
+                //         alert('success', res)
+
+                //     }, function errorCallback(res){
+                //         alert('success', res)
+                //     }).then(function successCallback2(res){
+
+                //         var inArrayKey = that.isInArray(that.getPlaylist(), track.id);
+                //         if(inArrayKey === false) {
+                //             that.addToPlaylist(track);
                         
-                    //     //add to sound manager
-                    //     soundManager.createSound({
-                    //         id: track.id,
-                    //         url: track.url
-                    //     });
-                    //     socket.emit('addSong', track);
-                    //     $rootScope.$broadcast('player:playlist', playlist);
-                    // }.bind(this)).error(function() {
-                    //     $('<div>Track url is dead!</div>').insertBefore('.nowplaying').delay(3000).fadeOut();
-                    //     console.log('track not found');
-                    // });
+                //         //add to sound manager
+                //             soundManager.createSound({
+                //                 id: track.id,
+                //                 url: track.url
+                //             });
+                //             socket.emit('addSong', track);
+                //             $rootScope.$broadcast('player:playlist', playlist);
+                //             return track.id;
+                //         } else {
+                //             alert('error cant add')
+                //         }
+                //     });
 
-
-                }
-                return track.id;
+                // return track.id;
             },
             removeSong: function(song, index) {
                 //if this song is playing stop it
@@ -4676,7 +4734,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 //remove from playlist
                 
                 //once all done then broadcast
-                console.log('line 4676: removed song,', song, 'removed index', index)
+                console.log('line 4680: removed song,', song, 'removed index', index)
                 socket.emit('deleteSong', {song: song, index: index});
                 
             },
@@ -4878,10 +4936,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 var socket = angularPlayer.socket();
 
                 socket.on('getQueue', function (queue) {
-                    console.log('queue from server', queue);
-                    angularPlayer.clearPlaylist(function(bool){
-                      console.log(bool);
-                    });
+                    console.log('queue from server', queue)
                     queue.forEach(function(song) {
                         angularPlayer.addToPlaylist(song);
                     });
