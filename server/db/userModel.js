@@ -6,7 +6,7 @@ var userSchema = mongoose.Schema({
       type: String,
       index: {unique: true}
     }
-});
+}, { timestamps: true });
 
 var User = mongoose.model('User', userSchema);
 

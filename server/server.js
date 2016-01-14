@@ -66,6 +66,8 @@ io.on('connection', function (socket) {
     // io.to(socket.room).emit('hello', "Hello");
     User.getRoom(roomname, function(err, result){
       if(err || result === null){
+        console.log(err, result);
+        console.log("no room");
         socket.emit('roomjoined', null);
       } else {
         socket.leave(socket.room);

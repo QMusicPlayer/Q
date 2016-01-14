@@ -74,38 +74,42 @@ angular.module('Q.controllers', [
     }
   }
 
+  socket.on('roomcreated', function(roomname){
+    console.log('controller side room created', roomname);
+    if(roomname){
+      Playlist.makeHost();
+      $state.go('playlist');
+    } else {
+      console.log("Error creating room");
+      alert("Error creating room");
+    }
+  });
+
+  socket.on('roomjoined', function(roomname){
+    console.log('roomjoined', roomname);
+    console.log('roomjoined...', roomname);
+    if(roomname){
+      console.log('succesful room join on ', roomname) 
+      Playlist.makeGuest();
+      $state.go('playlist');
+    } else {
+      console.log("no such room");
+      alert('cant log in');
+      return
+    }
+  });
+
   $scope.createRoom = function(){
     // console.log("create room:", $scope.roomname);
     socket.emit("create room", $scope.roomname);
-    socket.on('roomcreated', function(roomname){
-      console.log('controller side room created', roomname);
-      if(roomname){
-        Playlist.makeHost();
-        $state.go('playlist');
-      } else {
-        console.log("Error creating room");
-        alert("Error creating room");
-      }
-    });
-
-
+ 
   };
 
   $scope.joinRoom = function(){
     // console.log("join Room:", $scope.enteredRoomName);
+    console.log("joinRoom");
     socket.emit("join room", $scope.enteredRoomName);
 
-    socket.on('roomjoined', function(roomname){
-      // console.log('roomjoined...', roomname);
-      if(roomname){
-        console.log('succesful room join on ', roomname) 
-      } else {
-        alert('cant log in');
-        return
-      }
-      Playlist.makeGuest();
-        $state.go('playlist');
-    });
   };
 
   $scope.makeGuest = function(){

@@ -22,6 +22,7 @@ module.exports = {
   },
 
   getRoom: function(room, callback){
+    console.log("getRoom", room);
     User.findOne({hash:room}, function(err, result){
       console.log(err, result);
       if(err){
