@@ -4624,9 +4624,6 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                     }
                 }
             },
-            songLike: function() {
-                console.log('liking it');
-            },
             addTrack: function(track) {
                 //check if track itself is valid and if its url is playable
                 if (!this.isTrackValid) {
@@ -4967,6 +4964,10 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                         scope.playlist = data;
                     });
                 });
+                scope.$on('voted', function(event, data) {
+                    console.log('song data: ' + data.title);
+                    //socket.emit('updateVotes', data);
+                })
             }
         };
     }
@@ -5015,7 +5016,7 @@ ngSoundManager.factory('socketFactory', ['angularPlayer', '$log', function (angu
 
 //*******************************************************
 // Nikola's code
-ngSoundManager.directive('upVote', ['angularPlayer', function (angularPlayer) {
+ngSoundManager.directive('upVote', ['angularPlayer', '$rootScope', function (angularPlayer, $rootScope) {
     return {
         restrict: "EA",
         scope: {
@@ -5026,6 +5027,11 @@ ngSoundManager.directive('upVote', ['angularPlayer', function (angularPlayer) {
                 scope.song.votes += 1;
                 console.log('i voted');
                 console.log(scope.song);
+                var songData = {
+                    votes: scope.song.votes,
+                    id: scope.song.id
+                };
+                $rootScope.$broadcast('voted', scope.song);
             });
         }
     };
