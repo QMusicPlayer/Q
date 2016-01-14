@@ -18,25 +18,21 @@ var port = process.env.PORT || 8000;
 server.listen(port);
 console.log('listening on port...', port)
 // This empties the database and seeds the database with one user with an empty queue (no multi-user functionality yet)
-userModel.remove({}, function() {
-  new userModel({
-    //to check with Harun and Spener
-    queue: []
-  }).save(function(err) {
-    if (err) console.error("error seeding database", err);
-    else {
-      console.log('saved new user');
-    }
-  });
-});
-
+// userModel.remove({}, function() {
+  // new userModel({
+  //   //to check with Harun and Spener
+  //   queue: []
+  // }).save(function(err) {
+  //   if (err) console.error("error seeding database", err);
+  //   else {
+  //     console.log('saved new user');
+  //   }
+  // });
+// });
 
 // io.configure(function () {  
 // });
 
-var rooms ={
-
-}
 
 io.on('connection', function (socket) {
   // console.log(socket);
@@ -49,62 +45,59 @@ io.on('connection', function (socket) {
   // });
 
   socket.on("create room", function(roomname){
-      // console.log('create room roomname', roomname);
-      //set roomname
-    if(rooms[roomname]){
-      console.log('room already exists');
-      socket.emit('roomcreated', null);
-    } else { 
-      rooms[roomname] = roomname;
-      //join room
-      console.log('new room joined', roomname);
-      socket.room = rooms[roomname]
-      // socket.username = roomname;
-      // console.log('socketedroom', socket.room)
-      socket.join(socket.room);
-      io.sockets.in(roomname).emit('roomcreated', 'SERVER', roomname + ' has connected to this room');
-      // io.to(roomname).emit('hello', roomname); other version
-    }
+    console.log(roomname);
+    // io.to(socket.room).emit('hello', "Hello");
+    User.addUser(roomname, function(err,result){
+      if(err){
+        console.log(err);
+        socket.emit('roomcreated', null);
+      } else {
+        socket.leave(socket.room);
+        socket.join(roomname);
+        socket.room = roomname;
+        io.sockets.in(roomname).emit('roomcreated', socket.room);
+
+      }
+    });
+
   });
-
-
   socket.on("join room", function(roomname){
-    console.log('joining room..',roomname);
-    if(rooms[roomname]){
-      // console.log('roomed to join', roomname)
-      // console.log('current room', socket.room)
-      // socket.username = roomname;
-      socket.room = rooms[roomname]
-      // console.log('new room', socket.room)
-      socket.join(socket.room);
-      // socket.broadcast.to(rooms[roomname]).emit('roomjoined', roomname);
-      io.sockets.in(roomname).emit('roomjoined', roomname);
-       // socket.broadcast.to(socket.room).emit('room joined', 'SERVER', roomname + ' has connected to this room');
-    } else {
-      // console.log('room doesnt exist');
-      socket.emit('roomjoined', null);
-    }
-
+    console.log(roomname);
+    // io.to(socket.room).emit('hello', "Hello");
+    User.getRoom(roomname, function(err, result){
+      if(err || result === null){
+        socket.emit('roomjoined', null);
+      } else {
+        socket.leave(socket.room);
+        socket.join(roomname);
+        socket.room = roomname;
+        console.log(socket.room);
+        console.log("room joined");
+        io.sockets.in(roomname).emit('roomjoined', socket.room);
+      }
+    });
   });
 
   socket.on('newGuest', function() {
-    User.getQueue(function(queue) {
+    console.log("newGuest", socket.room);
+    User.getQueue(socket.room, function(err, queue) {
       socket.emit('getQueue', queue);
+      console.log(queue);
     });
   });
 
   socket.on('addSong', function (newSong) {
-    User.addSong(newSong, function() {
-      socket.emit('newSong', newSong);
-      socket.broadcast.emit('newSong', newSong);
+    User.addSong(socket.room, newSong, function() {
+      // socket.emit('newSong', newSong);
+      // socket.broadcast.emit('newSong', newSong);
       // User.getQueue(function(queue) {
       // });
     });
   });
 
-  socket.on('deleteSong', function (target) {
-    User.deleteSong(target.song, function() {
-      socket.emit('deleteSong', target);
+  socket.on('deleteSong', function (target, roomname) {
+    User.deleteSong(socket.room, target.song, function() {
+      socket.to(roomname).emit('deleteSong', target);
       socket.broadcast.emit('deleteSong', target);
     });
   });
