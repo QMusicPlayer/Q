@@ -4434,8 +4434,8 @@ ngSoundManager.filter('humanTime', function () {
         };
     });
 
-ngSoundManager.factory('angularPlayer', ['$rootScope', '$log', '$http',
-    function($rootScope, $log, $http) {  //add http
+ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
+    function($rootScope, $log) {
         
         var currentTrack = null,
             repeat = false,
@@ -4599,6 +4599,8 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log', '$http',
                 }
             },
             addToPlaylist: function(track) {
+                console.log("add to playlist");
+                console.log(playlist);
                 playlist.push(track);
                 //broadcast playlist
                 $rootScope.$broadcast('player:playlist', playlist);
@@ -4624,16 +4626,14 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log', '$http',
             },
             addTrack: function(track) {
                 //check if track itself is valid and if its url is playable
-                console.log('add track', track)
                 if (!this.isTrackValid) {
                     return null;
                 }
 
                 //check if song already does not exists then add to playlist
-                // console.log('thisinarray:', this)
-                // var inArrayKey = this.isInArray(this.getPlaylist(), track.id);
+                var inArrayKey = this.isInArray(this.getPlaylist(), track.id);
                 if(inArrayKey === false) {
-                    // $log.debug('song does not exists in playlist');
+                    //$log.debug('song does not exists in playlist');
                     //add to playlist
 
                         this.addToPlaylist(track);
@@ -4645,35 +4645,26 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log', '$http',
                         });
                         socket.emit('addSong', track);
                         $rootScope.$broadcast('player:playlist', playlist);
-                //     //check to make sure track url isn't dead before adding it
-         
-                // $.get(track.url, function() {
-                //     alert('success')
-                //     console.time('get')
-
-                //     this.addToPlaylist(track);
+                    //check to make sure track url isn't dead before adding it
                     
-                //     //add to sound manager
-                //     soundManager.createSound({
-                //         id: track.id,
-                //         url: track.url
-                //     });
+                    // $.get(track.url, function() {
+                    //     this.addToPlaylist(track);
+                        
+                    //     //add to sound manager
+                    //     soundManager.createSound({
+                    //         id: track.id,
+                    //         url: track.url
+                    //     });
+                    //     socket.emit('addSong', track);
+                    //     $rootScope.$broadcast('player:playlist', playlist);
+                    // }.bind(this)).error(function() {
+                    //     $('<div>Track url is dead!</div>').insertBefore('.nowplaying').delay(3000).fadeOut();
+                    //     console.log('track not found');
+                    // });
 
-                //     socket.emit('addSong', track);
-                //     $rootScope.$broadcast('player:playlist', playlist);
 
-                //     console.log('success')
-                //     console.timeEnd('get')
-                // }.bind(this)).error(function() {
-                //     console.log('error')
-                //     console.timeEnd('get')
-
-                //     // $('<div>Track url is dead!</div>').insertBefore('.nowplaying').delay(3000).fadeOut();
-                //    alert('track not found');
-                // });
                 }
                 return track.id;
-        
             },
             removeSong: function(song, index) {
                 //if this song is playing stop it
@@ -4685,7 +4676,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log', '$http',
                 //remove from playlist
                 
                 //once all done then broadcast
-                console.log('line 4680: removed song,', song, 'removed index', index)
+                console.log('line 4676: removed song,', song, 'removed index', index)
                 socket.emit('deleteSong', {song: song, index: index});
                 
             },
@@ -4887,8 +4878,10 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 var socket = angularPlayer.socket();
 
                 socket.on('getQueue', function (queue) {
-                    console.log('queue from server', queue)
-            
+                    console.log('queue from server', queue);
+                    angularPlayer.clearPlaylist(function(bool){
+                      console.log(bool);
+                    });
                     queue.forEach(function(song) {
                         angularPlayer.addToPlaylist(song);
                     });
