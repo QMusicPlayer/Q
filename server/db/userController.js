@@ -2,32 +2,57 @@ var mongoose = require('mongoose');
 var User = require('./userModel');
 
 module.exports = {
-  addUser: function(req, res, next) {
+  addUser: function(room, callback) {
     var newUser = new User({
       //to check with Harun and Spener
+      hash: room,
       queue: []
     });
-    newUser.save(function(err) {
-      if (err) console.log("error saving new user", err);
-      else {
+    newUser.save(function(err, result) {
+      if (err) {
+        console.log("error saving new user", err);
+        callback(err, result);
+      } else {
         console.log('saved new user');
+        console.log(err, result);
+        callback(err, result);
       }
       // res.end();
     });
   },
 
-  getQueue: function(callback) {
-    User.findOne({}, function(err, result) {
-      callback(result.queue);
+  getRoom: function(room, callback){
+    User.findOne({hash:room}, function(err, result){
+      console.log(err, result);
+      if(err){
+        console.log(err);
+        callback(err);
+      } else{
+        console.log(result);
+        callback(err, result);
+      }
     });
   },
 
-  saveQueue: function(updatedQueue, callback) {
+  getQueue: function(room, callback) {
+    console.log('getQueue', room);
+    User.findOne({hash: room}, function(err, result) {
+      if(!result) return;
+      console.log(result);
+      callback(err, result.queue);
+    });
+  },
+
+  saveQueue: function(room, updatedQueue, callback) {
     updatedQueue = updatedQueue.map(function(song) {
       delete song['$$hashKey'];
       return song;
     });
-    User.findOne({}, function(err, result) {
+    User.findOne({hash: room}, function(err, result) {
+      console.log("saveQueue", result);
+
+      if(!result){
+      }
       console.log(updatedQueue)
       result.queue = updatedQueue;
       result.save(function(err) {
@@ -37,9 +62,12 @@ module.exports = {
     });
   },
 
-  addSong: function(data, callback) {
+  addSong: function(room, data, callback) {
+    console.log("addSong, room:", room);
     delete data['$$hashKey'];
-    User.findOne({}, function(err, result) {
+    User.findOne({hash: room}, function(err, result) {
+      console.log("addSong", result);
+      if(!result) return;
       var alreadyAdded = false;
       result.queue.forEach(function(song) {
         if (data.id === song.id) {
@@ -58,8 +86,9 @@ module.exports = {
     });
   },
 
-  deleteSong: function(target, callback) {
-    User.findOne({}, function(err, result) {
+  deleteSong: function(room, target, callback) {
+    User.findOne({hash: room}, function(err, result) {
+      if(!result) return;
 
       console.log(target);
       var deleteLocations = [];

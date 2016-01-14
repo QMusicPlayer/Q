@@ -1,7 +1,7 @@
 var userController = require('./db/userController');
 
 module.exports = function (app, express) {
-  app.get('/testdb', userController.addUser)
+  // app.get('/testdb', userController.addUser)
 };
 
 
