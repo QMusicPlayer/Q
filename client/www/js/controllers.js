@@ -75,12 +75,11 @@ angular.module('Q.controllers', [
   }
 
   $scope.createRoom = function(){
-    console.log("create room:", $scope.roomname);
-
+    // console.log("create room:", $scope.roomname);
     socket.emit("create room", $scope.roomname);
     socket.on('room created', function(roomname){
       console.log('controller side room created', roomname);
-      socket.emit('newGuest')
+
     });
 
     Playlist.makeHost();
@@ -88,20 +87,19 @@ angular.module('Q.controllers', [
   };
 
   $scope.joinRoom = function(){
-    console.log("join Room:", $scope.enteredRoomName);
+    // console.log("join Room:", $scope.enteredRoomName);
     socket.emit("join room", $scope.enteredRoomName);
 
-    socket.on('room joined', function(roomname){
-      console.log('roomjoined...', roomname);
+    socket.on('roomjoined', function(roomname){
+      // console.log('roomjoined...', roomname);
       if(roomname){
-        console.log('succesfful room join')
-        socket.emit('newGuest')
-        Playlist.makeGuest();
-        $state.go('playlist');
+        console.log('succesfful room join on ', roomname) 
       } else {
-        alert('cant log in')
+        alert('cant log in');
+        return
       }
-
+      Playlist.makeGuest();
+        $state.go('playlist');
     });
   };
 

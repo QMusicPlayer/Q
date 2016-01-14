@@ -47,32 +47,43 @@ io.on('connection', function (socket) {
   // User.getQueue(function(queue) {
   //   socket.emit('getQueue', queue);
   // });
+
   socket.on("create room", function(roomname){
-    console.log('create room roomname', roomname);
-    //set roomname
-    rooms[roomname] = roomname;
-    //join room
-    console.log('new room joined', roomname);
-    socket.room = rooms[roomname]
-    console.log('socketedroom', socket.room)
-    socket.join(socket.room);
-    socket.broadcast.to(roomname).emit('room created', 'SERVER', roomname + ' has connected to this room');
-    // io.to(roomname).emit('hello', roomname);
+      // console.log('create room roomname', roomname);
+      //set roomname
+    if(rooms[roomname]){
+      console.log('room already exists');
+      socket.emit('roomcreated', null);
+    } else { 
+      rooms[roomname] = roomname;
+      //join room
+      console.log('new room joined', roomname);
+      socket.room = rooms[roomname]
+      // socket.username = roomname;
+      // console.log('socketedroom', socket.room)
+      socket.join(socket.room);
+      io.sockets.in(roomname).emit('roomcreated', 'SERVER', roomname + ' has connected to this room');
+      // io.to(roomname).emit('hello', roomname); other version
+    }
   });
 
 
   socket.on("join room", function(roomname){
     console.log('joining room..',roomname);
     if(rooms[roomname]){
-      console.log('roomed to join', roomname)
+      // console.log('roomed to join', roomname)
+      // console.log('current room', socket.room)
+      // socket.username = roomname;
       socket.room = rooms[roomname]
+      // console.log('new room', socket.room)
       socket.join(socket.room);
-      socket.broadcast.to(rooms[roomname]).emit('room joined', 'SERVER', roomname + ' has connected to this room');
+      // socket.broadcast.to(rooms[roomname]).emit('roomjoined', roomname);
+      io.sockets.in(roomname).emit('roomjoined', roomname);
+       // socket.broadcast.to(socket.room).emit('room joined', 'SERVER', roomname + ' has connected to this room');
     } else {
-      console.log('else..');
-      socket.emit('room joined', null);
+      // console.log('room doesnt exist');
+      socket.emit('roomjoined', null);
     }
-    // io.to(roomname).emit('hello', roomname);
 
   });
 
