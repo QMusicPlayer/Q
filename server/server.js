@@ -16,7 +16,7 @@ app.use(express.static(__dirname + '/../client/www'));
 
 var port = process.env.PORT || 8000;
 server.listen(port);
-
+console.log('listening on port...', port)
 // This empties the database and seeds the database with one user with an empty queue (no multi-user functionality yet)
 userModel.remove({}, function() {
   new userModel({
@@ -35,7 +35,7 @@ userModel.remove({}, function() {
 // });
 
 io.on('connection', function (socket) {
-  console.log(socket);
+  // console.log(socket);
 
   // This line needed only for Heroku, comment it out if serving locally
   // io.set("transports", ["polling"]); 
