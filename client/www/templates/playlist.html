@@ -60,8 +60,10 @@
     <ul>
       <div class='row' ng-repeat="song in playlist">
         <div class="col-90">
+          <button class="vote-btn" ng-click="songLike()" ng-init="count=0">upvote</button>
           <div ng-class="currentPlaying.id === song.id ? 'button button-positive button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'">
-          {{ song.title }} by {{song.artist}} votes: {{song.votes}}
+            
+          {{ song.title }} by {{song.artist}} votes: {{song.votes}} count: {{count}}
           </div>
         </div>
       </div>

@@ -14,6 +14,7 @@ angular.module('Q.services', [
   }
 
   var addSong = function (song){
+    console.log("adding song: " + song);
     return $http ({
       method: 'POST',
       url: '/',
@@ -44,6 +45,10 @@ angular.module('Q.services', [
 
   var makeHost = function () {
     isHostData = true;
+  }
+
+  var songLike = function(song) {
+    console.log('trying to like');
   }
 
   var makeGuest = function(){
