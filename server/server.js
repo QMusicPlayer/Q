@@ -18,17 +18,20 @@ var port = process.env.PORT || 8000;
 server.listen(port);
 console.log('listening on port...', port)
 // This empties the database and seeds the database with one user with an empty queue (no multi-user functionality yet)
+
+
 // userModel.remove({}, function() {
-  // new userModel({
-  //   //to check with Harun and Spener
-  //   queue: []
-  // }).save(function(err) {
-  //   if (err) console.error("error seeding database", err);
-  //   else {
-  //     console.log('saved new user');
-  //   }
-  // });
+//   new userModel({
+//     //to check with Harun and Spener
+//     queue: []
+//   }).save(function(err) {
+//     if (err) console.error("error seeding database", err);
+//     else {
+//       console.log('saved new user');
+//     }
+//   });
 // });
+
 
 // io.configure(function () {  
 // });
