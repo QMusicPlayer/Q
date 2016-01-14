@@ -4671,7 +4671,8 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log', '$http',
                 //     // $('<div>Track url is dead!</div>').insertBefore('.nowplaying').delay(3000).fadeOut();
                 //    alert('track not found');
                 // });
-
+                }
+                return track.id;
         
             },
             removeSong: function(song, index) {
