@@ -86,10 +86,9 @@ angular.module('Q.controllers', [
   });
 
   socket.on('roomjoined', function(roomname){
-    console.log('roomjoined', roomname);
     console.log('roomjoined...', roomname);
     if(roomname){
-      console.log('succesful room join on ', roomname) 
+      console.log('succesful room join on', roomname) ;
       Playlist.makeGuest();
       $state.go('playlist');
     } else {
