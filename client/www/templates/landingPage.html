@@ -37,14 +37,14 @@
 
 <!-- Show Enter Room Button -->
 	<div class="list list-inset">
-		<a ng-click="makeGuest()" class="button button-block button-positive">Enter Room</a>
+		<a ng-click="joinRoom()" class="button button-block button-positive">Enter Room</a>
 	</div>
 
 <!-- Entering Rooms does not actually work now, need to create rooms in DB -->
 	<div class="list list-inset">
-		<form ng-submit="makeGuest()">
+		<form ng-submit="joinRoom()">
 		  <label class="item item-input">
-		    <input type="text" placeholder="Room Name">
+		    <input type="text" placeholder="Room Name" ng-model='enteredRoomName'>
 		  </label>
 	  </form>
 	</div>

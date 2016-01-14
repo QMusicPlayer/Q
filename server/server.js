@@ -34,6 +34,10 @@ userModel.remove({}, function() {
 // io.configure(function () {  
 // });
 
+var rooms ={
+
+}
+
 io.on('connection', function (socket) {
   // console.log(socket);
 
@@ -44,10 +48,42 @@ io.on('connection', function (socket) {
   //   socket.emit('getQueue', queue);
   // });
 
+  socket.on("create room", function(roomname){
+      // console.log('create room roomname', roomname);
+      //set roomname
+    if(rooms[roomname]){
+      console.log('room already exists');
+      socket.emit('roomcreated', null);
+    } else { 
+      rooms[roomname] = roomname;
+      //join room
+      console.log('new room joined', roomname);
+      socket.room = rooms[roomname]
+      // socket.username = roomname;
+      // console.log('socketedroom', socket.room)
+      socket.join(socket.room);
+      io.sockets.in(roomname).emit('roomcreated', 'SERVER', roomname + ' has connected to this room');
+      // io.to(roomname).emit('hello', roomname); other version
+    }
+  });
+
+
   socket.on("join room", function(roomname){
-    console.log(roomname);
-    socket.join(roomname);
-    io.to(roomname).emit('hello', roomname);
+    console.log('joining room..',roomname);
+    if(rooms[roomname]){
+      // console.log('roomed to join', roomname)
+      // console.log('current room', socket.room)
+      // socket.username = roomname;
+      socket.room = rooms[roomname]
+      // console.log('new room', socket.room)
+      socket.join(socket.room);
+      // socket.broadcast.to(rooms[roomname]).emit('roomjoined', roomname);
+      io.sockets.in(roomname).emit('roomjoined', roomname);
+       // socket.broadcast.to(socket.room).emit('room joined', 'SERVER', roomname + ' has connected to this room');
+    } else {
+      // console.log('room doesnt exist');
+      socket.emit('roomjoined', null);
+    }
 
   });
 
