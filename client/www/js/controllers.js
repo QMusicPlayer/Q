@@ -91,7 +91,7 @@ angular.module('Q.controllers', [
       $state.go('playlist');
     } else {
       console.log("Error creating room");
-      alert("Error creating room");
+      $scope.showAlert("Room already exists");
     }
   });
 
@@ -103,7 +103,7 @@ angular.module('Q.controllers', [
       $state.go('playlist');
     } else {
       console.log("no such room");
-      alert('cant log in');
+      $scope.showAlert('Room does not exist');
       return
     }
   });
