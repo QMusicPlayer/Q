@@ -4883,7 +4883,9 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
 
                 socket.on('newVotes', function (songData) {
                     console.log('full circle: ' + scope.playlist[songData.index].title);
-                    scope.playlist[songData.index].votes = songData.votes;
+                    scope.$apply(function() { 
+                      scope.playlist[songData.index].votes = songData.votes;
+                    });
                 });
 
                 socket.on('getQueue', function (queue) {
