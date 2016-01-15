@@ -5,7 +5,7 @@ angular.module('Q.controllers', [
 'angularSoundManager',
 ])
 
-.controller('playlistController', function($scope, $rootScope, $location, Playlist) {
+.controller('playlistController', function($scope, $rootScope, $location, Playlist, $state) {
   $rootScope.songs= [];  //why root scope??
   $rootScope.customPlaylist;
 
@@ -37,6 +37,12 @@ angular.module('Q.controllers', [
     }
   } else {
     window.socket.emit('newGuest');
+  }
+
+  $scope.logOut = function() {
+    localStorage.removeItem('qHost');
+    localStorage.removeItem('qRoom');
+    $state.go('landing')
   }
 
   $scope.searchSong = function (){
@@ -93,7 +99,7 @@ angular.module('Q.controllers', [
   console.log(Playlist.isHost());
 })
 
-.controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout){
+.controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout, $state){
   console.log("INIT LANDING PAGE CONTROLLER");
   localStorage.removeItem('qRoom');
 

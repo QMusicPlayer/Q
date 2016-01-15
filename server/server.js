@@ -19,24 +19,6 @@ server.listen(port);
 console.log('listening on port...', port)
 // This empties the database and seeds the database with one user with an empty queue (no multi-user functionality yet)
 
-
-// userModel.remove({}, function() {
-//   new userModel({
-//     //to check with Harun and Spener
-//     queue: []
-//   }).save(function(err) {
-//     if (err) console.error("error seeding database", err);
-//     else {
-//       console.log('saved new user');
-//     }
-//   });
-// });
-
-
-// io.configure(function () {  
-// });
-
-
 io.on('connection', function (socket) {
   // console.log(socket);
 
@@ -49,7 +31,6 @@ io.on('connection', function (socket) {
 
   socket.on("create room", function(roomname){
     // console.log(roomname);
-    // io.to(socket.room).emit('hello', "Hello");
     User.addUser(roomname, function(err,result){
       if(err){
         // console.log(err);
@@ -66,8 +47,13 @@ io.on('connection', function (socket) {
 
   });
   socket.on("join room", function(roomname){
+    if(typeof roomname === 'object'){
+      var host = roomname.q_host; 
+      var roomname = roomname.q_room;  
+    } 
 
-    console.log(roomname);
+    console.log('roomname for joing room', roomname);
+    // console.log('id', socket.id);
 
     User.getRoom(roomname, function(err, result){
       if(err || result === null){
@@ -75,19 +61,24 @@ io.on('connection', function (socket) {
         console.log("no room");
         socket.emit('roomjoined', null);
       } else {
-        console.log('whole socket', socket.id)
-
+        console.log(' socket room:', socket.room)
         socket.leave(socket.room);
         socket.join(roomname);
         socket.room = roomname;
-
         console.log(socket.room);
         console.log("room joined");
-        io.to(socket.id).emit('roomjoined', socket.room);
 
+        //check if session continuation
+        if (host === roomname) {
+          io.to(socket.id).emit('roomjoined', socket.room, host);
+        } else {
+          io.to(socket.id).emit('roomjoined', socket.room);
+          
+        }
 
       }
     });
+
   });
 
   socket.on('newGuest', function() {
