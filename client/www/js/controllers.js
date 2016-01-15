@@ -5,9 +5,10 @@ angular.module('Q.controllers', [
 'angularSoundManager',
 ])
 
-.controller('playlistController', function($scope, $rootScope, $location, Playlist) {
+.controller('playlistController', function($scope, $rootScope, $location, $state, Playlist) {
   $rootScope.songs= [];  //why root scope??
   $rootScope.customPlaylist;
+
 
   // console.log('dustom playlist', $rootScope.customePlayList)
   console.log("INIT PLAYLIST CONTROLLER");
@@ -109,30 +110,43 @@ angular.module('Q.controllers', [
     });
   }
 
-
   socket.on('roomcreated', function(roomname){
     console.log('controller side room created', roomname);
     if(roomname){
       Playlist.makeHost();
       $state.go('playlist');
+      
+      //add sessions
+      sessionStorage.setItem('q_room', roomname)
+      sessionStorage.setItem('q_host', roomname)
+
     } else {
-      console.log("Error creating room");
+      // console.log("Error creating room");
       $scope.showAlert("Room already exists");
     }
 
 
   });
 
-  socket.on('roomjoined', function(roomname){
+  socket.on('roomjoined', function(roomname, isHost){
 
     console.log('roomjoined...', roomname);
     if(roomname){
       console.log('succesful room join on', roomname) ;
-      Playlist.makeGuest();
-
+        
+      alert('is host' + isHost) 
+      if(isHost){
+        Playlist.makeHost()
+      } else {
+        Playlist.makeGuest();
+      }
       $state.go('playlist');
+
+      //add sessions
+      sessionStorage.setItem('q_room', roomname)
+
     } else {
-      console.log("no such room");
+      // console.log("no such room");
       $scope.showAlert('Room does not exist');
       return
     }

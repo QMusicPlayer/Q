@@ -47,9 +47,13 @@ io.on('connection', function (socket) {
 
   });
   socket.on("join room", function(roomname){
+    if(typeof roomname === 'object'){
+      var host = roomname.q_host; 
+      var roomname = roomname.q_room;  
+    } 
 
-    console.log('roomname', roomname);
-    console.log('id', socket.id);
+    console.log('roomname for joing room', roomname);
+    // console.log('id', socket.id);
 
     User.getRoom(roomname, function(err, result){
       if(err || result === null){
@@ -57,13 +61,20 @@ io.on('connection', function (socket) {
         console.log("no room");
         socket.emit('roomjoined', null);
       } else {
-        console.log('whole socket', socket.id)
+        console.log(' socket room:', socket.room)
         socket.leave(socket.room);
         socket.join(roomname);
         socket.room = roomname;
         console.log(socket.room);
         console.log("room joined");
-        io.to(socket.id).emit('roomjoined', socket.room);
+
+        //check if session continuation
+        if (host === roomname) {
+          io.to(socket.id).emit('roomjoined', socket.room, host);
+        } else {
+          io.to(socket.id).emit('roomjoined', socket.room);
+          
+        }
 
       }
     });
