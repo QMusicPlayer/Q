@@ -113,8 +113,7 @@ io.on('connection', function (socket) {
   socket.on('deleteSong', function (target, roomname) {
 
     User.deleteSong(socket.room, target.song, function() {
-      socket.to(roomname).emit('deleteSong', target);
-      socket.broadcast.emit('deleteSong', target);
+      io.to(socket.room).emit('deleteSong', target);
     });
   });
 
