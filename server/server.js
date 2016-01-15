@@ -31,7 +31,6 @@ io.on('connection', function (socket) {
 
   socket.on("create room", function(roomname){
     // console.log(roomname);
-    // io.to(socket.room).emit('hello', "Hello");
     User.addUser(roomname, function(err,result){
       if(err){
         // console.log(err);
@@ -49,7 +48,8 @@ io.on('connection', function (socket) {
   });
   socket.on("join room", function(roomname){
 
-    console.log(roomname);
+    console.log('roomname', roomname);
+    console.log('id', socket.id);
 
     User.getRoom(roomname, function(err, result){
       if(err || result === null){
@@ -67,6 +67,7 @@ io.on('connection', function (socket) {
 
       }
     });
+
   });
 
   socket.on('newGuest', function() {

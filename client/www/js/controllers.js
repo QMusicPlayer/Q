@@ -22,6 +22,7 @@ angular.module('Q.controllers', [
       console.log(localStorage.getItem('qHost'), localStorage.getItem('qRoom'));
 
 
+
       socket.emit("join room", localStorage.getItem('qRoom'));
       socket.on('roomjoined', function(roomname){
         if(roomname){
@@ -108,35 +109,26 @@ angular.module('Q.controllers', [
     });
   }
 
+
   socket.on('roomcreated', function(roomname){
     console.log('controller side room created', roomname);
     if(roomname){
       Playlist.makeHost();
-      
-      sessionStorage.setItem('q_room', roomname)
-      sessionStorage.setItem('q_host', Playlist.isHost())
-    
       $state.go('playlist');
     } else {
       console.log("Error creating room");
       $scope.showAlert("Room already exists");
     }
+
+
   });
 
   socket.on('roomjoined', function(roomname){
-    console.log('roomjoined...', roomname);
-    if(sessionStorage.getItem('q_room')){
-      Playlist.makeGuest();
-      $state.go('playlist');
-      //need to check if host
-    }
 
+    console.log('roomjoined...', roomname);
     if(roomname){
       console.log('succesful room join on', roomname) ;
       Playlist.makeGuest();
-      
-      // alert('host?' + Playlist.isHost().toString() )
-      
 
       $state.go('playlist');
     } else {
@@ -144,6 +136,8 @@ angular.module('Q.controllers', [
       $scope.showAlert('Room does not exist');
       return
     }
+
+
   });
 
   $scope.createRoom = function(){
