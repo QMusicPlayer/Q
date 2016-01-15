@@ -51,12 +51,23 @@ angular.module('Q.services', [
     isHostData = false;
   }
 
+  var roomEntered = false;
+  var isRoomEntered = function(){
+    return roomEntered;
+  }
+
+  var enterRoom = function(){
+    roomEntered = true;
+  }
+
   return {
     getSongs: getSongs,
     addSong: addSong,
     searchSongs: searchSongs,
     makeHost: makeHost,
     makeGuest: makeGuest,
-    isHost: isHost
+    isHost: isHost,
+    isRoomEntered: isRoomEntered,
+    enterRoom: enterRoom
   }
 })

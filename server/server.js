@@ -91,7 +91,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('newGuest', function() {
-    // console.log("newGuest", socket.room);
+    console.log("newGuest", socket.room);
     User.getQueue(socket.room, function(err, queue) {
       socket.emit('getQueue', queue);
       console.log(queue);
