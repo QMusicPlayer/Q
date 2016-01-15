@@ -89,18 +89,25 @@ module.exports = {
 
   updateVotes: function(room, data, callback) {
     console.log('update votes in userController');
-    User.findOne({hash: room}, function(err, user) {
-      if (!user) return;
-      for (var i = 0; i < user.queue.length; i++) {
-        if (user.queue[i].id === data.id) {
-          user.queue[i].votes++;
-        }
-      }
-      user.save(function(err) {
-        console.error(err);
-        callback();
-      });
-    });
+    User.update({'hash': room, 'queue.id': data.id}, {'queue.$.votes': data.votes}, callback);
+    // User.findOne({hash: room}, function(err, user) {
+    //   if (!user) return;
+    //   for (var i = 0; i < user.queue.length; i++) {
+    //     if (user.queue[i].id === data.id) {
+    //       console.log('match found' + user.queue[i].title);
+    //       user.queue[i].votes = data.votes;
+    //       console.log(user.queue[i].votes);
+    //       user.save(function(err) {
+    //         console.error(err);
+    //         callback();
+    //         if (!err) {
+    //           console.log('alegadly saved votes')
+    //         }
+    //       });
+    //     }
+    //   }
+      
+    // });
   },
 
   deleteSong: function(room, target, callback) {
