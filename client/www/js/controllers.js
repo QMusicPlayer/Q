@@ -8,9 +8,36 @@ angular.module('Q.controllers', [
 .controller('playlistController', function($scope, $rootScope, $location, Playlist) {
   $rootScope.songs= [];  //why root scope??
   $rootScope.customPlaylist;
-  // console.log('dustom playlist', $rootScope.customePlayList)
 
-  window.socket.emit('newGuest'); // ???
+  // console.log('dustom playlist', $rootScope.customePlayList)
+  console.log("INIT PLAYLIST CONTROLLER");
+  if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
+    Playlist.makeHost();
+  }
+  if(!Playlist.isRoomEntered()){
+
+    if(localStorage.getItem('qRoom')){
+      console.log(localStorage.getItem('qRoom'));
+      console.log("join room emitted");
+      console.log(localStorage.getItem('qHost'), localStorage.getItem('qRoom'));
+
+
+      socket.emit("join room", localStorage.getItem('qRoom'));
+      socket.on('roomjoined', function(roomname){
+        if(roomname){
+          console.log('succesful room join on', roomname);
+          window.socket.emit('newGuest');
+
+        } else {
+          console.log("no such room");
+          $scope.showAlert('Room does not exist');
+          return
+        }
+      });
+    }
+  } else {
+    window.socket.emit('newGuest');
+  }
 
   $scope.searchSong = function (){
     $rootScope.songs= [];
@@ -49,7 +76,6 @@ angular.module('Q.controllers', [
     
   }
 
-
   $scope.clearResults = function (){
     $scope.query = '';
     $rootScope.songs = [];
@@ -63,10 +89,14 @@ angular.module('Q.controllers', [
     $scope.query = '';
     $rootScope.songs = [];
   }
+
   console.log(Playlist.isHost());
 })
 
 .controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout){
+  console.log("INIT LANDING PAGE CONTROLLER");
+  localStorage.removeItem('qRoom');
+
   $scope.showAlert = function(alertMessage){
     var alertPopup = $ionicPopup.alert({
       title: 'sorry...',
@@ -112,7 +142,10 @@ angular.module('Q.controllers', [
 
   $scope.createRoom = function(){
     // console.log("create room:", $scope.roomname);
+    localStorage.setItem("qRoom", $scope.roomname);
+    localStorage.setItem('qHost', $scope.roomname);
     socket.emit("create room", $scope.roomname);
+    Playlist.enterRoom();
 
   };
 
@@ -120,6 +153,8 @@ angular.module('Q.controllers', [
     // console.log("join Room:", $scope.enteredRoomName);
     console.log("joinRoom");
     socket.emit("join room", $scope.enteredRoomName);
+    localStorage.setItem("qRoom", $scope.enteredRoomName);
+    Playlist.enterRoom();
 
   };
 
