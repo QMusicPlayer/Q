@@ -93,13 +93,16 @@ module.exports = {
       if (!user) return;
       for (var i = 0; i < user.queue.length; i++) {
         if (user.queue[i].id === data.id) {
-          user.queue[i].votes++;
+          console.log('match found' + user.queue[i].title);
+          user.queue[i].votes = data.votes;
+          console.log(user.queue[i].votes);
+          user.save(function(err) {
+            console.error(err);
+            callback();
+          });
         }
       }
-      user.save(function(err) {
-        console.error(err);
-        callback();
-      });
+      
     });
   },
 
