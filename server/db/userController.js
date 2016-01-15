@@ -91,14 +91,14 @@ module.exports = {
     console.log('update votes in userController');
     User.findOne({hash: room}, function(err, user) {
       if (!user) return;
-      user.queue.forEach(function(song) {
-        if (data.id === song.id) {
-          song.votes = data.votes;
+      for (var i = 0; i < user.queue.length; i++) {
+        if (user.queue[i].id === data.id) {
+          user.queue[i].votes++;
         }
-      });
+      }
       user.save(function(err) {
         console.error(err);
-        callback(user.queue);
+        callback();
       });
     });
   },

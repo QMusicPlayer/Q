@@ -4881,6 +4881,11 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 // });
                 var socket = angularPlayer.socket();
 
+                socket.on('newVotes', function (songData) {
+                    console.log('full circle: ' + scope.playlist[songData.index].title);
+                    scope.playlist[songData.index].votes = songData.votes;
+                });
+
                 socket.on('getQueue', function (queue) {
                     console.log('queue from server', queue);
                     angularPlayer.clearPlaylist(function(bool){
@@ -5029,9 +5034,10 @@ ngSoundManager.directive('upVote', ['angularPlayer', '$rootScope', function (ang
                 console.log(scope.song);
                 var songData = {
                     votes: scope.song.votes,
-                    id: scope.song.id
+                    id: scope.song.id,
+                    index: attrs.index
                 };
-                $rootScope.$broadcast('voted', scope.song);
+                $rootScope.$broadcast('voted', songData);
             });
         }
     };

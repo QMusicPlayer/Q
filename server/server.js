@@ -110,10 +110,9 @@ io.on('connection', function (socket) {
     });
   });
 
-  socket.on('updateVotes', function(song) {
-    User.updateVotes(socket.room, song, function(queue) {
-      console.log('queue: ' + queue);
-      io.to(socket.room).emit('getQueue', queue);
+  socket.on('updateVotes', function(songData) {
+    User.updateVotes(socket.room, songData, function() {
+      io.to(socket.room).emit('newVotes', songData);
     });
   });
 
