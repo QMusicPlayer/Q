@@ -4888,7 +4888,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 }); 
 
                 socket.on('deleteSong', function (targetObj) {
-                    console.log(targetObj);
+                    console.log("socket delete emit received, target:", targetObj);
                     soundManager.destroySound(targetObj.song);
                     scope.$apply(function () {
                         scope.playlist.splice(targetObj.index, 1);
