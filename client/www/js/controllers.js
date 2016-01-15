@@ -9,6 +9,11 @@ angular.module('Q.controllers', [
   $rootScope.songs= [];  //why root scope??
   $rootScope.customPlaylist;
 
+  $scope.logOut = function(){
+    localStorage.removeItem('qHost');
+    localStorage.removeItem('qRoom');
+    $state.go('playlist');
+  }
 
   // console.log('dustom playlist', $rootScope.customePlayList)
   console.log("INIT PLAYLIST CONTROLLER");
@@ -134,7 +139,6 @@ angular.module('Q.controllers', [
     if(roomname){
       console.log('succesful room join on', roomname) ;
         
-      alert('is host' + isHost) 
       if(isHost){
         Playlist.makeHost()
       } else {
