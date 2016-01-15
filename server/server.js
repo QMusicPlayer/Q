@@ -110,6 +110,12 @@ io.on('connection', function (socket) {
     });
   });
 
+  socket.on('updateVotes', function(song) {
+    User.updateVotes(socket.room, song, function(queue) {
+      io.to(socket.room).emit('getQueue', queue);
+    });
+  });
+
   socket.on('deleteSong', function (target, roomname) {
 
     User.deleteSong(socket.room, target.song, function() {

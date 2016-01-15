@@ -87,6 +87,22 @@ module.exports = {
     });
   },
 
+  updateVotes: function(room, data, callback) {
+    console.log('update votes in userController');
+    User.findOne({hash: room}, function(err, user) {
+      if (!user) return;
+      user.queue.forEach(function(song) {
+        if (data.id === song.id) {
+          song.votes = data.votes;
+        }
+      });
+      user.save(function(err) {
+        console.error(err);
+        callback(user.queue);
+      });
+    });
+  },
+
   deleteSong: function(room, target, callback) {
     User.findOne({hash: room}, function(err, result) {
       if(!result) return;
