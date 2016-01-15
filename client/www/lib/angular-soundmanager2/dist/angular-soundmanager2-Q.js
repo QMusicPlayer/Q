@@ -4645,22 +4645,26 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                         });
                         socket.emit('addSong', track);
                         $rootScope.$broadcast('player:playlist', playlist);
+
+                        var bindContext = this;
+
+                        //this.removeSong(track, 0);
                     //check to make sure track url isn't dead before adding it
                     
-                    // $.get(track.url, function() {
-                    //     this.addToPlaylist(track);
+                    $.get(track.url, function() {
+                        // this.addToPlaylist(track);
                         
-                    //     //add to sound manager
-                    //     soundManager.createSound({
-                    //         id: track.id,
-                    //         url: track.url
-                    //     });
-                    //     socket.emit('addSong', track);
-                    //     $rootScope.$broadcast('player:playlist', playlist);
-                    // }.bind(this)).error(function() {
-                    //     $('<div>Track url is dead!</div>').insertBefore('.nowplaying').delay(3000).fadeOut();
-                    //     console.log('track not found');
-                    // });
+                        // //add to sound manager
+                        // soundManager.createSound({
+                        //     id: track.id,
+                        //     url: track.url
+                        // });
+                        // socket.emit('addSong', track);
+                        // $rootScope.$broadcast('player:playlist', playlist);
+                    }.bind(this)).error(function() {
+                        //$('<div>Track url is dead!</div>').insertBefore('.nowplaying').delay(3000).fadeOut();
+                        bindContext.removeSong(track.id, playlist.length - 1);
+                    });
 
 
                 }
@@ -4676,7 +4680,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 //remove from playlist
                 
                 //once all done then broadcast
-                console.log('line 4676: removed song,', song, 'removed index', index)
+                console.log('removed song,', song, 'removed index', index)
                 socket.emit('deleteSong', {song: song, index: index});
                 
             },
