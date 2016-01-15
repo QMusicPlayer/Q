@@ -14,6 +14,7 @@ angular.module('Q.services', [
   }
 
   var addSong = function (song){
+    console.log("adding song: " + song);
     return $http ({
       method: 'POST',
       url: '/',
