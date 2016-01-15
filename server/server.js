@@ -19,24 +19,6 @@ server.listen(port);
 console.log('listening on port...', port)
 // This empties the database and seeds the database with one user with an empty queue (no multi-user functionality yet)
 
-
-// userModel.remove({}, function() {
-//   new userModel({
-//     //to check with Harun and Spener
-//     queue: []
-//   }).save(function(err) {
-//     if (err) console.error("error seeding database", err);
-//     else {
-//       console.log('saved new user');
-//     }
-//   });
-// });
-
-
-// io.configure(function () {  
-// });
-
-
 io.on('connection', function (socket) {
   // console.log(socket);
 
@@ -76,15 +58,12 @@ io.on('connection', function (socket) {
         socket.emit('roomjoined', null);
       } else {
         console.log('whole socket', socket.id)
-
         socket.leave(socket.room);
         socket.join(roomname);
         socket.room = roomname;
-
         console.log(socket.room);
         console.log("room joined");
         io.to(socket.id).emit('roomjoined', socket.room);
-
 
       }
     });

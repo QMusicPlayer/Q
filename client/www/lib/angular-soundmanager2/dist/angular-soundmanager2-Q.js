@@ -4625,6 +4625,9 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 }
             },
             addTrack: function(track) {
+                
+                alert('validating...')
+                
                 //check if track itself is valid and if its url is playable
                 if (!this.isTrackValid) {
                     return null;
@@ -4633,11 +4636,24 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 //check if song already does not exists then add to playlist
                 var inArrayKey = this.isInArray(this.getPlaylist(), track.id);
                 if(inArrayKey === false) {
+                    alert('not in database' )
                     //$log.debug('song does not exists in playlist');
                     //add to playlist
 
+                        // this.addToPlaylist(track);
+                        // //add to sound manager
+                        // soundManager.createSound({
+                        //     id: track.id,
+                        //     url: track.url
+                        // });
+                        // socket.emit('addSong', track);
+                        // $rootScope.$broadcast('player:playlist', playlist);
+                    //check to make sure track url isn't dead before adding it
+                        
+                    $.get(track.url, function() {
+                        alert('got the track')
                         this.addToPlaylist(track);
-                    
+                        
                         //add to sound manager
                         soundManager.createSound({
                             id: track.id,
@@ -4666,8 +4682,10 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                         bindContext.removeSong(track.id, playlist.length - 1);
                     });
 
+                } else {
 
                 }
+
                 return track.id;
             },
             removeSong: function(song, index) {
@@ -4903,7 +4921,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                         scope.playlist.splice(targetObj.index, 1);
                     });
                 }); 
-
+///adding track
                 socket.on('newSong', function (newSong) {
                     console.log('newSong from server', newSong)
                     angularPlayer.addTrack(newSong);

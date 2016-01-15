@@ -90,7 +90,8 @@ angular.module('Q.controllers', [
     $rootScope.songs = [];
   }
 
-  console.log(Playlist.isHost());
+  // console.log(Playlist.isHost());
+
 })
 
 .controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout){
@@ -107,19 +108,14 @@ angular.module('Q.controllers', [
     });
   }
 
-  $scope.makeHost = function(){
-
-    // Note: this is a temporary fix for the demo, and should not be used as actual authentication
-    if($scope.createRoomPassword === "test"){
-      Playlist.makeHost();
-      $state.go('playlist');
-    }
-  }
-
   socket.on('roomcreated', function(roomname){
     console.log('controller side room created', roomname);
     if(roomname){
       Playlist.makeHost();
+      
+      sessionStorage.setItem('q_room', roomname)
+      sessionStorage.setItem('q_host', Playlist.isHost())
+    
       $state.go('playlist');
     } else {
       console.log("Error creating room");
@@ -129,9 +125,19 @@ angular.module('Q.controllers', [
 
   socket.on('roomjoined', function(roomname){
     console.log('roomjoined...', roomname);
+    if(sessionStorage.getItem('q_room')){
+      Playlist.makeGuest();
+      $state.go('playlist');
+      //need to check if host
+    }
+
     if(roomname){
       console.log('succesful room join on', roomname) ;
       Playlist.makeGuest();
+      
+      // alert('host?' + Playlist.isHost().toString() )
+      
+
       $state.go('playlist');
     } else {
       console.log("no such room");
