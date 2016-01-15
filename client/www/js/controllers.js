@@ -5,15 +5,9 @@ angular.module('Q.controllers', [
 'angularSoundManager',
 ])
 
-.controller('playlistController', function($scope, $rootScope, $location, $state, Playlist) {
+.controller('playlistController', function($scope, $rootScope, $location, Playlist, $state) {
   $rootScope.songs= [];  //why root scope??
   $rootScope.customPlaylist;
-
-  $scope.logOut = function(){
-    localStorage.removeItem('qHost');
-    localStorage.removeItem('qRoom');
-    $state.go('playlist');
-  }
 
   // console.log('dustom playlist', $rootScope.customePlayList)
   console.log("INIT PLAYLIST CONTROLLER");
@@ -26,7 +20,6 @@ angular.module('Q.controllers', [
       console.log(localStorage.getItem('qRoom'));
       console.log("join room emitted");
       console.log(localStorage.getItem('qHost'), localStorage.getItem('qRoom'));
-
 
 
       socket.emit("join room", localStorage.getItem('qRoom'));
@@ -44,6 +37,12 @@ angular.module('Q.controllers', [
     }
   } else {
     window.socket.emit('newGuest');
+  }
+
+  $scope.logOut = function() {
+    localStorage.removeItem('qHost');
+    localStorage.removeItem('qRoom');
+    $state.go('landing')
   }
 
   $scope.searchSong = function (){
@@ -97,11 +96,10 @@ angular.module('Q.controllers', [
     $rootScope.songs = [];
   }
 
-  // console.log(Playlist.isHost());
-
+  console.log(Playlist.isHost());
 })
 
-.controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout){
+.controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout, $state){
   console.log("INIT LANDING PAGE CONTROLLER");
   localStorage.removeItem('qRoom');
 
@@ -115,47 +113,37 @@ angular.module('Q.controllers', [
     });
   }
 
+  $scope.makeHost = function(){
+
+    // Note: this is a temporary fix for the demo, and should not be used as actual authentication
+    if($scope.createRoomPassword === "test"){
+      Playlist.makeHost();
+      $state.go('playlist');
+    }
+  }
+
   socket.on('roomcreated', function(roomname){
     console.log('controller side room created', roomname);
     if(roomname){
       Playlist.makeHost();
       $state.go('playlist');
-      
-      //add sessions
-      sessionStorage.setItem('q_room', roomname)
-      sessionStorage.setItem('q_host', roomname)
-
     } else {
-      // console.log("Error creating room");
+      console.log("Error creating room");
       $scope.showAlert("Room already exists");
     }
-
-
   });
 
-  socket.on('roomjoined', function(roomname, isHost){
-
+  socket.on('roomjoined', function(roomname){
     console.log('roomjoined...', roomname);
     if(roomname){
       console.log('succesful room join on', roomname) ;
-        
-      if(isHost){
-        Playlist.makeHost()
-      } else {
-        Playlist.makeGuest();
-      }
+      Playlist.makeGuest();
       $state.go('playlist');
-
-      //add sessions
-      sessionStorage.setItem('q_room', roomname)
-
     } else {
-      // console.log("no such room");
+      console.log("no such room");
       $scope.showAlert('Room does not exist');
       return
     }
-
-
   });
 
   $scope.createRoom = function(){
