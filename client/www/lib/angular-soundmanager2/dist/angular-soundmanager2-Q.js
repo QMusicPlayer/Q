@@ -4855,6 +4855,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 });
             },
             sortByVotes: function() {
+                // console.log('right? ' + this.isPlayingStatus());
                 if (!isPlaying) {
                 var tempPlayList = playlist.slice();
                     this.clearPlaylist(function() {
@@ -4896,6 +4897,9 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
             },
             isPlayingStatus: function() {
                 return isPlaying;
+            },
+            setPlaying: function(data) {
+                isPlaying = data;
             }
         };
     }
@@ -4921,6 +4925,11 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 //     });
                 // });
                 var socket = angularPlayer.socket();
+
+                socket.on('isPlaying', function(data)  {
+                    console.log('you know your playing: ' + data);
+                    angularPlayer.setPlaying(data);
+                });
 
                 socket.on('newVotes', function (songData) {
                    // console.log('full circle: ' + scope.playlist[songData.index].title);
@@ -4995,13 +5004,13 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                     // });
                 });
 
-                socket.on('currentTrackDuration', function(data) {
-                    scope.$apply(function() {
-                        scope.isPlaying = data;
-                    });
-                });
+                // socket.on('currentTrackDuration', function(data) {
+                //     scope.$apply(function() {
+                //         scope.isPlaying = data;
+                //     });
+                // });
 
-                scope.isPlaying = false;
+                //scope.isPlaying = false;
                 scope.$on('music:isPlaying', function(event, data) {
                     socket.emit('isPlaying', data);
                     // scope.$apply(function() {
