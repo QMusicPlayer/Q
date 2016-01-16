@@ -5,10 +5,10 @@ angular.module('Q.controllers', [
 'angularSoundManager',
 ])
 
-.controller('playlistController', function($scope, $rootScope, $location, Playlist, $state) {
+.controller('playlistController', function($scope, $rootScope, $location, Playlist, $state, $ionicPopup, $stateParams) {
   $rootScope.songs= [];  //why root scope??
   $rootScope.customPlaylist;
-
+  $rootScope.friendCount;
   // console.log('dustom playlist', $rootScope.customePlayList)
   console.log("INIT PLAYLIST CONTROLLER");
   if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
@@ -96,12 +96,28 @@ angular.module('Q.controllers', [
     $rootScope.songs = [];
   }
 
+  $scope.showAlert = function(alertMessage){
+    var alertPopup = $ionicPopup.alert({
+      title: 'sorry...',
+      template: alertMessage
+    });
+    alertPopup.then(function(res){
+      console.log('thanks for trying')
+    });
+  }
+
   console.log(Playlist.isHost());
 })
 
-.controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout, $state){
+.controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout, $state, $rootScope){
   console.log("INIT LANDING PAGE CONTROLLER");
   localStorage.removeItem('qRoom');
+
+  socket.on('userCount', function(friendCount) {
+    console.log('created, here i am...', friendCount);
+    $rootScope.friendCount = friendCount;
+  
+  });
 
   $scope.showAlert = function(alertMessage){
     var alertPopup = $ionicPopup.alert({
@@ -123,7 +139,7 @@ angular.module('Q.controllers', [
   }
 
   socket.on('roomcreated', function(roomname){
-    console.log('controller side room created', roomname);
+    // console.log('controller side room created', roomname);
     if(roomname){
       Playlist.makeHost();
       $state.go('playlist');
@@ -136,6 +152,7 @@ angular.module('Q.controllers', [
   socket.on('roomjoined', function(roomname){
     console.log('roomjoined...', roomname);
     if(roomname){
+      
       console.log('succesful room join on', roomname) ;
       Playlist.makeGuest();
       $state.go('playlist');

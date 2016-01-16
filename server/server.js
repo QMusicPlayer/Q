@@ -36,12 +36,19 @@ io.on('connection', function (socket) {
         // console.log(err);
         socket.emit('roomcreated', null);
       } else {
-        // socket.leave(socket.room);
-        socket.join(roomname);
-        socket.room = roomname;
-        // console.log('room created on socket.rom:', socket.room)
-        io.sockets.in(roomname).emit('roomcreated', socket.room);
+        // -----
+        var c = io.engine.clientsCount;
+        User.updateRoomCount(roomname, 'add', function(err, userCount){
+          console.log('creat room room count', userCount)
 
+          socket.join(roomname);
+          socket.room = roomname;
+          // console.log('room created on socket.rom:', socket.room)
+          io.sockets.in(roomname).emit('userCount', userCount);
+          io.sockets.in(roomname).emit('roomcreated', socket.room);
+
+        });
+      
       }
     });
 
@@ -67,6 +74,12 @@ io.on('connection', function (socket) {
         socket.room = roomname;
         console.log(socket.room);
         console.log("room joined");
+        
+        //adding user count
+        User.updateRoomCount(roomname, 'add', function(err, userCount){
+          console.log('join room room count', userCount)
+          io.sockets.in(roomname).emit('userCount', userCount);
+        })
 
         //check if session continuation
         if (host === roomname) {
@@ -119,22 +132,36 @@ io.on('connection', function (socket) {
   });
 
   socket.on('currentlyPlaying', function (data) {
-    socket.emit('currentlyPlaying', data);
-    socket.broadcast.emit('currentlyPlaying', data);
+    // socket.emit('currentlyPlaying', data);
+    // socket.broadcast.emit('currentlyPlaying', data);
+    io.to(socket.room).emit('currentlyPlaying', data);
   });
 
   socket.on('currentTrackPosition', function (data) {
-    socket.emit('currentTrackPosition', data);
-    socket.broadcast.emit('currentTrackPosition', data);
+    // socket.emit('currentTrackPosition', data);
+    io.to(socket.room).emit('currentTrackPosition', data);
   });
 
   socket.on('currentTrackDuration', function (data) {
-    socket.emit('currentTrackDuration', data);
-    socket.broadcast.emit('currentTrackDuration', data);
+    // socket.emit('currentTrackDuration', data);
+    io.to(socket.room).emit('currentTrackDuration', data);
   });
 
   socket.on('isPlaying', function (data) {
-    socket.emit('isPlaying', data);
-    socket.broadcast.emit('isPlaying', data);
+    // socket.emit('isPlaying', data);
+     io.to(socket.room).emit('isPlaying', data);
   });
+
+  socket.on('disconnect', function(){
+    
+    User.updateRoomCount(socket.room, 'subtract', function(err, userCount){  
+      console.log('disconnting socket', userCount);
+      io.sockets.in(socket.room).emit('userCount', userCount);
+      socket.leave(socket.room);
+    });
+    
+
+  });
+
+
 });
