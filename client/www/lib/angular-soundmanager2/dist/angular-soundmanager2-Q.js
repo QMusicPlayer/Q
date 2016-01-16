@@ -4937,6 +4937,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                     queue.forEach(function(song) {
                         angularPlayer.addToPlaylist(song);
                     });
+                    angularPlayer.sortByVotes();
                 }); 
 
                 socket.on('deleteSong', function (targetObj) {
