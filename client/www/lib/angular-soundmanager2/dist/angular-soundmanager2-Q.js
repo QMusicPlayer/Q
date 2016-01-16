@@ -4529,6 +4529,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                                 var injector = elem.injector();
                                 //get the service.
                                 var angularPlayer = injector.get('angularPlayer');
+                                socket.emit('deleteSong', {song: currentTrack, index: 0});
                                 angularPlayer.nextTrack();
                                 $rootScope.$broadcast('track:id', currentTrack);
                             }

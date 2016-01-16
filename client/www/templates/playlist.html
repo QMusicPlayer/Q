@@ -53,7 +53,7 @@
       <li class='row' ng-repeat="song in playlist" > <!-- | orderBy:'-votes'" -->
         <!-- mp: had some weidr behavior. sometimes couldn't delete. changed to li elements -->
         <div class="col-90">
-          <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'">
+          <div ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'">
             <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
             <div class="songinfo" style="padding-left: 30px; text-align: left;">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
           </div>
