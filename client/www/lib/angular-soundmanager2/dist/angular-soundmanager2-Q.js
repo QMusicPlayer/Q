@@ -4855,9 +4855,9 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 });
             },
             sortByVotes: function() {
-                // console.log('right? ' + this.isPlayingStatus());
+                console.log('right? ' + this.isPlayingStatus());
                 if (!isPlaying) {
-                var tempPlayList = playlist.slice();
+                    var tempPlayList = playlist.slice();
                     this.clearPlaylist(function() {
                         playlist = tempPlayList.sort(function(a, b) {
                             return b.votes - a.votes ;
