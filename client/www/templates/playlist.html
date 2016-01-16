@@ -55,7 +55,7 @@
       <ion-item class='row' ng-repeat="song in playlist" on-hold="viewSong(song.title)" >
         <!-- mp: can't do pop vie song for guest-->
         <div class="col-80">
-          <div ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
+          <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
             <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
             <div class="songinfo" style="padding-left: 30px; text-align: left, ">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
           </div>
