@@ -4838,6 +4838,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                             //custom code
                             soundManager.destroySound(soundManager.soundIDs[0]);
                             //custom code
+                            console.log('should happen first' + i);
                             loop();
                         }, 100);
                     },
@@ -4846,10 +4847,25 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                         $log.debug('All done!');
                         //clear playlist
                         playlist = [];
-                        $rootScope.$broadcast('player:playlist', playlist);
                         callback(true);
+                        $rootScope.$broadcast('player:playlist', playlist);
                         //callback custom code
                     }
+                });
+            },
+            sortByVotes: function() {
+                var tempPlayList = playlist.slice();
+                this.clearPlaylist(function() {
+                    playlist = tempPlayList.sort(function(a, b) {
+                        return b.votes - a.votes ;
+                    });
+                    console.log('should happen last');
+                    playlist.forEach(function(song) {
+                        soundManager.createSound({
+                        id: song.id,
+                        url: song.url
+                        });
+                    }); 
                 });
             },
             resetProgress: function() {
@@ -4888,6 +4904,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                     scope.$apply(function() { 
                       scope.playlist[songData.index].votes = songData.votes;
                     });
+                    angularPlayer.sortByVotes();
                 });
 
                 socket.on('getQueue', function (queue) {
