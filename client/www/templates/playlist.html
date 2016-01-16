@@ -42,18 +42,20 @@
 <!-- CONTENT -->
 <!-- Playlist View: If you are the host -->
 <ion-content class="has-header has-footer has-subheader" ng-show="isHost()">
-  <div style="height:70%; margin-right:auto; margin-left:auto; width:80%">
-    <div class="row card" ng-show="playlist.length === 0">
+ 
+<!--   <div style="height:100%; margin-right:auto; margin-left:auto; width:100%"> -->
+    <div class="row card" ng-show="playlist.length === 0" style="height:100%; margin-right:auto; margin-left:auto; width:100%">
       <center>
         <h3>There are no songs currently in your playlist.</h3>
         <h4>Use the search bar at the top to search for songs and add to the playlist.</h4>
       </center>
     </div>
-    <ul>
-      <li class='row' ng-repeat="song in playlist" > <!-- | orderBy:'-votes'" -->
+
+    <ion-list>
+      <ion-item class='row' ng-repeat="song in playlist | orderBy:'-votes'" on-hold="onHold(song.title)" >
         <!-- mp: had some weidr behavior. sometimes couldn't delete. changed to li elements -->
-        <div class="col-90">
-          <div ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'">
+        <div class="col-80">
+          <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
             <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
             <div class="songinfo" style="padding-left: 30px; text-align: left;">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
           </div>
@@ -63,31 +65,34 @@
             <i class="ion-close-round"></i>
           </a>
         </div>
-      </li>
-    </ul>
-    </div>
+      </ion-item>
+    </ion-list>
+  
+  <!-- </div> -->
 </ion-content>
 
 <!-- Playlist View: If you are a guest -->
 <ion-content class="has-header has-footer has-subheader" ng-show="!isHost()">
-  <div style="height:70%; margin-right:auto; margin-left:auto; width:80%">
+ <!--  <div style="height:70%; margin-right:auto; margin-left:auto; width:100%"> -->
     <div class="row card" ng-show="playlist.length === 0">
     <center>
       <h3>There are no songs currently in your playlist.</h3>
       <h4>Use the search bar at the top to search for songs and add to the playlist.</h4>
     </center>
     </div>
-    <ul>
-      <div class='row' ng-repeat="song in playlist"> <!-- | orderBy:'-votes'"> -->
-        <div class="col-90">
+
+    <ion-list>
+      <ion-item class='row' ng-repeat="song in playlist | orderBy:'-votes'">
+        <!-- <div class="col-90"> -->
           <div ng-class="currentPlaying.id === song.id ? 'button button-positive button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'" up-vote="song" data-index="{{$index}}" style="position:relative">
           <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
           <div class="songinfo" style="padding-left: 30px; text-align: left;">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
           </div>
-        </div>
-      </div>
-    </ul>
-  </div>
+        <!-- </div> -->
+      </ion-item>
+    </ion-list>
+
+<!--   </div> -->
 </ion-content>
 
 <!-- FOOTER  -->
