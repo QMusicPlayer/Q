@@ -132,23 +132,24 @@ io.on('connection', function (socket) {
   });
 
   socket.on('currentlyPlaying', function (data) {
-    socket.emit('currentlyPlaying', data);
-    socket.broadcast.emit('currentlyPlaying', data);
+    // socket.emit('currentlyPlaying', data);
+    // socket.broadcast.emit('currentlyPlaying', data);
+    io.to(socket.room).emit('currentlyPlaying', data);
   });
 
   socket.on('currentTrackPosition', function (data) {
-    socket.emit('currentTrackPosition', data);
-    socket.broadcast.emit('currentTrackPosition', data);
+    // socket.emit('currentTrackPosition', data);
+    io.to(socket.room).emit('currentTrackPosition', data);
   });
 
   socket.on('currentTrackDuration', function (data) {
-    socket.emit('currentTrackDuration', data);
-    socket.broadcast.emit('currentTrackDuration', data);
+    // socket.emit('currentTrackDuration', data);
+    io.to(socket.room).emit('currentTrackDuration', data);
   });
 
   socket.on('isPlaying', function (data) {
-    socket.emit('isPlaying', data);
-    socket.broadcast.emit('isPlaying', data);
+    // socket.emit('isPlaying', data);
+     io.to(socket.room).emit('isPlaying', data);
   });
 
   socket.on('disconnect', function(){
