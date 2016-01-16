@@ -114,10 +114,10 @@ angular.module('Q.controllers', [
 
   }
 
-  $scope.onHold = function(title) {
+  $scope.showSong = function(title) {
     $scope.viewSong(title)
   }
-  
+
   console.log(Playlist.isHost());
 })
 

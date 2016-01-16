@@ -3,11 +3,11 @@
 <ion-header-bar ng-class="isHost() ? 'bar bar-header bar-royal' : 'bar bar-header bar-positive'">
   <h1 class="title"><img ng-click='logOut()'src='./img/icon2.png' height='40' width='40'></h1>
 
-    <!-- <span>
-    still need to properly binding updated count
+    <span>
+    <!-- still need to properly binding updated count -->
     <i class="icon ion-person-stalker"></i>
     Friends
-    <span class='friendCount'>{{friendCount}}</span> -->
+    <span class='friendCount'>{{friendCount}}</span>
   </span>
 
 </ion-header-bar>
@@ -31,7 +31,7 @@
 <!-- Search Results -->
 <div class='list list-inset searchResults'>
 
-  <div music-player="" add-song="song" ng-click='clearResults()' class="row searchResultsItem" ng-repeat='song in songs'>
+  <div music-player="" add-song="song" ng-click='clearResults()' class="row searchResultsItem" ng-repeat='song in songs' on-hold='showSong(song.title)'>
     <span add-song="song" class="center thumb">  <img class='rounded right small'  src={{song.image}} ></span>
     <span class="center textcenter large">  {{song.title}} by {{song.artist}}</span>
   </div>
@@ -52,16 +52,16 @@
     </div>
 
     <ion-list>
-      <ion-item class='row' ng-repeat="song in playlist | orderBy:'-votes'" on-hold="onHold(song.title)" >
-        <!-- mp: had some weidr behavior. sometimes couldn't delete. changed to li elements -->
+      <ion-item class='row' ng-repeat="song in playlist | orderBy:'-votes'" on-hold="viewSong(song.title)" >
+        <!-- mp: can't do pop vie song for guest-->
         <div class="col-80">
           <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
             <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
-            <div class="songinfo" style="padding-left: 30px; text-align: left;">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
+            <div class="songinfo" style="padding-left: 30px; text-align: left, ">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
           </div>
         </div>
         <div ng-show="isHost()">
-          <a remove-from-playlist="song" data-index="{{$index}}" ng-class="currentPlaying.id === song.id ? 'button button-clear button-royal button-block' : 'button button-clear button-stable button-block'">
+          <a remove-from-playlist="song" data-index="{{$index}}" ng-class="currentPlaying.id === song.id ? 'button button-clear button-royal button-block' : 'button button-clear button-stable button-block'" >
             <i class="ion-close-round"></i>
           </a>
         </div>
