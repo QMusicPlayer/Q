@@ -4661,9 +4661,11 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                         // });
                         // socket.emit('addSong', track);
                         // $rootScope.$broadcast('player:playlist', playlist);
-                    }.bind(this)).error(function() {
+                    }.bind(this)).error(function(error) {
                         //$('<div>Track url is dead!</div>').insertBefore('.nowplaying').delay(3000).fadeOut();
-                        bindContext.removeSong(track.id, playlist.length - 1);
+                        if (error.status === 401) {
+                            bindContext.removeSong(track.id, playlist.length - 1);
+                        }
                     });
 
 
