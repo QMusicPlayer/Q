@@ -106,6 +106,18 @@ angular.module('Q.controllers', [
     });
   }
 
+  $scope.viewSong = function(alertMessage){
+    var alertPopup = $ionicPopup.alert({
+      title: 'Song title:',
+      template: alertMessage
+    });
+
+  }
+
+  $scope.showSong = function(title) {
+    $scope.viewSong(title)
+  }
+
   console.log(Playlist.isHost());
 })
 
