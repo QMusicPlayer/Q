@@ -2,9 +2,20 @@
 <!-- Search Bar -->
 <ion-header-bar ng-class="isHost() ? 'bar bar-header bar-royal' : 'bar bar-header bar-positive'">
   <h1 class="title"><img ng-click='logOut()'src='./img/icon2.png' height='40' width='40'></h1>
+
+    <!-- <span>
+    still need to properly binding updated count
+    <i class="icon ion-person-stalker"></i>
+    Friends
+    <span class='friendCount'>{{friendCount}}</span> -->
+  </span>
+
 </ion-header-bar>
-   <ion-nav-view></ion-nav-view>
+
+<ion-nav-view></ion-nav-view>
+
 <div class="bar bar-subheader item-input-inset">
+
   <label class="item-input-wrapper">
     <i class="icon ion-ios-search placeholder-icon"></i>
     <input type="search" placeholder="SoundCloud search..." ng-model="query" ng-change='searchSong()'>
@@ -14,8 +25,12 @@
   </button>
 </div>
 
+<!-- adding num of users count... -->
+
+
 <!-- Search Results -->
 <div class='list list-inset searchResults'>
+
   <div music-player="" add-song="song" ng-click='clearResults()' class="row searchResultsItem" ng-repeat='song in songs'>
     <span add-song="song" class="center thumb">  <img class='rounded right small'  src={{song.image}} ></span>
     <span class="center textcenter large">  {{song.title}} by {{song.artist}}</span>

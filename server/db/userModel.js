@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var userSchema = mongoose.Schema({
+    userCount: Number,
     queue: [],
     hash: {
       type: String,

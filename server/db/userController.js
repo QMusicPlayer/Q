@@ -6,7 +6,8 @@ module.exports = {
     var newUser = new User({
       //to check with Harun and Spener
       hash: room,
-      queue: []
+      queue: [],
+      userCount: 0 //added for room count
     });
     newUser.save(function(err, result) {
       if (err) {
@@ -130,6 +131,30 @@ module.exports = {
         });
       });
     });
-  }
+  },
+
+  updateRoomCount: function(room, changeDir, callback) {
+    console.log('update roomCount in userController');
+
+
+    User.findOne({'hash': room}, function(err, doc){
+      console.log('update room count');
+
+      if(doc !== null ){ 
+
+        if(changeDir === 'add'){
+          doc.userCount++;
+        } else if (changeDir === 'subtract'){
+          console.log('subtracting...', doc)
+          doc.userCount--;
+        }
+        doc.save();
+        callback(err, doc.userCount)
+      }
+
+    });
+    
+  },
+
 
 };

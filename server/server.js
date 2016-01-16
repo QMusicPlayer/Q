@@ -36,12 +36,19 @@ io.on('connection', function (socket) {
         // console.log(err);
         socket.emit('roomcreated', null);
       } else {
-        // socket.leave(socket.room);
-        socket.join(roomname);
-        socket.room = roomname;
-        // console.log('room created on socket.rom:', socket.room)
-        io.sockets.in(roomname).emit('roomcreated', socket.room);
+        // -----
+        var c = io.engine.clientsCount;
+        User.updateRoomCount(roomname, 'add', function(err, userCount){
+          console.log('creat room room count', userCount)
 
+          socket.join(roomname);
+          socket.room = roomname;
+          // console.log('room created on socket.rom:', socket.room)
+          io.sockets.in(roomname).emit('userCount', userCount);
+          io.sockets.in(roomname).emit('roomcreated', socket.room);
+
+        });
+      
       }
     });
 
@@ -67,6 +74,12 @@ io.on('connection', function (socket) {
         socket.room = roomname;
         console.log(socket.room);
         console.log("room joined");
+        
+        //adding user count
+        User.updateRoomCount(roomname, 'add', function(err, userCount){
+          console.log('join room room count', userCount)
+          io.sockets.in(roomname).emit('userCount', userCount);
+        })
 
         //check if session continuation
         if (host === roomname) {
@@ -137,4 +150,17 @@ io.on('connection', function (socket) {
     socket.emit('isPlaying', data);
     socket.broadcast.emit('isPlaying', data);
   });
+
+  socket.on('disconnect', function(){
+    
+    User.updateRoomCount(socket.room, 'subtract', function(err, userCount){  
+      console.log('disconnting socket', userCount);
+      io.sockets.in(socket.room).emit('userCount', userCount);
+      socket.leave(socket.room);
+    });
+    
+
+  });
+
+
 });
