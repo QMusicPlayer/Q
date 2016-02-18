@@ -450,7 +450,7 @@
             if(!options.serverURL && options.autoPlay) {
                 oSound.play();
             }
-            
+
             return oSound;
         };
         /**
@@ -4436,7 +4436,7 @@ ngSoundManager.filter('humanTime', function () {
 
 ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
     function($rootScope, $log) {
-        
+
         var currentTrack = null,
             currentSong = null,
             repeat = false,
@@ -4447,12 +4447,12 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
             playlist = [],
             socket = soundManager.socket();
 
-        
+
         // socket.on('deleteSong', function(queue) {
         //     playlist = queue;
         //     $rootScope.$broadcast('player:playlist', playlist);
         // });
-        
+
         return {
             /**
              * Initialize soundmanager,
@@ -4638,9 +4638,9 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                     //$log.debug('song does not exists in playlist');
                     //add to playlist
 
-                        $('.broken-link').remove();
+                        // $('.broken-link').remove();
                         this.addToPlaylist(track);
-                    
+
                         //add to sound manager
                         soundManager.createSound({
                             id: track.id,
@@ -4653,10 +4653,10 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
 
                         //this.removeSong(track, 0);
                     //check to make sure track url isn't dead before adding it
-                    
+
                     $.get(track.url, function() {
                         // this.addToPlaylist(track);
-                        
+
                         // //add to sound manager
                         // soundManager.createSound({
                         //     id: track.id,
@@ -4668,7 +4668,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                         //$('<div>Track url is dead!</div>').insertBefore('.nowplaying').delay(3000).fadeOut();
                         if (error.status === 401) {
                             bindContext.removeSong(track.id, playlist.length - 1);
-                            $('.has-footer').prepend("<div class='broken-link' style='color:red;''>...yeahhh, that SouncCloud link is broken, you're gonna wanna try a different one.</div>");
+                            // $('.has-footer').prepend("<div class='broken-link' style='color:red;''>...yeahhh, that SouncCloud link is broken, you're gonna wanna try a different one.</div>");
                         }
                     });
 
@@ -4682,13 +4682,13 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                     this.stop();
                 }
                 //unload from soundManager
-                
+
                 //remove from playlist
-                
+
                 //once all done then broadcast
                 console.log('removed song,', song, 'removed index', index)
                 socket.emit('deleteSong', {song: song, index: index});
-                
+
             },
             initPlayTrack: function(trackId, isResume) {
                 if(isResume !== true) {
@@ -4871,7 +4871,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                             id: song.id,
                             url: song.url
                             });
-                        }); 
+                        });
                     });
                 } else {
                     console.log("sortByVotes");
@@ -4976,7 +4976,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                         break;
                       }
                     }
-                    scope.$apply(function() { 
+                    scope.$apply(function() {
                       scope.playlist[index].votes = songData.votes;
                     });
                     angularPlayer.sortByVotes();
@@ -4991,7 +4991,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                         angularPlayer.addToPlaylist(song);
                     });
                     angularPlayer.sortByVotes();
-                }); 
+                });
 
                 socket.on('deleteSong', function (targetObj) {
                     console.log("socket delete emit received, target:", targetObj);
@@ -5008,13 +5008,13 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                     scope.$apply(function () {
                         scope.playlist.splice(index, 1);
                     });
-                }); 
+                });
 
                 socket.on('newSong', function (newSong) {
                     console.log('newSong from server', newSong)
                     angularPlayer.addTrack(newSong);
-                }); 
-                
+                });
+
                 socket.on('currentlyPlaying', function(currentTrack) {
                     scope.$apply(function() {
                         scope.currentPlaying = currentTrack;
@@ -5154,7 +5154,7 @@ ngSoundManager.directive('upVote', ['angularPlayer', '$rootScope', function (ang
 }]);
 
 //*******************************************************
-    
+
 
 
 ngSoundManager.directive('playFromPlaylist', ['angularPlayer', function (angularPlayer) {
@@ -5380,7 +5380,7 @@ ngSoundManager.directive('playAll', ['angularPlayer', '$log',
                         for(var i = 0; i < scope.songs.length; i++) {
                             angularPlayer.addTrack(scope.songs[i]);
                         }
-                        
+
                         if (attrs.play != 'false') {
                             //play first song
                             angularPlayer.play();
@@ -5446,7 +5446,7 @@ ngSoundManager.directive('playPauseToggle', ['angularPlayer',
                         }
                     }
                 });
-                
+
                 element.bind('click', function(event) {
                     if(angularPlayer.isPlayingStatus()) {
                         //if playing then pause
@@ -5454,7 +5454,7 @@ ngSoundManager.directive('playPauseToggle', ['angularPlayer',
                     } else {
                         //else play if not playing
                         angularPlayer.play();
-                        
+
                     }
                 });
             }
