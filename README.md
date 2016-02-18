@@ -116,7 +116,7 @@ Q <br>
 
 ## Roadmap
 
-View the project roadmap www.github.com/mightychondria/Q/issues
+View the project roadmap www.github.com/QMusicPlayer/Q/issues
 
 
 ## Contributing
