@@ -52,7 +52,7 @@
 
 	var App = __webpack_require__(177);
 
-	var configureStore = __webpack_require__(229);
+	var configureStore = __webpack_require__(247);
 
 	var store = configureStore();
 	// store.subscribe(() => {
@@ -21020,9 +21020,7 @@
 
 	var _actions = __webpack_require__(226);
 
-	var _actions2 = _interopRequireDefault(_actions);
-
-	var _Playlist = __webpack_require__(234);
+	var _Playlist = __webpack_require__(229);
 
 	var _constants = __webpack_require__(228);
 
@@ -21093,8 +21091,8 @@
 	function mapDispatchToProps(dispatch) {
 	  // console.log("THE MAPPED ACTIONS", actions);
 	  var actionsObj = {};
-	  for (var key in _actions2.default) {
-	    actionsObj[key] = (0, _redux.bindActionCreators)(_actions2.default[key], dispatch);
+	  for (var key in _actions.actions) {
+	    actionsObj[key] = (0, _redux.bindActionCreators)(_actions.actions[key], dispatch);
 	  }
 	  return actionsObj;
 	}
@@ -43608,14 +43606,40 @@
 
 /***/ },
 /* 226 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = {};
+	module.exports = {
+		Playlist: __webpack_require__(227)
+	};
 
 /***/ },
-/* 227 */,
+/* 227 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.searchTracks = undefined;
+
+	var _constants = __webpack_require__(228);
+
+	var searchTracks = exports.searchTracks = function searchTracks(searchText) {
+	  SC.initialize({
+	    client_id: 'f270bdc572dc8380259d38d8015bdbe7'
+	  });
+
+	  return SC.get('/tracks', {
+	    q: query
+	  }).then(function (tracks) {
+	    return tracks;
+	  });
+	};
+
+/***/ },
 /* 228 */
 /***/ function(module, exports) {
 
@@ -43639,80 +43663,6 @@
 
 	'use strict';
 
-	var createStore = __webpack_require__(165).createStore;
-	var applyMiddleware = __webpack_require__(165).applyMiddleware;
-	var thunk = __webpack_require__(230);
-	var reducer = __webpack_require__(231);
-
-	var createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
-
-	function configureStore(initialState) {
-	  var store = createStoreWithMiddleware(reducer, initialState);
-	  return store;
-	}
-
-	module.exports = configureStore;
-
-/***/ },
-/* 230 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	function thunkMiddleware(_ref) {
-	  var dispatch = _ref.dispatch;
-	  var getState = _ref.getState;
-
-	  return function (next) {
-	    return function (action) {
-	      return typeof action === 'function' ? action(dispatch, getState) : next(action);
-	    };
-	  };
-	}
-
-	module.exports = thunkMiddleware;
-
-/***/ },
-/* 231 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var combineReducers = __webpack_require__(165).combineReducers;
-
-	var reducers = {
-	  view: __webpack_require__(232)
-	};
-
-	module.exports = combineReducers(reducers);
-
-/***/ },
-/* 232 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _ = __webpack_require__(178);
-	//view strings
-	var views = __webpack_require__(228).view;
-
-	function viewReducer(state, action) {
-	  state = state || views.PLAYLIST;
-	  switch (action.type) {
-	    default:
-	      return state;
-	  }
-	};
-
-	module.exports = viewReducer;
-
-/***/ },
-/* 233 */,
-/* 234 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -43720,15 +43670,15 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _components = __webpack_require__(235);
+	var _components = __webpack_require__(230);
 
-	var _addons = __webpack_require__(246);
+	var _addons = __webpack_require__(241);
 
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Player = __webpack_require__(251);
+	var _Player = __webpack_require__(246);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -43741,7 +43691,9 @@
 	var SoundCloudLogoSVG = _components.Icons.SoundCloudLogoSVG;
 
 	var clientId = 'f270bdc572dc8380259d38d8015bdbe7';
-	var resolveUrl = 'https://soundcloud.com/stepan-i-meduza-official/dolgo-obyasnyat';
+
+	//Test track
+	var resolveUrl = 'https://soundcloud.com/harp00n/like-ooooh-w-alicia';
 
 	var Playlist = exports.Playlist = function (_React$Component) {
 	  _inherits(Playlist, _React$Component);
@@ -43771,14 +43723,14 @@
 	}(_react2.default.Component);
 
 /***/ },
-/* 235 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(236);
+	module.exports = __webpack_require__(231);
 
 
 /***/ },
-/* 236 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43789,50 +43741,50 @@
 	  value: true
 	});
 
-	var _PlayButton2 = __webpack_require__(237);
+	var _PlayButton2 = __webpack_require__(232);
 
 	var _PlayButton3 = _interopRequireWildcard(_PlayButton2);
 
 	exports.PlayButton = _PlayButton3['default'];
 
-	var _NextButton2 = __webpack_require__(241);
+	var _NextButton2 = __webpack_require__(236);
 
 	var _NextButton3 = _interopRequireWildcard(_NextButton2);
 
 	exports.NextButton = _NextButton3['default'];
 
-	var _PrevButton2 = __webpack_require__(242);
+	var _PrevButton2 = __webpack_require__(237);
 
 	var _PrevButton3 = _interopRequireWildcard(_PrevButton2);
 
 	exports.PrevButton = _PrevButton3['default'];
 
-	var _Progress2 = __webpack_require__(243);
+	var _Progress2 = __webpack_require__(238);
 
 	var _Progress3 = _interopRequireWildcard(_Progress2);
 
 	exports.Progress = _Progress3['default'];
 
-	var _Timer2 = __webpack_require__(244);
+	var _Timer2 = __webpack_require__(239);
 
 	var _Timer3 = _interopRequireWildcard(_Timer2);
 
 	exports.Timer = _Timer3['default'];
 
-	var _Cover2 = __webpack_require__(245);
+	var _Cover2 = __webpack_require__(240);
 
 	var _Cover3 = _interopRequireWildcard(_Cover2);
 
 	exports.Cover = _Cover3['default'];
 
-	var _Icons2 = __webpack_require__(240);
+	var _Icons2 = __webpack_require__(235);
 
 	var _Icons3 = _interopRequireWildcard(_Icons2);
 
 	exports.Icons = _Icons3['default'];
 
 /***/ },
-/* 237 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43853,15 +43805,15 @@
 
 	var _React2 = _interopRequireWildcard(_React);
 
-	var _ClassNames = __webpack_require__(238);
+	var _ClassNames = __webpack_require__(233);
 
 	var _ClassNames2 = _interopRequireWildcard(_ClassNames);
 
-	var _SoundCloudAudio = __webpack_require__(239);
+	var _SoundCloudAudio = __webpack_require__(234);
 
 	var _SoundCloudAudio2 = _interopRequireWildcard(_SoundCloudAudio);
 
-	var _PlayIconSVG$PauseIconSVG = __webpack_require__(240);
+	var _PlayIconSVG$PauseIconSVG = __webpack_require__(235);
 
 	var PropTypes = _React2['default'].PropTypes;
 	var Component = _React2['default'].Component;
@@ -43951,7 +43903,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 238 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -44005,33 +43957,10 @@
 
 
 /***/ },
-/* 239 */
+/* 234 */
 /***/ function(module, exports) {
 
 	'use strict';
-
-	var anchor;
-	var keys = 'protocol hostname host pathname port search hash href'.split(' ');
-	function _parseURL (url) {
-	    if (!anchor) {
-	        anchor = document.createElement('a');
-	    }
-	    anchor.href = url || '';
-	    var result = {}
-	    for (var i = 0, len = keys.length; i < len; i++) {
-	        var key = keys[i];
-	        result[key] = anchor[key];
-	    }
-	    return result;
-	}
-
-	function _appendQueryParam (url, param, value) {
-	    var U = _parseURL(url);
-	    var regex = /\?(?:.*)$/;
-	    var chr = regex.test(U.search) ? '&' : '?';
-	    var result = U.protocol + '//' +  U.host + U.port + U.pathname + U.search + chr + param + '=' + value + U.hash;
-	    return result;
-	}
 
 	function SoundCloud (clientId) {
 	    if (!(this instanceof SoundCloud)) {
@@ -44053,15 +43982,21 @@
 	    this.audio = document.createElement('audio');
 	}
 
+	SoundCloud.prototype.appendQueryParam = function(url, param, value) {
+	    var regex = /\?(?:.*)$/;
+	    var chr = regex.test(url) ? '&' : '?';
+
+	    return url + chr + param + '=' + value;
+	};
+
 	SoundCloud.prototype.resolve = function (url, callback) {
 	    if (!url) {
 	        throw new Error('SoundCloud track or playlist url is required');
 	    }
 
-	    var resolveUrl = this._baseUrl + '/resolve.json?url=' + encodeURIComponent(url) + '&client_id=' + this._clientId;
-	    this._jsonp(resolveUrl, function (data) {
-	        this.cleanData();
+	    url = this._baseUrl + '/resolve.json?url=' + url + '&client_id=' + this._clientId;
 
+	    this._jsonp(url, function (data) {
 	        if (Array.isArray(data)) {
 	            var tracks = data;
 	            data = {tracks: tracks};
@@ -44070,10 +44005,6 @@
 	            this._playlist = data;
 	        } else {
 	            this._track = data;
-
-	            // save timings
-	            var U = _parseURL(url);
-	            this._track.stream_url += U.hash;
 	        }
 
 	        this.duration = data.duration && !isNaN(data.duration) ?
@@ -44088,7 +44019,7 @@
 	    var target = document.getElementsByTagName('script')[0] || document.head;
 	    var script = document.createElement('script');
 
-	    var id = 'jsonp_callback_' + (new Date()).valueOf();
+	    var id = 'jsonp_callback_' + Math.round(100000 * Math.random());
 	    window[id] = function (data) {
 	        if (script.parentNode) {
 	            script.parentNode.removeChild(script);
@@ -44097,7 +44028,7 @@
 	        callback(data);
 	    };
 
-	    script.src = _appendQueryParam(url, 'callback', id);
+	    script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + id;
 	    target.parentNode.insertBefore(script, target);
 	};
 
@@ -44122,7 +44053,7 @@
 
 	SoundCloud.prototype.preload = function (streamUrl) {
 	    this._track = {stream_url: streamUrl};
-	    this.audio.src = _appendQueryParam(streamUrl, 'client_id', this._clientId);
+	    this.audio.src = streamUrl + '?client_id=' + this._clientId;
 	};
 
 	SoundCloud.prototype.play = function (options) {
@@ -44151,7 +44082,7 @@
 	        throw new Error('There is no tracks to play, use `streamUrl` option or `load` method');
 	    }
 
-	    src = _appendQueryParam(src, 'client_id', this._clientId);
+	    src = this.appendQueryParam(src, 'client_id', this._clientId);
 
 	    if (src !== this.audio.src) {
 	        this.audio.src = src;
@@ -44199,16 +44130,11 @@
 	    this.audio.currentTime = percent * (this.audio.duration || 0);
 	};
 
-	SoundCloud.prototype.cleanData = function () {
-	    this._track = void 0;
-	    this._playlist = void 0;
-	};
-
 	module.exports = SoundCloud;
 
 
 /***/ },
-/* 240 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44437,7 +44363,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 241 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44458,15 +44384,15 @@
 
 	var _React2 = _interopRequireWildcard(_React);
 
-	var _ClassNames = __webpack_require__(238);
+	var _ClassNames = __webpack_require__(233);
 
 	var _ClassNames2 = _interopRequireWildcard(_ClassNames);
 
-	var _SoundCloudAudio = __webpack_require__(239);
+	var _SoundCloudAudio = __webpack_require__(234);
 
 	var _SoundCloudAudio2 = _interopRequireWildcard(_SoundCloudAudio);
 
-	var _NextIconSVG = __webpack_require__(240);
+	var _NextIconSVG = __webpack_require__(235);
 
 	var PropTypes = _React2['default'].PropTypes;
 	var Component = _React2['default'].Component;
@@ -44525,7 +44451,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 242 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44546,15 +44472,15 @@
 
 	var _React2 = _interopRequireWildcard(_React);
 
-	var _ClassNames = __webpack_require__(238);
+	var _ClassNames = __webpack_require__(233);
 
 	var _ClassNames2 = _interopRequireWildcard(_ClassNames);
 
-	var _SoundCloudAudio = __webpack_require__(239);
+	var _SoundCloudAudio = __webpack_require__(234);
 
 	var _SoundCloudAudio2 = _interopRequireWildcard(_SoundCloudAudio);
 
-	var _PrevIconSVG = __webpack_require__(240);
+	var _PrevIconSVG = __webpack_require__(235);
 
 	var PropTypes = _React2['default'].PropTypes;
 	var Component = _React2['default'].Component;
@@ -44613,7 +44539,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 243 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44634,11 +44560,11 @@
 
 	var _React2 = _interopRequireWildcard(_React);
 
-	var _SoundCloudAudio = __webpack_require__(239);
+	var _SoundCloudAudio = __webpack_require__(234);
 
 	var _SoundCloudAudio2 = _interopRequireWildcard(_SoundCloudAudio);
 
-	var _ClassNames = __webpack_require__(238);
+	var _ClassNames = __webpack_require__(233);
 
 	var _ClassNames2 = _interopRequireWildcard(_ClassNames);
 
@@ -44718,7 +44644,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 244 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44739,7 +44665,7 @@
 
 	var _React2 = _interopRequireWildcard(_React);
 
-	var _ClassNames = __webpack_require__(238);
+	var _ClassNames = __webpack_require__(233);
 
 	var _ClassNames2 = _interopRequireWildcard(_ClassNames);
 
@@ -44815,7 +44741,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 245 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44836,11 +44762,11 @@
 
 	var _React2 = _interopRequireWildcard(_React);
 
-	var _ClassNames = __webpack_require__(238);
+	var _ClassNames = __webpack_require__(233);
 
 	var _ClassNames2 = _interopRequireWildcard(_ClassNames);
 
-	var _SoundCloudLogoSVG = __webpack_require__(240);
+	var _SoundCloudLogoSVG = __webpack_require__(235);
 
 	var PropTypes = _React2['default'].PropTypes;
 	var Component = _React2['default'].Component;
@@ -44914,14 +44840,14 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 246 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(247);
+	module.exports = __webpack_require__(242);
 
 
 /***/ },
-/* 247 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44932,14 +44858,14 @@
 	  value: true
 	});
 
-	var _SoundPlayerContainer2 = __webpack_require__(248);
+	var _SoundPlayerContainer2 = __webpack_require__(243);
 
 	var _SoundPlayerContainer3 = _interopRequireWildcard(_SoundPlayerContainer2);
 
 	exports.SoundPlayerContainer = _SoundPlayerContainer3['default'];
 
 /***/ },
-/* 248 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44964,15 +44890,15 @@
 
 	var _React2 = _interopRequireWildcard(_React);
 
-	var _SoundCloudAudio = __webpack_require__(239);
+	var _SoundCloudAudio = __webpack_require__(234);
 
 	var _SoundCloudAudio2 = _interopRequireWildcard(_SoundCloudAudio);
 
-	var _assign = __webpack_require__(249);
+	var _assign = __webpack_require__(244);
 
 	var _assign2 = _interopRequireWildcard(_assign);
 
-	var _stopAllOther$addToPlayedStore = __webpack_require__(250);
+	var _stopAllOther$addToPlayedStore = __webpack_require__(245);
 
 	var PropTypes = _React2['default'].PropTypes;
 	var Component = _React2['default'].Component;
@@ -45161,7 +45087,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 249 */
+/* 244 */
 /***/ function(module, exports) {
 
 	/* eslint-disable no-unused-vars */
@@ -45206,7 +45132,7 @@
 
 
 /***/ },
-/* 250 */
+/* 245 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -45253,7 +45179,7 @@
 	}
 
 /***/ },
-/* 251 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45269,7 +45195,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _components = __webpack_require__(235);
+	var _components = __webpack_require__(230);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -45341,6 +45267,99 @@
 
 	    return Player;
 	}(_react2.default.Component);
+
+/***/ },
+/* 247 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var createStore = __webpack_require__(165).createStore;
+	var applyMiddleware = __webpack_require__(165).applyMiddleware;
+	var thunk = __webpack_require__(248);
+	var reducer = __webpack_require__(249);
+
+	var createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
+
+	function configureStore(initialState) {
+	  var store = createStoreWithMiddleware(reducer, initialState);
+	  return store;
+	}
+
+	module.exports = configureStore;
+
+/***/ },
+/* 248 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	function thunkMiddleware(_ref) {
+	  var dispatch = _ref.dispatch;
+	  var getState = _ref.getState;
+
+	  return function (next) {
+	    return function (action) {
+	      return typeof action === 'function' ? action(dispatch, getState) : next(action);
+	    };
+	  };
+	}
+
+	module.exports = thunkMiddleware;
+
+/***/ },
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var combineReducers = __webpack_require__(165).combineReducers;
+
+	var reducers = {
+	  view: __webpack_require__(250),
+	  playlist: __webpack_require__(251)
+	};
+
+	module.exports = combineReducers(reducers);
+
+/***/ },
+/* 250 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _ = __webpack_require__(178);
+	//view strings
+	var views = __webpack_require__(228).view;
+
+	function viewReducer(state, action) {
+	  state = state || views.PLAYLIST;
+	  switch (action.type) {
+	    default:
+	      return state;
+	  }
+	};
+
+	module.exports = viewReducer;
+
+/***/ },
+/* 251 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _ = __webpack_require__(178);
+	//view strings
+	var initial = {};
+	function playlistReducer(state, action) {
+	  state = state || initial;
+	  switch (action.type) {
+	    default:
+	      return state;
+	  }
+	};
+
+	module.exports = playlistReducer;
 
 /***/ }
 /******/ ]);

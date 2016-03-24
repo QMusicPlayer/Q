@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import io from 'socket.io-client';
 
 //actions require
-import actions from '../actions';
+import {actions}   from '../actions';
 import {Playlist} from '../components/Playlist.js'
 
 //constant requires (views)
