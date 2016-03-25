@@ -2,6 +2,7 @@ var React = require('react');
 
 var Staging = React.createClass({
   render: function() {
+    console.log(this)
     return (
       <div>
         <form>

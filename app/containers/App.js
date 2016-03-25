@@ -8,10 +8,10 @@ import io from 'socket.io-client';
 
 //actions require
 import {actions}   from '../actions';
-import {Playlist} from '../components/Playlist.js'
+import {components} from '../components/'
 
 //constant requires (views)
-import {view} from '../constants';
+import {views} from '../constants';
 
 var contextType = {
   redux: React.PropTypes.object
@@ -20,16 +20,10 @@ var contextType = {
 class App extends React.Component{
   render() {
       switch(this.props.view) {
-        case view.STAGING:
+        case views.PLAYLIST:
           return (
             <div>
-              <components.Staging {...this.props}/>
-            </div>
-          );
-        case view.PLAYLIST:
-          return (
-            <div>
-              <Playlist/>
+              <components.Playlist {...this.props}/>
             </div>
           );
         
@@ -38,9 +32,8 @@ class App extends React.Component{
     }
 }
 
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
     // instantiate empty object
-    // keys currently are: user, view, newRace, activeRace
     var mapping = {};
 
     for (var k in state){
@@ -50,7 +43,7 @@ function mapStateToProps(state) {
   return mapping;
 }
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   // console.log("THE MAPPED ACTIONS", actions);
   var actionsObj = {}
   for(var key in actions) {

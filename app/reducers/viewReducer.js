@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 //view strings
-var views = require('../constants').view
+import {views} from '../constants'
 
 function viewReducer (state, action){
   state = state || views.PLAYLIST;

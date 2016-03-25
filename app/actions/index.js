@@ -1,5 +1,5 @@
 'use strict';
 
-module.exports = {
-	Playlist: require('./PlaylistActions.js')
+export const actions = {
+	PlaylistActions: require('./PlaylistActions.js')
 }
