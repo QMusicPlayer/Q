@@ -13,12 +13,16 @@ const Playlist = React.createClass({
 			this.props.PlaylistActions.searchTracks(event.nativeEvent.target.value)			
 		},
 	  render: function () {
+	  	console.log(this.props.playlist)
 	    return (
 	      <div>
 	      	<input onChange={this.searchSong}/>
 		     <SoundPlayerContainer resolveUrl={resolveUrl} clientId={clientId}>
 		   		<Player/>
 		     </SoundPlayerContainer>
+	      </div>
+	      <div>
+	      {this.props.playlist.tracks}
 	      </div>
 	    )
 	  }
