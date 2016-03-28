@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import io from 'socket.io-client';
-
+import injectTapEventPlugin from 'react-tap-event-plugin';
 //actions require
 import {actions}   from '../actions';
 import {components} from '../components/'
@@ -51,5 +51,5 @@ const mapDispatchToProps = (dispatch) => {
   }
   return actionsObj;
 }
-
+injectTapEventPlugin();
 module.exports = connect(mapStateToProps, mapDispatchToProps)(App);

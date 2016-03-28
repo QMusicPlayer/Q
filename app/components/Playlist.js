@@ -15,11 +15,20 @@ const Playlist = React.createClass({
 		},
 	  render: function () {
 	  	const resolveUrl = this.props.current;
-	  	const playSong = this.playSong
-	  	const tracks = this.props.playlist.tracks.map(function(element, index) {
+	  	const playSong = this.playSong;
+	  	const addSong = this.addSong;
+	  	const tracks = this.props.playlist.searchTracks.map(function(element, index) {
 
 	  		return (
-	  			<div onClick={playSong.bind(this, element)} key={index + 1}> <img height='20' width='20' src={element.artwork_url}></img> {element.title} </div>
+	  			<div onClick={addSong.bind(null, element)} key={index + 1}> <img height='20' width='20' src={element.artwork_url}></img> {element.title} </div>
+	  		)
+
+	  	})
+
+	  	const playlist = this.props.playlist.playlist.map(function(element, index) {
+
+	  		return (
+	  			<div onClick={playSong.bind(null, element)} key={index + 1}> <img height='20' width='20' src={element.artwork_url}></img> {element.title} </div>
 	  		)
 
 	  	})
@@ -33,13 +42,21 @@ const Playlist = React.createClass({
 			    	Tracks:
 		      	{tracks}
 		      </div>
+		      <div>
+		      Playlist:
+		      {playlist}
+		      </div>
 	      </div>
 
 	    )
 	  },
 
-	  playSong: function(url) {
-			this.props.PlaylistActions.playTrack(url)
+	  playSong: function(song) {
+			this.props.PlaylistActions.playTrack(song);
+		},
+
+		addSong: function(song) {
+			this.props.PlaylistActions.addSongToPlaylist(song);
 		}
 });
 

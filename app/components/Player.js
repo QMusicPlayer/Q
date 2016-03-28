@@ -3,6 +3,7 @@ import { PlayButton, Progress, Icons } from 'react-soundplayer/components';
 
 export class Player extends React.Component {
     play(stream) {
+
         let { soundCloudAudio, playing } = this.props;
         if (playing) {
             soundCloudAudio.pause();
@@ -12,10 +13,10 @@ export class Player extends React.Component {
     }
 
     render() {
-        let { track, playing } = this.props;
+        let { track, playing, soundCloudAudio } = this.props;
 
         if (!track) {
-            return <div>Loading...</div>;
+            return <div>Please add a track and click play</div>;
         }
 
         return (

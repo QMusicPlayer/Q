@@ -17,14 +17,22 @@ const searchTracks = (searchText) => {
   }
 }
 
-const playTrack = (url) => {
+const playTrack = (song) => {
 	return {
 		type: actions.PLAY_SONG,
-		payload:url
+		payload:song
+	}
+}
+
+const addSongToPlaylist = (song) => {
+	return {
+		type: actions.ADD_SONG,
+		payload:song
 	}
 }
 
 module.exports = {
 	searchTracks: searchTracks,
-	playTrack: playTrack
+	playTrack: playTrack,
+	addSongToPlaylist: addSongToPlaylist
 }
