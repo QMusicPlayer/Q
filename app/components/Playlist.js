@@ -10,20 +10,28 @@ const resolveUrl = 'https://soundcloud.com/harp00n/like-ooooh-w-alicia';
 
 const Playlist = React.createClass({
 		searchSong: function (event) {
-			this.props.PlaylistActions.searchTracks(event.nativeEvent.target.value)			
+			this.props.PlaylistActions.searchTracks(event.nativeEvent.target.value);
+
 		},
 	  render: function () {
-	  	console.log(this.props.playlist)
+	  	var tracks = this.props.playlist.tracks.map(function(element, index) {
+	  		return (
+	  			<li key={index + 1}>{index + 1}. {element.title}</li>
+
+	  		)
+	  	})
 	    return (
 	      <div>
-	      	<input onChange={this.searchSong}/>
-		     <SoundPlayerContainer resolveUrl={resolveUrl} clientId={clientId}>
-		   		<Player/>
-		     </SoundPlayerContainer>
+		      <input onChange={this.searchSong}></input>
+			    <SoundPlayerContainer resolveUrl={resolveUrl} clientId={clientId}>
+			   		<Player></Player>
+			    </SoundPlayerContainer>
+			    <div>
+			    	Tracks:
+		      	{tracks}
+		      </div>
 	      </div>
-	      <div>
-	      {this.props.playlist.tracks}
-	      </div>
+
 	    )
 	  }
 });

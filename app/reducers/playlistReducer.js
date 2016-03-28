@@ -10,7 +10,7 @@ function playlistReducer (state, action){
   switch (action.type){
   	case actions.SEARCH_RESULTS:
   		return _.extend({}, state, {
-        tracks: action.payload,
+        tracks: action.payload
       });
     default:
       return state;
