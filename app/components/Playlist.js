@@ -6,7 +6,7 @@ const { SoundCloudLogoSVG } = Icons;
 const clientId = 'f270bdc572dc8380259d38d8015bdbe7';
 
 //Test track
-const resolveUrl = 'https://soundcloud.com/harp00n/like-ooooh-w-alicia';
+
 
 const Playlist = React.createClass({
 		searchSong: function (event) {
@@ -14,17 +14,20 @@ const Playlist = React.createClass({
 
 		},
 	  render: function () {
-	  	var tracks = this.props.playlist.tracks.map(function(element, index) {
-	  		return (
-	  			<li key={index + 1}>{index + 1}. {element.title}</li>
+	  	const resolveUrl = this.props.current;
+	  	const playSong = this.playSong
+	  	const tracks = this.props.playlist.tracks.map(function(element, index) {
 
+	  		return (
+	  			<div onClick={playSong.bind(this, element)} key={index + 1}> <img height='20' width='20' src={element.artwork_url}></img> {element.title} </div>
 	  		)
+
 	  	})
 	    return (
 	      <div>
 		      <input onChange={this.searchSong}></input>
 			    <SoundPlayerContainer resolveUrl={resolveUrl} clientId={clientId}>
-			   		<Player></Player>
+			   		<Player track={this.props.playlist.current}></Player>
 			    </SoundPlayerContainer>
 			    <div>
 			    	Tracks:
@@ -33,7 +36,11 @@ const Playlist = React.createClass({
 	      </div>
 
 	    )
-	  }
+	  },
+
+	  playSong: function(url) {
+			this.props.PlaylistActions.playTrack(url)
+		}
 });
 
 module.exports = Playlist;

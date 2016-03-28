@@ -17,6 +17,14 @@ const searchTracks = (searchText) => {
   }
 }
 
+const playTrack = (url) => {
+	return {
+		type: actions.PLAY_SONG,
+		payload:url
+	}
+}
+
 module.exports = {
-	searchTracks: searchTracks
+	searchTracks: searchTracks,
+	playTrack: playTrack
 }

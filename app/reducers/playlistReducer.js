@@ -3,7 +3,8 @@ import {actions} from '../constants'
 var _ = require('lodash');
 //view strings
 const initial = {
-  tracks: []
+  tracks: [],
+  current: ''
 }
 function playlistReducer (state, action){
   state = state || initial;
@@ -11,6 +12,10 @@ function playlistReducer (state, action){
   	case actions.SEARCH_RESULTS:
   		return _.extend({}, state, {
         tracks: action.payload
+      });
+    case actions.PLAY_SONG:
+  		return _.extend({}, state, {
+        current: action.payload
       });
     default:
       return state;
