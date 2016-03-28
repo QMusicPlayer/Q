@@ -20,7 +20,6 @@ function playlistReducer (state, action){
       });
     case actions.ADD_SONG:
   		var state = _.extend({}, state, {});
-  		console.log(action.payload)
   		state.playlist.push(action.payload);
   		return state;
     default:

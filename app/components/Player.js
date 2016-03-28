@@ -1,6 +1,6 @@
 import React from 'react';
 import { PlayButton, Progress, Icons } from 'react-soundplayer/components';
-
+import FlatButton from 'material-ui/lib/flat-button';
 export class Player extends React.Component {
     play(stream) {
 
@@ -16,16 +16,15 @@ export class Player extends React.Component {
         let { track, playing, soundCloudAudio } = this.props;
 
         if (!track) {
-            return <div>Please add a track and click play</div>;
+            return <div>There are currently no tracks in your playlist...</div>;
         }
 
         return (
             <div>
-                <h2>{track.title}</h2>
-                <h3>{track.user.username}</h3>
-                <button onClick={this.play.bind(this, track.stream_url)}>
+                <h2>{track.title} {track.user.username}</h2>
+                <FlatButton primary={true} onClick={this.play.bind(this, track.stream_url)}>
                     {playing ? 'Pause' : 'Play'}
-                </button>
+                </FlatButton>
             </div>
         );
     }
