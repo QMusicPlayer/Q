@@ -1,0 +1,12 @@
+qplayer:
+  build: .
+  environment:
+    DEPLOYED: "true"
+  dockerfile: Dockerfile
+  ports:
+   - 8000:8000
+  links:
+   - mongo
+
+mongo:
+  image: mongo
