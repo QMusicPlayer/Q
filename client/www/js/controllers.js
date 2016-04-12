@@ -9,6 +9,7 @@ angular.module('Q.controllers', [
   $rootScope.songs= [];  //why root scope??
   $rootScope.customPlaylist;
   $rootScope.friendCount;
+  $rootScope.roomName;
   // console.log('dustom playlist', $rootScope.customePlayList)
   console.log("INIT PLAYLIST CONTROLLER");
   if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
@@ -19,6 +20,7 @@ angular.module('Q.controllers', [
     if(localStorage.getItem('qRoom')){
       console.log(localStorage.getItem('qRoom'));
       console.log("join room emitted");
+      $scope.roomName = localStorage.getItem('qRoom');
       console.log(localStorage.getItem('qHost'), localStorage.getItem('qRoom'));
 
 

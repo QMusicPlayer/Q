@@ -4,7 +4,7 @@ Q is a community playlist app that allows users to share and manage a music play
 <img src="http://i.imgur.com/5g2g3Pn.gif"></img>
 
 ## Demo
-http://qplayer.herokuapp.com/
+http://159.203.172.158:8000/
 
 ## Team
 
@@ -22,11 +22,7 @@ http://qplayer.herokuapp.com/
     5. [Contributing](#contributing)
 
 ## Usage
-For Q to work properly, a designated host needs to login by clicking 'CREATE ROOM' on the login page and entering 'test' as the password. The host also needs to login before any other user adds a song to the queue; this is a known issue and flawed feature. Users who are not the host must click 'ENTER ROOM' to join the host's room.
-
-Multiple rooms for different hosts is a feature that has not yet been developed. Ideally, a host should be able to create a room which will have a distinct URL has that the host can give to other users. Other users can use this url to access the host's playlist.
-
-It was also conscious decsion to enhace user experience to not handle strict authentication for users to make it easy and effortless for users to join and create rooms.
+For proper use, a designated host needs to login by entering a unique room name in the 'CREATE ROOM' field and clicking 'CREATE ROOM' on the login page. Users who are not the host must enter the room name provided by the host into the 'ENTER ROOM' field to join the host's room.
 
 TO start Q's server, first start mongodb server (mongod) and run npm start inside the project's main directory.
 

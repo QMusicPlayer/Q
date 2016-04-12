@@ -1,14 +1,25 @@
 <!-- SUBHEADER -->
 <!-- Search Bar -->
 <ion-header-bar ng-class="isHost() ? 'bar bar-header bar-royal' : 'bar bar-header bar-positive'">
-  <h1 class="title"><img ng-click='logOut()'src='./img/icon2.png' height='40' width='40'></h1>
 
-    <span>
+<!-- <img ng-click='logOut()'src='./img/icon2.png' height='40' width='40'> -->
+  <div class='row'>
+   <div class='col-20'>
     <!-- still need to properly binding updated count -->
     <i class="icon ion-person-stalker"></i>
     Listeners
-    <span class='friendCount'>{{friendCount}}</span>
-  </span>
+
+  {{friendCount}}
+  </div>
+  <div class='col-60'>
+  </div>
+  <div class='col-20 col-offset-5 right'>
+ 
+  Room: {{roomName}}
+  </div>
+</div>
+
+
 
 </ion-header-bar>
 
@@ -33,7 +44,7 @@
 
   <div music-player="" add-song="song" ng-click='clearResults()' class="row searchResultsItem" ng-repeat='song in songs' on-hold='showSong(song.title)'>
     <span add-song="song" class="center thumb">  <img class='rounded right small'  src={{song.image}} ></span>
-    <span class="center textcenter large">  {{song.title}} by {{song.artist}}</span>
+    <span class="textcenter large">  {{song.title}} by {{song.artist}}</span>
   </div>
 </div>
 <!-- Sound Manager Init -->
@@ -44,9 +55,10 @@
 <ion-content class="has-header has-footer has-subheader" ng-show="isHost()">
  
 <!--   <div style="height:100%; margin-right:auto; margin-left:auto; width:100%"> -->
-    <div class="row card" ng-show="playlist.length === 0" style="height:100%; margin-right:auto; margin-left:auto; width:100%">
+    <div class="center" ng-show="playlist.length === 0" style="height:100%; margin-right:auto; margin-left:auto; width:100%">
       <center>
-        <h3>There are no songs currently in your playlist.</h3>
+        <br>
+        <h3>This playlist is currently empty.</h3>
         <h4>Use the search bar at the top to search for songs and add to the playlist.</h4>
       </center>
     </div>
@@ -54,7 +66,7 @@
     <ion-list>
       <ion-item class='row' ng-repeat="song in playlist" on-hold="viewSong(song.title)" >
         <!-- mp: can't do pop vie song for guest-->
-        <div class="col-80">
+        <div class="col-80 center">
           <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
             <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
             <div class="songinfo" style="padding-left: 30px; text-align: left, ">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
@@ -74,21 +86,23 @@
 <!-- Playlist View: If you are a guest -->
 <ion-content class="has-header has-footer has-subheader" ng-show="!isHost()">
  <!--  <div style="height:70%; margin-right:auto; margin-left:auto; width:100%"> -->
-    <div class="row card" ng-show="playlist.length === 0">
-    <center>
-      <h3>There are no songs currently in your playlist.</h3>
-      <h4>Use the search bar at the top to search for songs and add to the playlist.</h4>
-    </center>
+    <div class="center" ng-show="playlist.length === 0" style="height:100%; margin-right:auto; margin-left:auto; width:100%">
+      <center>
+        <br>
+        <h3>This playlist is currently empty.</h3>
+        <h4>Use the search bar at the top to search for songs and add to the playlist.</h4>
+      </center>
     </div>
 
     <ion-list>
+
       <ion-item class='row' ng-repeat="song in playlist">
-        <!-- <div class="col-90"> -->
+        <div class="col-80 center">
           <div ng-class="currentPlaying.id === song.id ? 'button button-positive button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'" up-vote="song" data-index="{{$index}}" style="position:relative">
           <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
           <div class="songinfo" style="padding-left: 30px; text-align: left;">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
           </div>
-        <!-- </div> -->
+        </div>
       </ion-item>
     </ion-list>
 
