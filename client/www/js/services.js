@@ -32,6 +32,10 @@ angular.module('Q.services', [
     });
   }
 
+  // var createRoom = function(roomName) {
+    
+  // }
+
   // isHostData in factory stores whether or not the current user is the host
   
   var isHostData = false;
@@ -41,7 +45,7 @@ angular.module('Q.services', [
   }
 
   var makeHost = function () {
-    isHostData = true;
+    return true;
   }
 
   var makeGuest = function(){

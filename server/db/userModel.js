@@ -1,12 +1,7 @@
 var mongoose = require('mongoose');
 
 var userSchema = mongoose.Schema({
-    userCount: Number,
-    queue: [],
-    hash: {
-      type: String,
-      index: {unique: true}
-    }
+  id: String
 }, { timestamps: true });
 
 var User = mongoose.model('User', userSchema);

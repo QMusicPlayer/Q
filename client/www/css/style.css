@@ -1,4 +1,10 @@
 /* Empty. Add your own CSS if you like */
+#landinginfo {
+  padding-top:20px;
+}
+#landingbody {
+  padding-top: 40px;
+}
 .bottomButton {
   width: 35px;
   height: 35px;
@@ -10,7 +16,13 @@
   border-radius: 5px;
 
 }
+.widthmobile {
+  width:310px;
+}
 
+input {
+  text-align: center;
+}
 .right {
   float:right;
   text-align: right;

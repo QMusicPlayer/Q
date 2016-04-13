@@ -6,13 +6,17 @@ angular.module('Q.controllers', [
 ])
 
 .controller('playlistController', function($scope, $rootScope, $location, Playlist, $state, $ionicPopup, $stateParams) {
-  $rootScope.songs= [];  //why root scope??
+  $rootScope.isUserAHost;
+  $rootScope.songs= [];  
   $rootScope.customPlaylist;
   $rootScope.friendCount;
   $rootScope.roomName;
+
   console.log("initalized playlist controller");
+
+  // checks if user is host of entered room
   if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
-    Playlist.makeHost();
+    $rootScope.isUserAHost = Playlist.makeHost();
   }
 
   if(!Playlist.isRoomEntered()){
@@ -20,7 +24,6 @@ angular.module('Q.controllers', [
     if(localStorage.getItem('qRoom')){
       console.log(localStorage.getItem('qRoom'));
       console.log("join room emitted");
-      $scope.roomName = localStorage.getItem('qRoom');
       console.log(localStorage.getItem('qHost'), localStorage.getItem('qRoom'));
 
 
@@ -85,7 +88,7 @@ angular.module('Q.controllers', [
   }
 
   $scope.isHost = function(){
-    return Playlist.isHost();
+    return $rootScope.isUserAHost;
   }
 
   $scope.clearResults = function (){
@@ -150,6 +153,7 @@ angular.module('Q.controllers', [
   socket.on('roomcreated', function(roomname){
     // console.log('controller side room created', roomname);
     if(roomname){
+      $rootScope.roomName = roomname;
       Playlist.makeHost();
       $state.go('playlist');
     } else {
@@ -163,6 +167,7 @@ angular.module('Q.controllers', [
     if(roomname){
       
       console.log('succesful room join on', roomname) ;
+      $rootScope.roomName = roomname;
       Playlist.makeGuest();
       $state.go('playlist');
     } else {
@@ -172,19 +177,19 @@ angular.module('Q.controllers', [
     }
   });
 
+  // createRoom function (initiated when Create Room button is clicked on landing page)
   $scope.createRoom = function(){
-    localStorage.setItem("qRoom", $scope.roomname);
-    localStorage.setItem('qHost', $scope.roomname);
-    socket.emit("create room", $scope.roomname);
+    localStorage.setItem("qRoom", $rootScope.roomName);
+    localStorage.setItem('qHost', $rootScope.roomName);
+    socket.emit("create room", $rootScope.roomName);
     Playlist.enterRoom();
-
   };
 
+  // joinRooom function (initated when Join Room is clicked on landing page)
   $scope.joinRoom = function(){
-    // console.log("join Room:", $scope.enteredRoomName);
-    console.log("joinRoom");
-    socket.emit("join room", $scope.enteredRoomName);
-    localStorage.setItem("qRoom", $scope.enteredRoomName);
+    console.log("joining rooom " + $scope.joinRoomName);
+    socket.emit("join room", $scope.joinRoomName);
+    localStorage.setItem("qRoom", $scope.joinRoomName);
     Playlist.enterRoom();
 
   };

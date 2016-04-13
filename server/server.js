@@ -7,6 +7,7 @@ var SC = require('node-soundcloud');
 var db = require('./db/dbConfig');
 var User = require('./db/userController');
 var userModel = require('./db/userModel');
+var Sentencer = require('sentencer');
 
 require('./routes.js')(app, express);
 
@@ -17,32 +18,22 @@ app.use(express.static(__dirname + '/../client/www'));
 var port = process.env.PORT || 3000;
 server.listen(port);
 console.log('listening on port...', port)
-// This empties the database and seeds the database with one user with an empty queue (no multi-user functionality yet)
 
 io.on('connection', function (socket) {
-  // console.log(socket);
-
-  // This line needed only for Heroku, comment it out if serving locally
-  // io.set("transports", ["polling"]); 
-
-  // User.getQueue(function(queue) {
-  //   socket.emit('getQueue', queue);
-  // });
-
   socket.on("create room", function(roomname){
-    // console.log(roomname);
-    User.addUser(roomname, function(err,result){
+    var random_roomname = Sentencer.make("{{ adjective }} {{ noun }}");
+    User.addUser(random_roomname, function(err,result){
       if(err){
         // console.log(err);
-        socket.emit('roomcreated', null);
+        socket.emit('roomcreated', random_roomname);
       } else {
         // -----
         var c = io.engine.clientsCount;
-        User.updateRoomCount(roomname, 'add', function(err, userCount){
-          console.log('creat room room count', userCount)
+        User.updateRoomCount(random_roomname, 'add', function(err, userCount){
+          console.log('create room room count', userCount)
 
           socket.join(roomname);
-          socket.room = roomname;
+          socket.room = random_roomname;
           // console.log('room created on socket.rom:', socket.room)
           io.sockets.in(roomname).emit('userCount', userCount);
           io.sockets.in(roomname).emit('roomcreated', socket.room);
