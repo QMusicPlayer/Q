@@ -10,11 +10,11 @@ angular.module('Q.controllers', [
   $rootScope.customPlaylist;
   $rootScope.friendCount;
   $rootScope.roomName;
-  // console.log('dustom playlist', $rootScope.customePlayList)
-  console.log("INIT PLAYLIST CONTROLLER");
+  console.log("initalized playlist controller");
   if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
     Playlist.makeHost();
   }
+
   if(!Playlist.isRoomEntered()){
 
     if(localStorage.getItem('qRoom')){
@@ -47,41 +47,36 @@ angular.module('Q.controllers', [
     $state.go('landing')
   }
 
+  //search song function
   $scope.searchSong = function (){
     $rootScope.songs= [];
-  
-    if($scope.query === ''){
+    if($scope.query === '') {
       return;
-    } else{
+    } else {
       return Playlist.searchSongs($scope.query).then(function(tracks){
         // console.log('tracks', tracks)
         for(var i = 0;i<tracks.length;i++){
           // console.log('track', tracks[i])
           var track = {
-                            id: tracks[i].id,
-                            title: tracks[i].title,
-                            artist: tracks[i].user.permalink,
-                            url: tracks[i].stream_url + "?client_id=f270bdc572dc8380259d38d8015bdbe7",
-                            waveform: tracks[i].waveform_url,
-                            votes: 0
-                        };
+            id: tracks[i].id,
+            title: tracks[i].title,
+            artist: tracks[i].user.permalink,
+            url: tracks[i].stream_url + "?client_id=f270bdc572dc8380259d38d8015bdbe7",
+            waveform: tracks[i].waveform_url,
+            votes: 0
+          };
           if(tracks[i].artwork_url === null){
               track.image = '../img/notavailable.png';
           } else {
               track.image = tracks[i].artwork_url
           }
 
-          $rootScope.$apply(function(){  // ??? why root scope?
+          $rootScope.$apply(function(){  
             $rootScope.songs.push(track);
-          })
-         // console.log('rootscope songs', $rootScope.songs) ???
-         
+          });         
         }
-
-      })
-
-    }
-    
+      });
+    }    
   }
 
   $scope.clearResults = function (){
@@ -90,7 +85,7 @@ angular.module('Q.controllers', [
   }
 
   $scope.isHost = function(){
-      return Playlist.isHost();
+    return Playlist.isHost();
   }
 
   $scope.clearResults = function (){
@@ -178,7 +173,6 @@ angular.module('Q.controllers', [
   });
 
   $scope.createRoom = function(){
-    // console.log("create room:", $scope.roomname);
     localStorage.setItem("qRoom", $scope.roomname);
     localStorage.setItem('qHost', $scope.roomname);
     socket.emit("create room", $scope.roomname);

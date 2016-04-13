@@ -1,8 +1,6 @@
 angular.module('Q.services', [
 'ionic'
 ])
-
-
 .factory('Playlist', function($http){
   var getSongs = function(){
       return $http ({
@@ -34,8 +32,7 @@ angular.module('Q.services', [
     });
   }
 
-  // isHostData in factory stores whether or not
-  // the current user is the host
+  // isHostData in factory stores whether or not the current user is the host
   
   var isHostData = false;
 

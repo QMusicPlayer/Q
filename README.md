@@ -4,7 +4,7 @@ Q is a community playlist app that allows users to share and manage a music play
 <img src="http://i.imgur.com/5g2g3Pn.gif"></img>
 
 ## Demo
-http://159.203.172.158:8000/
+qplayer.tech
 
 ## Team
 

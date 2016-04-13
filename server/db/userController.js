@@ -4,10 +4,9 @@ var User = require('./userModel');
 module.exports = {
   addUser: function(room, callback) {
     var newUser = new User({
-      //to check with Harun and Spener
       hash: room,
       queue: [],
-      userCount: 0 //added for room count
+      userCount: 0 
     });
     newUser.save(function(err, result) {
       if (err) {
@@ -18,7 +17,6 @@ module.exports = {
         console.log(err, result);
         callback(err, result);
       }
-      // res.end();
     });
   },
 
