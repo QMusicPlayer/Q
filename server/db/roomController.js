@@ -4,7 +4,6 @@ var Sentencer = require('sentencer');
 
 module.exports = {
   createRoom: function(req, res, next) {
-
     var random_roomname = Sentencer.make("{{ adjective }} {{ noun }}");
     console.log('attempting to create room: ', random_roomname)
     var newRoom = new Room({
@@ -27,9 +26,18 @@ module.exports = {
     console.log("finding room", req.body.roomName);
     Room.findOne({name:req.body.roomName}).then(function(room){
       if(room) {
-        console.log('successfully joined room');
-        room.guests.push(req.body.socketId);
-        res.json('successfully joined room');
+        if(room.host !== req.body.socketId){
+          room.guests.push(req.body.socketId);
+          room.save().then(function(){
+            console.log('successfully joined room as guest');
+            res.json('successfully joined room as guest');
+          }).catch(function(error){
+            next(error);
+          });
+        } else {
+          console.log('user is a host');
+          res.json('user is a host');
+        }
       } else {
         res.json('room does not exist');
       }

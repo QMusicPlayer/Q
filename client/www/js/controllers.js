@@ -190,8 +190,7 @@ angular.module('Q.controllers', [
       localStorage.setItem('qHost', $rootScope.roomName);
       socket.emit("create_room", $rootScope.roomName);
       $state.go('playlist');
-      $rootScope.isUserAHost = Playlist.makeHost();
-      
+      $rootScope.isUserAHost = true;      
       // Playlist.enterRoom();
     }).catch(function(error){
       console.log('failed to create room', error)
@@ -205,15 +204,21 @@ angular.module('Q.controllers', [
       if (response.data === 'room does not exist') {
         $scope.showAlert('Room does not exist');
       } 
-      else if (response.data === 'successfully joined room') {
-        console.log('successfully joined room');
+      else if (response.data === 'successfully joined room as guest') {
+        console.log('successfully joined room as guest');
         $rootScope.roomName = $scope.joinRoomName;
         socket.emit("join_room", $scope.joinRoomName);
         localStorage.setItem("qRoom", $scope.joinRoomName);
         $state.go('playlist');  
-        $rootScope.isUserAHost = Playlist.makeGuest();
-        console.log($rootScope.isUserAHost)
+        $rootScope.isUserAHost = false;
         
+      }
+      else if (response.data === 'user is a host') {
+        $rootScope.roomName = $scope.joinRoomName;
+        socket.emit("join_room", $scope.joinRoomName);
+        localStorage.setItem("qRoom", $scope.joinRoomName);
+        $state.go('playlist');  
+        $rootScope.isUserAHost = true;
       }
     });
     
