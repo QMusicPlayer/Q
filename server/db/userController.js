@@ -2,20 +2,31 @@ var mongoose = require('mongoose');
 var User = require('./userModel');
 
 module.exports = {
-  addUser: function(room, callback) {
-    var newUser = new User({
-      hash: room,
-      queue: [],
-      userCount: 0 
-    });
-    newUser.save(function(err, result) {
-      if (err) {
-        console.log("error saving new user", err);
-        callback(err, result);
+  addUser: function(id, room, callback) {
+    console.log('finding user with id: ' + id)
+    User.findOne({socketId: id}, function(err, result) {
+      if(err) {
+        console.log('error finding user. Error: ' + err);
+        callback(err);
       } else {
-        console.log('saved new user');
-        console.log(err, result);
-        callback(err, result);
+        if(result !== null) {
+          console.log('user found', result)
+          result.rooms.push(room);
+          console.log('sucessfullt added room to existing user', result)
+        } else {
+          console.log('no user found, adding new user')
+          newUser = new User({
+            socketId: id,
+            rooms: [room]
+          })
+          newUser.save(function(err, result){
+            if(err) {
+              console.log('error adding user', err);
+            } else {
+              console.log('add user success', newUser)
+            }
+          })
+        }
       }
     });
   },

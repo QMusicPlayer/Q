@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var SC = require('node-soundcloud');
 var db = require('./db/dbConfig');
 var User = require('./db/userController');
+var Room = require('./db/roomController');
 var userModel = require('./db/userModel');
 var Sentencer = require('sentencer');
 
@@ -22,26 +23,41 @@ console.log('listening on port...', port)
 io.on('connection', function (socket) {
   socket.on("create room", function(roomname){
     var random_roomname = Sentencer.make("{{ adjective }} {{ noun }}");
-    User.addUser(random_roomname, function(err,result){
+    User.addUser(socket.id, random_roomname, function(err,result){
       if(err){
         // console.log(err);
-        socket.emit('roomcreated', random_roomname);
+        // socket.emit('roomcreated', random_roomname);
+        console.log('error adding user to db: ', err)
       } else {
-        // -----
-        var c = io.engine.clientsCount;
-        User.updateRoomCount(random_roomname, 'add', function(err, userCount){
-          console.log('create room room count', userCount)
+        console.log('user addition/update success', result)
+        socket.join(random_roomname);
+        socket.room = random_roomname;
+      }
 
-          socket.join(roomname);
-          socket.room = random_roomname;
-          // console.log('room created on socket.rom:', socket.room)
-          io.sockets.in(roomname).emit('userCount', userCount);
-          io.sockets.in(roomname).emit('roomcreated', socket.room);
+      //  else {
+      //   var c = io.engine.clientsCount;
+      //   User.updateRoomCount(random_roomname, 'add', function(err, userCount){
+      //     console.log('create room room count', userCount)
 
-        });
+  
+      //     // console.log('room created on socket.rom:', socket.room)
+      //     io.sockets.in(roomname).emit('userCount', userCount);
+      //     io.sockets.in(roomname).emit('roomcreated', socket.room);
+
+      //   });
       
+      // }
+    });
+
+    Room.createRoom(random_roomname, socket.id, function(err, result){
+      if (err) {
+        console.log('error creating room in database:', err)
+      } else {
+        console.log('room creation successful', result);
+        socket.emit('roomcreated', random_roomname);
       }
     });
+
 
   });
   socket.on("join room", function(roomname){
