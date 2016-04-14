@@ -12,37 +12,42 @@ angular.module('Q.controllers', [
   $rootScope.friendCount;
   $rootScope.roomName;
 
-  console.log("initalized playlist controller");
+  if($rootScope.isUserAHost) {
+    console.log("initalized playlist controller as host");
+  } else {
+    console.log("initalized playlist controller as guest");  
+  }
+  
 
   // checks if user is host of entered room
-  if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
-    $rootScope.isUserAHost = Playlist.makeHost();
-  }
+  // if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
+  //   $rootScope.isUserAHost = Playlist.makeHost();
+  // }
 
-  if(!Playlist.isRoomEntered()){
+  // if(!Playlist.isRoomEntered()){
 
-    if(localStorage.getItem('qRoom')){
-      console.log(localStorage.getItem('qRoom'));
-      console.log("join room emitted");
-      console.log(localStorage.getItem('qHost'), localStorage.getItem('qRoom'));
+  //   if(localStorage.getItem('qRoom')){
+  //     // console.log(localStorage.getItem('qRoom'));
+  //     // console.log("join room emitted");
+  //     // console.log(localStorage.getItem('qHost'), localStorage.getItem('qRoom'));
 
 
-      socket.emit("join room", localStorage.getItem('qRoom'));
-      socket.on('roomjoined', function(roomname){
-        if(roomname){
-          console.log('succesful room join on', roomname);
-          window.socket.emit('newGuest');
+  //     socket.emit("join room", localStorage.getItem('qRoom'));
+  //     socket.on('roomjoined', function(roomname){
+  //       if(roomname){
+  //         console.log('succesful room join on', roomname);
+  //         window.socket.emit('newGuest');
 
-        } else {
-          console.log("no such room");
-          $scope.showAlert('Room does not exist');
-          return
-        }
-      });
-    }
-  } else {
-    window.socket.emit('newGuest');
-  }
+  //       } else {
+  //         console.log("no such room");
+  //         $scope.showAlert('Room does not exist');
+  //         return
+  //       }
+  //     });
+  //   }
+  // } else {
+  //   window.socket.emit('newGuest');
+  // }
 
   $scope.logOut = function() {
     localStorage.removeItem('qHost');
@@ -118,7 +123,6 @@ angular.module('Q.controllers', [
     $scope.viewSong(title)
   }
 
-  console.log(Playlist.isHost());
 })
 
 .controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout, $state, $rootScope){
@@ -162,14 +166,13 @@ angular.module('Q.controllers', [
     }
   });
 
-  socket.on('roomjoined', function(roomname){
-    console.log('roomjoined...', roomname);
+  socket.on('roomjoined', function(roomName){
     if(roomname){
-      
-      console.log('succesful room join on', roomname) ;
-      $rootScope.roomName = roomname;
-      Playlist.makeGuest();
+      console.log('succesfully joined room', roomName) ;
+      $rootScope.roomName = roomName;
+      $rootScope.isUserAHost = Playlist.makeGuest();
       $state.go('playlist');
+      Playlist.getQueue(roomName);
     } else {
       console.log("no such room");
       $scope.showAlert('Room does not exist');
@@ -179,19 +182,41 @@ angular.module('Q.controllers', [
 
   // createRoom function (initiated when Create Room button is clicked on landing page)
   $scope.createRoom = function(){
-    localStorage.setItem("qRoom", $rootScope.roomName);
-    localStorage.setItem('qHost', $rootScope.roomName);
-    socket.emit("create room", $rootScope.roomName);
-    Playlist.enterRoom();
+      console.log('attempting to create new room');
+    Playlist.createRoom(socket.id).then(function(response){
+      console.log('successfully created room: ', response.data.name);
+      $rootScope.roomName = response.data.name;
+      localStorage.setItem("qRoom", $rootScope.roomName);
+      localStorage.setItem('qHost', $rootScope.roomName);
+      socket.emit("create_room", $rootScope.roomName);
+      $state.go('playlist');
+      $rootScope.isUserAHost = Playlist.makeHost();
+      
+      // Playlist.enterRoom();
+    }).catch(function(error){
+      console.log('failed to create room', error)
+    });    
   };
 
   // joinRooom function (initated when Join Room is clicked on landing page)
   $scope.joinRoom = function(){
-    console.log("joining rooom " + $scope.joinRoomName);
-    socket.emit("join room", $scope.joinRoomName);
-    localStorage.setItem("qRoom", $scope.joinRoomName);
-    Playlist.enterRoom();
-
+    console.log("attempting to join room " + $scope.joinRoomName);
+    Playlist.joinRoom($scope.joinRoomName, socket.id).then(function(response) {
+      if (response.data === 'room does not exist') {
+        $scope.showAlert('Room does not exist');
+      } 
+      else if (response.data === 'successfully joined room') {
+        console.log('successfully joined room');
+        $rootScope.roomName = $scope.joinRoomName;
+        socket.emit("join_room", $scope.joinRoomName);
+        localStorage.setItem("qRoom", $scope.joinRoomName);
+        $state.go('playlist');  
+        $rootScope.isUserAHost = Playlist.makeGuest();
+        console.log($rootScope.isUserAHost)
+        
+      }
+    });
+    
   };
 
   $scope.makeGuest = function(){

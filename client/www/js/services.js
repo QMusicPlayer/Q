@@ -2,13 +2,14 @@ angular.module('Q.services', [
 'ionic'
 ])
 .factory('Playlist', function($http){
+
   var getSongs = function(){
       return $http ({
         method: 'GET',
         url: '/'
       }).then(function(response){
         return response.data;
-      })
+      });
   }
 
   var addSong = function (song){
@@ -17,8 +18,37 @@ angular.module('Q.services', [
       method: 'POST',
       url: '/',
       data: song
+    });
+  }
+
+  var createRoom = function(host){
+    return $http ({
+      method: 'POST',
+      url: '/api/rooms',
+      data: {
+        host: host
+      }
+    }).then(function(room){
+      return room;
+    });
+  }
+
+  var joinRoom = function(roomName, socketId) {
+    return $http ({
+      method: 'PUT',
+      url: '/api/rooms/',
+      data: {
+        roomName: roomName,
+        socketId: socketId
+      }
+    }).then(function(result){
+      return result;
     })
   }
+  // var getQueue = function (roomName) {
+  //   console.log('getting queue for room:' roomName);
+  //   return
+  // }
 
   var searchSongs = function(query){
     SC.initialize({
@@ -49,7 +79,7 @@ angular.module('Q.services', [
   }
 
   var makeGuest = function(){
-    isHostData = false;
+    return false;
   }
 
   var roomEntered = false;
@@ -64,6 +94,8 @@ angular.module('Q.services', [
   return {
     getSongs: getSongs,
     addSong: addSong,
+    createRoom: createRoom,
+    joinRoom: joinRoom,
     searchSongs: searchSongs,
     makeHost: makeHost,
     makeGuest: makeGuest,

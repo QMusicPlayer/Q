@@ -70,7 +70,7 @@ module.exports = {
         console.error(err);
         callback();
       });
-    });
+    });io.to(socket.id).emit('roomjoined', result.name);
   },
 
   addSong: function(room, data, callback) {

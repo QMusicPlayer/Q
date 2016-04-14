@@ -1,49 +1,75 @@
 var mongoose = require('mongoose');
 var Room = require('./roomModel');
+var Sentencer = require('sentencer');
 
 module.exports = {
-  createRoom: function(roomName, host, callback) {
-    console.log('creating room')
+  createRoom: function(req, res, next) {
+
+    var random_roomname = Sentencer.make("{{ adjective }} {{ noun }}");
+    console.log('attempting to create room: ', random_roomname)
     var newRoom = new Room({
-      name: roomName,
-      host: host,
+      name: random_roomname,
+      host: req.body.host,
       userCount: 1,
       guests: [],
       queue: []
     });
-    newRoom.save(function(err, result) {
-      if (err) {
-        console.log("error saving new room", err);
-        callback(err, result);
+    newRoom.save().then(function(){
+      console.log('successfully created room', newRoom)
+      res.json(newRoom);
+    })
+    .catch(function(error) {
+      next(error)
+    })
+  },
+
+  joinRoom: function(req, res, next){
+    console.log("finding room", req.body.roomName);
+    Room.findOne({name:req.body.roomName}).then(function(room){
+      if(room) {
+        console.log('successfully joined room');
+        room.guests.push(req.body.socketId);
+        res.json('successfully joined room');
       } else {
-        console.log('saved new room');
-        callback(err, result);
+        res.json('room does not exist');
+      }
+    }).catch(function(error){
+      next(error);
+    });
+        
+  },
+
+  addSong: function(room, data, callback) {
+    console.log("addSong, room:", room);
+    delete data['$$hashKey'];
+    Room.findOne({name: room}, function(err, result) {
+      console.log("addSong", result);
+      if(!result) return;
+      var alreadyAdded = false;
+      result.queue.forEach(function(song) {
+        if (data.id === song.id) {
+          alreadyAdded = true;
+        }
+      });
+      if (!alreadyAdded) {
+        result.queue.push(data);
+        result.save(function(err) {
+          console.error(err);
+          callback();
+        });
+      } else {
+        return;
       }
     });
-  }
-
-  // getRoom: function(room, callback){
-  //   console.log("getRoom", room);
-  //   User.findOne({hash:room}, function(err, result){
-  //     console.log(err, result);
-  //     if(err){
-  //       console.log(err);
-  //       callback(err);
-  //     } else{
-  //       console.log(result);
-  //       callback(err, result);
-  //     }
-  //   });
-  // },
-
-  // getQueue: function(room, callback) {
-  //   console.log('getQueue', room);
-  //   User.findOne({hash: room}, function(err, result) {
-  //     if(!result) return;
-  //     console.log(result);
-  //     callback(err, result.queue);
-  //   });
-  // },
+  },
+  getQueue: function(room, callback) {
+    console.log('getQueue', room);
+    Room.findOne({name: room}, function(err, result) {
+      if(!result) return;
+      console.log(result);
+      callback(err, result.queue);
+    });
+  },
 
   // saveQueue: function(room, updatedQueue, callback) {
   //   updatedQueue = updatedQueue.map(function(song) {
@@ -64,29 +90,7 @@ module.exports = {
   //   });
   // },
 
-  // addSong: function(room, data, callback) {
-  //   console.log("addSong, room:", room);
-  //   delete data['$$hashKey'];
-  //   User.findOne({hash: room}, function(err, result) {
-  //     console.log("addSong", result);
-  //     if(!result) return;
-  //     var alreadyAdded = false;
-  //     result.queue.forEach(function(song) {
-  //       if (data.id === song.id) {
-  //         alreadyAdded = true;
-  //       }
-  //     });
-  //     if (!alreadyAdded) {
-  //       result.queue.push(data);
-  //       result.save(function(err) {
-  //         console.error(err);
-  //         callback();
-  //       });
-  //     } else {
-  //       return;
-  //     }
-  //   });
-  // },
+  
 
   // updateVotes: function(room, data, callback) {
   //   console.log('update votes in userController');
