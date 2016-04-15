@@ -11,6 +11,7 @@ var User = require('./db/userController');
 var Room = require('./db/roomController');
 var userModel = require('./db/userModel');
 var Sentencer = require('sentencer');
+var roomFinder = require('./roomFinder')
 
 
 
@@ -24,9 +25,10 @@ server.listen(port);
 console.log('listening on port...', port)
 
 io.on('connection', function (socket) {
+  
   socket.on("create_room", function(roomName){
     socket.join(roomName);
-    io.sockets.in(roomName).emit('userCount', userCount);
+    // io.sockets.in(roomName).emit('userCount', userCount);
     // var random_roomname = Sentencer.make("{{ adjective }} {{ noun }}");
     // User.addUser(socket.id, random_roomname, function(err,result){
     //   if(err){
@@ -66,24 +68,25 @@ io.on('connection', function (socket) {
 
   });
   socket.on("join_room", function(roomName){
+    socket.join(roomName);
+    socket.to(socket.id).emit('roomjoined', roomName);
+
     // console.log(roomName)
     // if(typeof roomname === 'object'){
     //   var host = roomname.q_host; 
     //   var roomname = roomname.q_room;  
     // } 
 
-    console.log('attempting to join room', roomName);
+    // Room.getRoom(roomName, function(err, result){
+    //   if(err){
+    //     console.log(err)
+    //   } else {
+    //     console.log('found room from db: ', result)
+    //     socket.join(result.name);
+    //     io.to(socket.id).emit('roomjoined', result.name);
+    //   }
 
-    Room.getRoom(roomName, function(err, result){
-      if(err){
-        console.log(err)
-      } else {
-        console.log('found room from db: ', result)
-        socket.join(result.name);
-        io.to(socket.id).emit('roomjoined', result.name);
-      }
-
-    })
+    // })
     // console.log('id', socket.id);
 
     // User.getRoom(roomname, function(err, result){
@@ -127,12 +130,12 @@ io.on('connection', function (socket) {
   });
 
   socket.on('addSong', function (newSong) {
-    console.log('addsong: socket room', socket)
-    Room.addSong(socket.room, newSong, function() {
+    console.log('addsong: socket room', roomFinder(socket), newSong)
+    Room.addSong(roomFinder(socket), newSong, function() {
 
       // socket.emit('newSong', newSong);
       // socket.broadcast.emit('newSong', newSong);
-      io.to(socket.room).emit('newSong', newSong);
+      io.to(roomFinder(socket)).emit('newSong', newSong);
       // User.getQueue(function(queue) {
       // });
     });

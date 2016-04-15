@@ -17,7 +17,8 @@ angular.module('Q.controllers', [
   } else {
     console.log("initalized playlist controller as guest");  
   }
-  
+
+  console.log($scope.playlist)
 
   // checks if user is host of entered room
   // if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
@@ -154,31 +155,31 @@ angular.module('Q.controllers', [
     }
   }
 
-  socket.on('roomcreated', function(roomname){
-    // console.log('controller side room created', roomname);
-    if(roomname){
-      $rootScope.roomName = roomname;
-      Playlist.makeHost();
-      $state.go('playlist');
-    } else {
-      console.log("Error creating room");
-      $scope.showAlert("Room already exists");
-    }
-  });
+  // socket.on('roomcreated', function(roomname){
+  //   // console.log('controller side room created', roomname);
+  //   if(roomname){
+  //     $rootScope.roomName = roomname;
+  //     Playlist.makeHost();
+  //     $state.go('playlist');
+  //   } else {
+  //     console.log("Error creating room");
+  //     $scope.showAlert("Room already exists");
+  //   }
+  // });
 
-  socket.on('roomjoined', function(roomName){
-    if(roomname){
-      console.log('succesfully joined room', roomName) ;
-      $rootScope.roomName = roomName;
-      $rootScope.isUserAHost = Playlist.makeGuest();
-      $state.go('playlist');
-      Playlist.getQueue(roomName);
-    } else {
-      console.log("no such room");
-      $scope.showAlert('Room does not exist');
-      return
-    }
-  });
+  // socket.on('roomjoined', function(roomName){
+  //   if(roomname){
+  //     console.log('succesfully joined room', roomName) ;
+  //     $rootScope.roomName = roomName;
+  //     $rootScope.isUserAHost = Playlist.makeGuest();
+  //     $state.go('playlist');
+  //     Playlist.getQueue(roomName);
+  //   } else {
+  //     console.log("no such room");
+  //     $scope.showAlert('Room does not exist');
+  //     return
+  //   }
+  // });
 
   // createRoom function (initiated when Create Room button is clicked on landing page)
   $scope.createRoom = function(){
