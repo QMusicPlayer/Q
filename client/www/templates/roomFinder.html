@@ -4,7 +4,10 @@
 </ion-header-bar>
 
 <!-- LANDING BODY -->
-<div id="landingbody" >
-	test
-
+<div id="landingbody">
+	<div ng-repeat='room in rooms'>
+		<div class="list center list-inset">
+			<a class="button widthmobile button-positive">{{room.name}} </a>
+		</div>
+	</div>
 </div>

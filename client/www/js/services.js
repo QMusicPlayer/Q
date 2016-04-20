@@ -47,10 +47,7 @@ angular.module('Q.services', [
       return result;
     })
   }
-  // var getQueue = function (roomName) {
-  //   console.log('getting queue for room:' roomName);
-  //   return
-  // }
+
 
   var searchSongs = function(query){
     SC.initialize({
@@ -64,9 +61,7 @@ angular.module('Q.services', [
     });
   }
 
-  // var createRoom = function(roomName) {
-    
-  // }
+  
 
   // isHostData in factory stores whether or not the current user is the host
   
@@ -104,5 +99,19 @@ angular.module('Q.services', [
     isHost: isHost,
     isRoomEntered: isRoomEntered,
     enterRoom: enterRoom
+  }
+})
+.factory('Rooms', function ($http){
+  var getRooms = function () {
+    return $http ({
+      method: 'GET',
+      url: '/api/rooms',
+    }).then(function(rooms) {
+      return rooms;
+    })
+  };
+
+  return {
+    getRooms: getRooms
   }
 })

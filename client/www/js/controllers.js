@@ -246,6 +246,11 @@ angular.module('Q.controllers', [
   $scope.attemptHost = false; //??
   $scope.createRoomPassword; //??
 })
-.controller('roomFinderController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout, $state, $rootScope){
+.controller('roomFinderController', function($scope, $location, $state, Rooms, $ionicPopup, $timeout, $state, $rootScope){
   console.log('initializing roomFinder controller')
+  $rootScope.rooms;
+  Rooms.getRooms().then(function(response){
+    console.log(response.data)
+    $rootScope.rooms = response.data;
+  });
 })

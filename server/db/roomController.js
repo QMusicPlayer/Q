@@ -23,6 +23,12 @@ module.exports = {
     })
   },
 
+  getRooms: function (req, res, next) {
+    Room.find().then(function(rooms){
+      res.json(rooms)
+    })
+  },
+
   joinRoom: function(req, res, next){
     console.log("finding room", req.body.roomName);
     Room.findOne({name:req.body.roomName}).then(function(room){
