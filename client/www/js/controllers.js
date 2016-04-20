@@ -142,7 +142,7 @@ angular.module('Q.controllers', [
   
   });
 
-  $scope.showAlert = function(alertMessage){
+  $rootScope.showAlert = function(alertMessage){
     var alertPopup = $ionicPopup.alert({
       title: 'sorry...',
       template: alertMessage
@@ -172,20 +172,22 @@ angular.module('Q.controllers', [
   //     $scope.showAlert("Room already exists");
   //   }
   // });
-
-  // socket.on('roomjoined', function(roomName){
-  //   if(roomname){
-  //     console.log('succesfully joined room', roomName) ;
-  //     $rootScope.roomName = roomName;
-  //     $rootScope.isUserAHost = Playlist.makeGuest();
-  //     $state.go('playlist');
-  //     Playlist.getQueue(roomName);
-  //   } else {
-  //     console.log("no such room");
-  //     $scope.showAlert('Room does not exist');
-  //     return
-  //   }
-  // });
+  socket.on('enter_new_room', function(roomName){
+    socket.emit('join_room', roomName)
+  })
+  socket.on('roomjoined', function(roomName){
+    // if(roomName){
+    //   console.log('succesfully joined room', roomName) ;
+    //   $rootScope.roomName = roomName;
+    //   $rootScope.isUserAHost = Playlist.makeGuest();
+    //   $state.go('playlist');
+    //   Playlist.getQueue(roomName);
+    // } else {
+    //   console.log("no such room");
+    //   $scope.showAlert('Room does not exist');
+    //   return
+    // }
+  });
 
   // createRoom function (initiated when Create Room button is clicked on landing page)
   $scope.createRoom = function(){
@@ -196,7 +198,7 @@ angular.module('Q.controllers', [
       localStorage.setItem("qRoom", $rootScope.roomName);
       localStorage.setItem('qHost', $rootScope.roomName);
       socket.emit("create_room", $rootScope.roomName);
-      socket.disconnect();
+      // socket.disconnect();
       $state.go('playlist');
       $rootScope.isUserAHost = true;    
 
@@ -206,32 +208,7 @@ angular.module('Q.controllers', [
     });    
   };
 
-  // joinRooom function (initated when Join Room is clicked on landing page)
-  $scope.joinRoom = function(){
-    console.log("attempting to join room " + $scope.joinRoomName);
-    Playlist.joinRoom($scope.joinRoomName, socket.id).then(function(response) {
-      if (response.data === 'room does not exist') {
-        $scope.showAlert('Room does not exist');
-      } 
-      else if (response.data === 'successfully joined room as guest') {
-        console.log('successfully joined room as guest');
-        $rootScope.roomName = $scope.joinRoomName;
-        socket.emit("join_room", $scope.joinRoomName);
-        localStorage.setItem("qRoom", $scope.joinRoomName);
-        $state.go('playlist');  
-        $rootScope.isUserAHost = false;
-        
-      }
-      else if (response.data === 'user is a host') {
-        $rootScope.roomName = $scope.joinRoomName;
-        socket.emit("join_room", $scope.joinRoomName);
-        localStorage.setItem("qRoom", $scope.joinRoomName);
-        $state.go('playlist');  
-        $rootScope.isUserAHost = true;
-      }
-    });
-    
-  };
+  
 
   $scope.navToFindRoom = function () {
     console.log('nav to find room page')
@@ -253,4 +230,31 @@ angular.module('Q.controllers', [
     console.log(response.data)
     $rootScope.rooms = response.data;
   });
+
+  // joinRooom function (initated when Join Room is clicked on landing page)
+  $scope.joinRoom = function(roomName){
+    console.log(roomName)
+    console.log("attempting to join room " + roomName);
+    Rooms.joinRoom(roomName, socket.id).then(function(response) {
+      if (response.data === 'room does not exist') {
+        $rootScope.showAlert('Room does not exist');
+      } 
+      else if (response.data === 'successfully joined room as guest') {
+        $rootScope.roomName =  roomName;
+        socket.emit("join_room", roomName);
+        localStorage.setItem("qRoom", roomName);
+        $state.go('playlist');  
+        $rootScope.isUserAHost = false;
+        
+      }
+      else if (response.data === 'user is a host') {
+        $rootScope.roomName = roomName;
+        socket.emit("join_room", roomName);
+        localStorage.setItem("qRoom", roomName);
+        $state.go('playlist');  
+        $rootScope.isUserAHost = true;
+      }
+    });
+    
+  };
 })

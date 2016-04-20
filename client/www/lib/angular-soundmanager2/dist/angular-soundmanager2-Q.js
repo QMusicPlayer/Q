@@ -4606,6 +4606,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 playlist.push(track);
                 //broadcast playlist
                 $rootScope.$broadcast('player:playlist', playlist);
+                
             },
             isTrackValid: function (track) {
                 if (typeof track == 'undefined') {

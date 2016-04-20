@@ -35,18 +35,7 @@ angular.module('Q.services', [
     });
   }
 
-  var joinRoom = function(roomName, socketId) {
-    return $http ({
-      method: 'PUT',
-      url: '/api/rooms/',
-      data: {
-        roomName: roomName,
-        socketId: socketId
-      }
-    }).then(function(result){
-      return result;
-    })
-  }
+  
 
 
   var searchSongs = function(query){
@@ -91,8 +80,7 @@ angular.module('Q.services', [
   return {
     getSongs: getSongs,
     addSong: addSong,
-    createRoom: createRoom,
-    joinRoom: joinRoom,
+    createRoom: createRoom, 
     searchSongs: searchSongs,
     makeHost: makeHost,
     makeGuest: makeGuest,
@@ -111,7 +99,21 @@ angular.module('Q.services', [
     })
   };
 
+  var joinRoom = function(roomName, socketId) {
+    return $http ({
+      method: 'PUT',
+      url: '/api/rooms/',
+      data: {
+        roomName: roomName,
+        socketId: socketId
+      }
+    }).then(function(result){
+      return result;
+    })
+  }
+
   return {
-    getRooms: getRooms
+    getRooms: getRooms,
+    joinRoom: joinRoom
   }
 })

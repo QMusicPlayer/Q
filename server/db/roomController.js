@@ -36,7 +36,7 @@ module.exports = {
         if(room.host !== req.body.socketId){
           room.guests.push(req.body.socketId);
           room.save().then(function(){
-            console.log('successfully joined room as guest');
+            console.log('successfully added user to room as guest');
             res.json('successfully joined room as guest');
           }).catch(function(error){
             next(error);
@@ -62,7 +62,7 @@ module.exports = {
         if(room.queue.map(function(element){return element.id}).indexOf(song.id)) {
           room.queue.push(song);
           room.save().then(function(){
-            console.log('successfully added song: ', song.title, 'to room: ', room)
+            console.log('successfully added song: ', song.title, ', to room: ', room.name)
           }).catch(function(error){
             console.log('error adding song:', error);
           });
@@ -76,10 +76,9 @@ module.exports = {
   },
   
   getQueue: function(room, callback) {
-    console.log('getQueue', room);
+    console.log('gettting queue from db for room', room);
     Room.findOne({name: room}, function(err, result) {
       if(!result) return;
-      console.log(result);
       callback(err, result.queue);
     });
   },

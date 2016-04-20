@@ -26,13 +26,10 @@ server.listen(port);
 console.log('listening on port...', port)
 
 io.on('connection', function (socket) {
-  console.log('connected')
+  console.log('connected', socket.rooms)
   socket.on("create_room", function(roomName){
-    console.log(socket.id)
-    // socket.disconnect();
-
-   
-    socket.join(roomName);
+    socket.emit('enter_new_room', roomName);
+    
     // io.sockets.in(roomName).emit('userCount', userCount);
     // var random_roomname = Sentencer.make("{{ adjective }} {{ noun }}");
     // User.addUser(socket.id, random_roomname, function(err,result){
@@ -74,14 +71,26 @@ io.on('connection', function (socket) {
   });
   
   socket.on("join_room", function(roomName){
+    console.log('joining room', roomName)
     socket.join(roomName);
-    socket.to(socket.id).emit('roomjoined', roomName);
+    console.log('rooms', socket)
+    console.log('attempting to get queue from room', roomName)
+    Room.getQueue(roomName, function(err, queue) {
+      if(err) {
+        console.log('error getting queue', err);
+      }
+      console.log('got queue', queue.map(function(element){
+        return element.title;
+      }))
+      io.to(socket.id).emit('getQueue', queue);
+    });
+      
 
     // console.log(roomName)
     // if(typeof roomname === 'object'){
     //   var host = roomname.q_host; 
     //   var roomname = roomname.q_room;  
-    // } 
+    // }    
 
     // Room.getRoom(roomName, function(err, result){
     //   if(err){
@@ -131,11 +140,11 @@ io.on('connection', function (socket) {
     console.log("newGuest", socket.room);
     Room.getQueue(socket.room, function(err, queue) {
       socket.emit('getQueue', queue);
-      console.log(queue);
     });
   });
 
   socket.on('addSong', function (newSong) {
+    console.log(socket.rooms)
     Room.addSong(roomFinder(socket), newSong, function() {
       // socket.emit('newSong', newSong);
       // socket.broadcast.emit('newSong', newSong);
