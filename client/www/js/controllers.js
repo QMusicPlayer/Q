@@ -6,19 +6,23 @@ angular.module('Q.controllers', [
 ])
 
 .controller('playlistController', function($scope, $rootScope, $location, Playlist, $state, $ionicPopup, $stateParams) {
+  
+ 
   $rootScope.isUserAHost;
   $rootScope.songs= [];  
   $rootScope.customPlaylist;
   $rootScope.friendCount;
   $rootScope.roomName;
-
+  $rootScope.location;
+  socket.connect();
+  
   if($rootScope.isUserAHost) {
     console.log("initalized playlist controller as host");
   } else {
     console.log("initalized playlist controller as guest");  
   }
 
-  console.log($scope.playlist)
+ 
 
   // checks if user is host of entered room
   // if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
@@ -128,8 +132,10 @@ angular.module('Q.controllers', [
 
 .controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout, $state, $rootScope){
   console.log("INIT LANDING PAGE CONTROLLER");
+  navigator.geolocation.getCurrentPosition(function(position){
+    $rootScope.location = position;
+  })
   localStorage.removeItem('qRoom');
-
   socket.on('userCount', function(friendCount) {
     console.log('created, here i am...', friendCount);
     $rootScope.friendCount = friendCount;
@@ -183,15 +189,17 @@ angular.module('Q.controllers', [
 
   // createRoom function (initiated when Create Room button is clicked on landing page)
   $scope.createRoom = function(){
-      console.log('attempting to create new room');
-    Playlist.createRoom(socket.id).then(function(response){
+      console.log('attempting to create new room for', socket.id);
+    Playlist.createRoom(socket.id, $rootScope.location).then(function(response){
       console.log('successfully created room: ', response.data.name);
       $rootScope.roomName = response.data.name;
       localStorage.setItem("qRoom", $rootScope.roomName);
       localStorage.setItem('qHost', $rootScope.roomName);
       socket.emit("create_room", $rootScope.roomName);
+      socket.disconnect();
       $state.go('playlist');
-      $rootScope.isUserAHost = true;      
+      $rootScope.isUserAHost = true;    
+
       // Playlist.enterRoom();
     }).catch(function(error){
       console.log('failed to create room', error)
@@ -225,6 +233,11 @@ angular.module('Q.controllers', [
     
   };
 
+  $scope.navToFindRoom = function () {
+    console.log('nav to find room page')
+    $state.go('roomFinder'); 
+  }
+
   $scope.makeGuest = function(){
     Playlist.makeGuest();
     $state.go('playlist');
@@ -232,4 +245,7 @@ angular.module('Q.controllers', [
 
   $scope.attemptHost = false; //??
   $scope.createRoomPassword; //??
+})
+.controller('roomFinderController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout, $state, $rootScope){
+  console.log('initializing roomFinder controller')
 })

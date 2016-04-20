@@ -14,18 +14,10 @@
 
 <!-- Enter Room Button -->
 	<div class="list center list-inset">
-		<a ng-click="joinRoom()" class="button widthmobile button-positive">Join Room</a>
+		<a ng-click="navToFindRoom()" class="button widthmobile button-positive">Find Room</a>
 	</div>
 
-	<div class='widthmobile center'>
-		<div class="list">
-			<form ng-submit="joinRoom()">
-			  <label class="item item-input">
-			    <input type="text" placeholder="Enter the name of an existing room..." ng-model='joinRoomName'>
-			  </label>
-		  </form>
-		</div>
-	</div>
+	
 
 	<div id='landinginfo' class="center widthmobile">
 	  <div class="col">

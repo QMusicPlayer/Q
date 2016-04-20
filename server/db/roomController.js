@@ -5,12 +5,13 @@ var Sentencer = require('sentencer');
 module.exports = {
   createRoom: function(req, res, next) {
     var random_roomname = Sentencer.make("{{ adjective }} {{ noun }}");
-    console.log('attempting to create room: ', random_roomname)
+    console.log('attempting to create room: ', random_roomname, 'with location ', req.body.location.longitude)
     var newRoom = new Room({
       name: random_roomname,
       host: req.body.host,
       userCount: 1,
       guests: [],
+      location: req.body.location,
       queue: []
     });
     newRoom.save().then(function(){
@@ -47,29 +48,27 @@ module.exports = {
         
   },
 
-  addSong: function(room, data, callback) {
-    console.log("addSong, room:", room);
-    delete data['$$hashKey'];
-    Room.findOne({name: room}, function(err, result) {
-      console.log("addSong", result);
-      if(!result) return;
-      var alreadyAdded = false;
-      result.queue.forEach(function(song) {
-        if (data.id === song.id) {
-          alreadyAdded = true;
+  addSong: function(room, song, callback) {
+    console.log('attempting to add song to room: ', room);
+    delete song['$$hashKey'];
+    Room.findOne({name: room}).then(function(room){
+      if(room) {
+        if(room.queue.map(function(element){return element.id}).indexOf(song.id)) {
+          room.queue.push(song);
+          room.save().then(function(){
+            console.log('successfully added song: ', song.title, 'to room: ', room)
+          }).catch(function(error){
+            console.log('error adding song:', error);
+          });
+        } else {
+          console.log('song already exists');
         }
-      });
-      if (!alreadyAdded) {
-        result.queue.push(data);
-        result.save(function(err) {
-          console.error(err);
-          callback();
-        });
       } else {
-        return;
+        console.log('room not found');
       }
-    });
+    }); 
   },
+  
   getQueue: function(room, callback) {
     console.log('getQueue', room);
     Room.findOne({name: room}, function(err, result) {

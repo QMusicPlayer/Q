@@ -30,14 +30,20 @@ angular.module('Q', [
 .config(function($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('playlist', {
-            url: '/playlist',
-            templateUrl:'../templates/playlist.html',
-            controller:'playlistController'
-        }).state('landing', {
-            url: '/landing',
-            templateUrl: '../templates/landingPage.html',
-            controller: 'landingPageController'
-        });
+          url: '/playlist',
+          templateUrl:'../templates/playlist.html',
+          controller:'playlistController'
+        })
+        .state('landing', {
+          url: '/landing',
+          templateUrl: '../templates/landingPage.html',
+          controller: 'landingPageController'
+        })
+        .state('roomFinder', {
+          url:'/roomFinder',
+          templateUrl: '../templates/roomFinder.html',
+          controller: 'roomFinderController'
+        })
     $urlRouterProvider.otherwise('/landing');
 
 });

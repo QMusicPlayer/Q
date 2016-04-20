@@ -21,12 +21,14 @@ angular.module('Q.services', [
     });
   }
 
-  var createRoom = function(host){
+  var createRoom = function(host, location){
+    
     return $http ({
       method: 'POST',
       url: '/api/rooms',
       data: {
-        host: host
+        host: host,
+        location: {longitude: location.coords.longitude, latitude: location.coords.latitude}
       }
     }).then(function(room){
       return room;

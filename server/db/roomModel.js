@@ -6,6 +6,7 @@ var roomSchema = mongoose.Schema({
 	host: String,
 	guests: [],
     userCount: Number,
+    location: {},
     queue: [],
 }, { timestamps: true });
 

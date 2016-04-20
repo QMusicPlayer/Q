@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
-var server = require('http').Server(app);
+var http = require('http')
+var server = http.createServer(app);
 var morgan = require('morgan');
 var response = require('response');
 var io = require('socket.io')(server);
@@ -11,22 +12,26 @@ var User = require('./db/userController');
 var Room = require('./db/roomController');
 var userModel = require('./db/userModel');
 var Sentencer = require('sentencer');
-var roomFinder = require('./roomFinder')
-
-
+var roomFinder = require('./roomFinder');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 require('./routes.js')(app, express);
 app.use(express.static(__dirname + '/../client/www'));
 
+
+
 var port = process.env.PORT || 3000;
 server.listen(port);
 console.log('listening on port...', port)
 
 io.on('connection', function (socket) {
-  
+  console.log('connected')
   socket.on("create_room", function(roomName){
+    console.log(socket.id)
+    // socket.disconnect();
+
+   
     socket.join(roomName);
     // io.sockets.in(roomName).emit('userCount', userCount);
     // var random_roomname = Sentencer.make("{{ adjective }} {{ noun }}");
@@ -67,6 +72,7 @@ io.on('connection', function (socket) {
 
 
   });
+  
   socket.on("join_room", function(roomName){
     socket.join(roomName);
     socket.to(socket.id).emit('roomjoined', roomName);
@@ -130,9 +136,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('addSong', function (newSong) {
-    console.log('addsong: socket room', roomFinder(socket), newSong)
     Room.addSong(roomFinder(socket), newSong, function() {
-
       // socket.emit('newSong', newSong);
       // socket.broadcast.emit('newSong', newSong);
       io.to(roomFinder(socket)).emit('newSong', newSong);
@@ -180,13 +184,14 @@ io.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function(){
-    
+
+    console.log('disconnecting')
     User.updateRoomCount(socket.room, 'subtract', function(err, userCount){  
       console.log('disconnting socket', userCount);
       io.sockets.in(socket.room).emit('userCount', userCount);
       socket.leave(socket.room);
     });
-    
+      
 
   });
 

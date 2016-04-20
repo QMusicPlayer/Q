@@ -27,6 +27,7 @@
     "express": "^4.13.3",
     "mongoose": "^4.3.4",
     "node-soundcloud": "0.0.4",
+    "node-static": "^0.7.7",
     "sentencer": "^0.1.5",
     "socket.io": "^1.4.0"
   },
