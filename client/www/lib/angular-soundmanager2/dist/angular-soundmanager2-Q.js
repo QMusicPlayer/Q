@@ -4987,12 +4987,16 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                     console.log('queue from server', queue);
                     angularPlayer.clearPlaylist(function(bool){
                       console.log(bool);
+
                     });
+                    console.log('test', queue)
                     queue.forEach(function(song) {
                         angularPlayer.addToPlaylist(song);
                     });
-                    angularPlayer.sortByVotes();
+                    // angularPlayer.sortByVotes();
                 });
+
+          
 
                 socket.on('deleteSong', function (targetObj) {
                     console.log("socket delete emit received, target:", targetObj);

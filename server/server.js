@@ -6,7 +6,7 @@ var morgan = require('morgan');
 var response = require('response');
 var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
-var SC = require('node-soundcloud');
+
 var db = require('./db/dbConfig');
 var User = require('./db/userController');
 var Room = require('./db/roomController');
@@ -26,9 +26,19 @@ server.listen(port);
 console.log('listening on port...', port)
 
 io.on('connection', function (socket) {
-  console.log('connected', socket.rooms)
+  console.log(socket.id, 'is connected')
   socket.on("create_room", function(roomName){
-    socket.emit('enter_new_room', roomName);
+    socket.join(roomName)
+    Room.getQueue(roomName, function(err, queue) {
+      if(err) {
+        console.log('error getting queue', err);
+      }
+      console.log('got queue', queue.map(function(element){
+        return element.title;
+      }))
+      io.to(socket.id).emit('getQueue', queue);
+    });
+ 
     
     // io.sockets.in(roomName).emit('userCount', userCount);
     // var random_roomname = Sentencer.make("{{ adjective }} {{ noun }}");
@@ -73,7 +83,6 @@ io.on('connection', function (socket) {
   socket.on("join_room", function(roomName){
     console.log('joining room', roomName)
     socket.join(roomName);
-    console.log('rooms', socket)
     console.log('attempting to get queue from room', roomName)
     Room.getQueue(roomName, function(err, queue) {
       if(err) {

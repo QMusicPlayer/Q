@@ -193,6 +193,7 @@ angular.module('Q.controllers', [
   $scope.createRoom = function(){
       console.log('attempting to create new room for', socket.id);
     Playlist.createRoom(socket.id, $rootScope.location).then(function(response){
+      
       console.log('successfully created room: ', response.data.name);
       $rootScope.roomName = response.data.name;
       localStorage.setItem("qRoom", $rootScope.roomName);
