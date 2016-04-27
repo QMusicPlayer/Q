@@ -5,6 +5,11 @@
 #landingbody {
   padding-top: 40px;
 }
+
+.verticalPadding {
+  padding-top: 20px;
+}
+
 .bottomButton {
   width: 35px;
   height: 35px;

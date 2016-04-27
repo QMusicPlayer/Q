@@ -4,16 +4,18 @@ var Sentencer = require('sentencer');
 
 module.exports = {
 
+  // generates random room name for user
   generateRoomName: function(req,res,next) {
     res.json(Sentencer.make("{{ adjective }}_{{ noun }}"));
   },
 
+  // saves room to db
   createRoom: function(req, res, next) {
-    console.log(req.body)
+    console.log(req.sessionID)
     console.log('attempting to create room: ', req.body.random_roomname, 'with location ', req.body.location.longitude)
     var newRoom = new Room({
       name: req.body.random_roomname,
-      host: req.body.host,
+      host: req.sessionID,
       userCount: 1,
       guests: [],
       location: req.body.location,
@@ -30,19 +32,21 @@ module.exports = {
     })
   },
 
+  // gets room from db
   getRooms: function (req, res, next) {
     Room.find().then(function(rooms){
       res.json(rooms)
     })
   },
 
+  // joins guest to room
   joinRoom: function(req, res, next){
     console.log("finding room", req.body.roomName);
-
     Room.findOne({name:req.body.roomName}).then(function(room){
       if(room) {
         if(room.host !== req.body.socketId){
           room.guests.push(req.body.socketId);
+          room.userCount++;
           room.save().then(function(){
             console.log('successfully added user to room as guest');
             res.json('successfully joined room as guest');
@@ -62,11 +66,39 @@ module.exports = {
         
   },
 
+  leaveRoom: function(req, res, next){
+    console.log("finding room", req.body.roomName);
+    Room.findOne({name:req.body.roomName}).then(function(room){
+      if(room) {
+        if(room.host !== req.body.socketId){
+          room.guests.push(req.body.socketId);
+          room.userCount--;
+          room.save().then(function(){
+            console.log('successfully added user to room as guest');
+            res.json('successfully joined room as guest');
+          }).catch(function(error){
+            next(error);
+          });
+        } else {
+          console.log('user is a host');
+          res.json('user is a host');
+        }
+      } else {
+        res.json('room does not exist');
+      }
+    }).catch(function(error){
+      next(error);
+    });
+        
+  },
+
+  // checks if joining user is a host 
   checkHost: function(req, res, next){
     console.log('session room name' ,req.session.hostRoom)
     res.send(req.session.hostRoom);
   },
 
+  // adds song to playlist within room
   addSong: function(room, song, callback) {
     console.log('attempting to add song to room: ', room);
     delete song['$$hashKey'];
@@ -89,6 +121,7 @@ module.exports = {
     }); 
   },
   
+  // gets queue from room
   getQueue: function(room, callback) {
     console.log('gettting queue from db for room', room);
     Room.findOne({name: room}, function(err, result) {

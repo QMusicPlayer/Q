@@ -48,5 +48,4 @@ angular.module('Q', [
           controller: 'roomFinderController'
         })
     $urlRouterProvider.otherwise('/landing');
-    
 });

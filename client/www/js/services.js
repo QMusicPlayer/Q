@@ -21,29 +21,6 @@ angular.module('Q.services', [
     });
   }
 
-  var createRoom = function(host, location){
-
-    return $http ({
-      mehtod: "GET",
-      url:'/api/generateRoomName'
-    }).then(function(roomName){
-      return $http ({
-        method: 'POST',
-        url: '/api/rooms',
-        data: {
-          random_roomname: roomName.data,
-          host: host,
-          location: {longitude: location.coords.longitude, latitude: location.coords.latitude}
-        }
-      }).then(function(room){
-        return room;
-      });
-     })
-    }
-
-  
-
-
   var searchSongs = function(query){
     SC.initialize({
       client_id: 'f270bdc572dc8380259d38d8015bdbe7'
@@ -86,7 +63,6 @@ angular.module('Q.services', [
   return {
     getSongs: getSongs,
     addSong: addSong,
-    createRoom: createRoom, 
     searchSongs: searchSongs,
     makeHost: makeHost,
     makeGuest: makeGuest,
@@ -116,11 +92,31 @@ angular.module('Q.services', [
     }).then(function(result){
       return result;
     })
+  };
+
+  var createRoom = function(host, location){
+    return $http ({
+      mehtod: "GET",
+      url:'/api/generateRoomName'
+    }).then(function(roomName){
+      return $http ({
+        method: 'POST',
+        url: '/api/rooms',
+        data: {
+          random_roomname: roomName.data,
+          host: host,
+          location: {longitude: location.coords.longitude, latitude: location.coords.latitude}
+        }
+      }).then(function(room){
+        return room;
+      });
+     })
   }
 
   return {
     getRooms: getRooms,
-    joinRoom: joinRoom
+    joinRoom: joinRoom,
+    createRoom: createRoom
   }
 })
 .factory('Host', function ($http){
