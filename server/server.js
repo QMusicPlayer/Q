@@ -37,15 +37,9 @@ io.on('connection', function (socket) {
   console.log(socket.id, 'is connected')
   socket.on("create_room", function(roomName){
     socket.join(roomName)
-    Room.getQueue(roomName, function(err, queue) {
-      if(err) {
-        console.log('error getting queue', err);
-      }
-      console.log('got queue', queue.map(function(element){
-        return element.title;
-      }))
-      io.to(socket.id).emit('getQueue', queue);
-    });
+      
+    io.to(socket.id).emit('getQueue', []);
+   
  
     
     // io.sockets.in(roomName).emit('userCount', userCount);

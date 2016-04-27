@@ -10,7 +10,7 @@ angular.module('Q', [
   'angularSoundManager'
 ])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -26,6 +26,9 @@ angular.module('Q', [
       StatusBar.styleDefault();
     }
   });
+
+ 
+
 })
 .config(function($stateProvider, $urlRouterProvider) {
     $stateProvider
@@ -45,5 +48,5 @@ angular.module('Q', [
           controller: 'roomFinderController'
         })
     $urlRouterProvider.otherwise('/landing');
-
+    
 });

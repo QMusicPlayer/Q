@@ -15,6 +15,10 @@ angular.module('Q.controllers', [
   $rootScope.roomName = $stateParams.roomName;
   $rootScope.room_name = $rootScope.roomName.split('_').join(' ');
   $rootScope.location;
+  $rootScope.refreshed = false;
+  if(!$rootScope.refresh) {
+    $state.go('landing');
+  }
   Host.isUserAHost($rootScope.roomName).then(function(isHost) {
     $rootScope.isUserAHost = isHost;
   });
@@ -25,7 +29,6 @@ angular.module('Q.controllers', [
     console.log("initalized playlist controller as guest");  
   }
 
- console.log($stateParams)
 
   // checks if user is host of entered room
   // if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
@@ -172,9 +175,7 @@ angular.module('Q.controllers', [
   //     $scope.showAlert("Room already exists");
   //   }
   // });
-  socket.on('enter_new_room', function(roomName){
-    socket.emit('join_room', roomName)
-  })
+ 
   socket.on('roomjoined', function(roomName){
     // if(roomName){
     //   console.log('succesfully joined room', roomName) ;
@@ -200,6 +201,7 @@ angular.module('Q.controllers', [
       // localStorage.setItem('qHost', $rootScope.roomName);
       socket.emit("create_room", $rootScope.roomName);
       // socket.disconnect();
+      $rootScope.refresh = true;
       $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
       // $rootScope.isUserAHost = true;    
 
@@ -247,7 +249,7 @@ angular.module('Q.controllers', [
       else if (response.data === 'successfully joined room as guest') {
         $rootScope.roomName =  roomName;
         socket.emit("join_room", roomName);
-        localStorage.setItem("qRoom", roomName);
+        $rootScope.refresh = true;
         $state.go('playlist', {roomName: roomName}, {location: true});  
         
         
@@ -255,7 +257,7 @@ angular.module('Q.controllers', [
       else if (response.data === 'user is a host') {
         $rootScope.roomName = roomName;
         socket.emit("join_room", roomName);
-        localStorage.setItem("qRoom", roomName);
+        $rootScope.refresh = true;
         $state.go('playlist', {roomName: roomName}, {location: true});  
       }
     });
