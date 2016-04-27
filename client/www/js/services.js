@@ -22,18 +22,24 @@ angular.module('Q.services', [
   }
 
   var createRoom = function(host, location){
-    
+
     return $http ({
-      method: 'POST',
-      url: '/api/rooms',
-      data: {
-        host: host,
-        location: {longitude: location.coords.longitude, latitude: location.coords.latitude}
-      }
-    }).then(function(room){
-      return room;
-    });
-  }
+      mehtod: "GET",
+      url:'/api/generateRoomName'
+    }).then(function(roomName){
+      return $http ({
+        method: 'POST',
+        url: '/api/rooms',
+        data: {
+          random_roomname: roomName.data,
+          host: host,
+          location: {longitude: location.coords.longitude, latitude: location.coords.latitude}
+        }
+      }).then(function(room){
+        return room;
+      });
+     })
+    }
 
   
 
@@ -102,7 +108,7 @@ angular.module('Q.services', [
   var joinRoom = function(roomName, socketId) {
     return $http ({
       method: 'PUT',
-      url: '/api/rooms/',
+      url: '/api/rooms',
       data: {
         roomName: roomName,
         socketId: socketId
@@ -116,4 +122,18 @@ angular.module('Q.services', [
     getRooms: getRooms,
     joinRoom: joinRoom
   }
+})
+.factory('Host', function ($http){
+  var isUserAHost = function (roomName) {
+    return $http ({
+      method: 'GET',
+      url: '/api/host',
+    }).then(function(result){
+      return result.data === roomName;
+    })
+  }
+
+  return {
+    isUserAHost: isUserAHost
+  }  
 })

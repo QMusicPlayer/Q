@@ -6,7 +6,8 @@ var morgan = require('morgan');
 var response = require('response');
 var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
-
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var db = require('./db/dbConfig');
 var User = require('./db/userController');
 var Room = require('./db/roomController');
@@ -14,12 +15,19 @@ var userModel = require('./db/userModel');
 var Sentencer = require('sentencer');
 var roomFinder = require('./roomFinder');
 
+// middleware
+app.use(cookieParser());
+app.use(session({
+  secret: 'keyboard cat'
+}))
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-require('./routes.js')(app, express);
+
+
 app.use(express.static(__dirname + '/../client/www'));
 
 
+require('./routes.js')(app, express);
 
 var port = process.env.PORT || 3000;
 server.listen(port);
@@ -145,18 +153,18 @@ io.on('connection', function (socket) {
 
   });
 
-  socket.on('newGuest', function() {
-    console.log("newGuest", socket.room);
-    Room.getQueue(socket.room, function(err, queue) {
+  socket.on('newGuest', function(room) {
+    console.log("newGuest", room);
+    Room.getQueue(room, function(err, queue) {
       socket.emit('getQueue', queue);
     });
   });
 
   socket.on('addSong', function (newSong) {
-    console.log(socket.rooms)
-    Room.addSong(roomFinder(socket), newSong, function() {
+    Room.addSong(roomFinder(socket), newSong, function(queue) {
       // socket.emit('newSong', newSong);
       // socket.broadcast.emit('newSong', newSong);
+      console.log(roomFinder(socket))
       io.to(roomFinder(socket)).emit('newSong', newSong);
       // User.getQueue(function(queue) {
       // });

@@ -30,7 +30,7 @@ angular.module('Q', [
 .config(function($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('playlist', {
-          url: '/playlist',
+          url: '/playlist/:roomName',
           templateUrl:'../templates/playlist.html',
           controller:'playlistController'
         })

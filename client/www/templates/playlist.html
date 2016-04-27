@@ -12,7 +12,7 @@
     
     <div class='col col-20 right'>
       <i class="icon ion-ios-pricetag"></i>
-      {{roomName}}
+      {{room_name}}
     </div>
   </div>
 
@@ -61,7 +61,7 @@
     </div>
 
     <ion-list>
-      <ion-item class='row' ng-repeat="song in playlist" on-hold="viewSong(song.title)" >
+      <ion-item class='row' ng-repeat="song in playlist track by $index" on-hold="viewSong(song.title)" >
         <!-- mp: can't do pop vie song for guest-->
         <div class="col-80 center">
           <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
@@ -93,7 +93,7 @@
 
     <ion-list>
 
-      <ion-item class='row' ng-repeat="song in playlist">
+      <ion-item class='row' ng-repeat="song in playlist track by $index ">
         <div class="col-80 center">
           <div ng-class="currentPlaying.id === song.id ? 'button button-positive button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'" up-vote="song" data-index="{{$index}}" style="position:relative">
           <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>

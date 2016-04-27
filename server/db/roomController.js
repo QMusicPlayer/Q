@@ -3,11 +3,16 @@ var Room = require('./roomModel');
 var Sentencer = require('sentencer');
 
 module.exports = {
+
+  generateRoomName: function(req,res,next) {
+    res.json(Sentencer.make("{{ adjective }}_{{ noun }}"));
+  },
+
   createRoom: function(req, res, next) {
-    var random_roomname = Sentencer.make("{{ adjective }} {{ noun }}");
-    console.log('attempting to create room: ', random_roomname, 'with location ', req.body.location.longitude)
+    console.log(req.body)
+    console.log('attempting to create room: ', req.body.random_roomname, 'with location ', req.body.location.longitude)
     var newRoom = new Room({
-      name: random_roomname,
+      name: req.body.random_roomname,
       host: req.body.host,
       userCount: 1,
       guests: [],
@@ -16,6 +21,8 @@ module.exports = {
     });
     newRoom.save().then(function(){
       console.log('successfully created room', newRoom)
+      req.session.hostRoom = req.body.random_roomname;
+      console.log('created session', req.session.hostRoom)
       res.json(newRoom);
     })
     .catch(function(error) {
@@ -31,6 +38,7 @@ module.exports = {
 
   joinRoom: function(req, res, next){
     console.log("finding room", req.body.roomName);
+
     Room.findOne({name:req.body.roomName}).then(function(room){
       if(room) {
         if(room.host !== req.body.socketId){
@@ -54,6 +62,11 @@ module.exports = {
         
   },
 
+  checkHost: function(req, res, next){
+    console.log('session room name' ,req.session.hostRoom)
+    res.send(req.session.hostRoom);
+  },
+
   addSong: function(room, song, callback) {
     console.log('attempting to add song to room: ', room);
     delete song['$$hashKey'];
@@ -62,7 +75,8 @@ module.exports = {
         if(room.queue.map(function(element){return element.id}).indexOf(song.id)) {
           room.queue.push(song);
           room.save().then(function(){
-            console.log('successfully added song: ', song.title, ', to room: ', room.name)
+            console.log('successfully added song: ', song.title, ', to room: ', room.name);
+           callback(room.queue);
           }).catch(function(error){
             console.log('error adding song:', error);
           });
@@ -82,6 +96,7 @@ module.exports = {
       callback(err, result.queue);
     });
   },
+
 
   // saveQueue: function(room, updatedQueue, callback) {
   //   updatedQueue = updatedQueue.map(function(song) {

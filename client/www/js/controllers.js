@@ -5,24 +5,27 @@ angular.module('Q.controllers', [
 'angularSoundManager',
 ])
 
-.controller('playlistController', function($scope, $rootScope, $location, Playlist, $state, $ionicPopup, $stateParams) {
+.controller('playlistController', function($scope, $rootScope, $location, Playlist, Host, $state, $ionicPopup, $stateParams) {
   
  
   $rootScope.isUserAHost;
   $rootScope.songs= [];  
   $rootScope.customPlaylist;
   $rootScope.friendCount;
-  $rootScope.roomName;
+  $rootScope.roomName = $stateParams.roomName;
+  $rootScope.room_name = $rootScope.roomName.split('_').join(' ');
   $rootScope.location;
-  socket.connect();
-  
+  Host.isUserAHost($rootScope.roomName).then(function(isHost) {
+    $rootScope.isUserAHost = isHost;
+  });
   if($rootScope.isUserAHost) {
     console.log("initalized playlist controller as host");
   } else {
+    socket.emit('newGuest', $scope.roomName)
     console.log("initalized playlist controller as guest");  
   }
 
- 
+ console.log($stateParams)
 
   // checks if user is host of entered room
   // if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
@@ -67,9 +70,7 @@ angular.module('Q.controllers', [
       return;
     } else {
       return Playlist.searchSongs($scope.query).then(function(tracks){
-        // console.log('tracks', tracks)
         for(var i = 0;i<tracks.length;i++){
-          // console.log('track', tracks[i])
           var track = {
             id: tracks[i].id,
             title: tracks[i].title,
@@ -83,7 +84,6 @@ angular.module('Q.controllers', [
           } else {
               track.image = tracks[i].artwork_url
           }
-
           $rootScope.$apply(function(){  
             $rootScope.songs.push(track);
           });         
@@ -196,12 +196,12 @@ angular.module('Q.controllers', [
       
       console.log('successfully created room: ', response.data.name);
       $rootScope.roomName = response.data.name;
-      localStorage.setItem("qRoom", $rootScope.roomName);
-      localStorage.setItem('qHost', $rootScope.roomName);
+      // localStorage.setItem("qRoom", $rootScope.roomName);
+      // localStorage.setItem('qHost', $rootScope.roomName);
       socket.emit("create_room", $rootScope.roomName);
       // socket.disconnect();
-      $state.go('playlist');
-      $rootScope.isUserAHost = true;    
+      $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
+      // $rootScope.isUserAHost = true;    
 
       // Playlist.enterRoom();
     }).catch(function(error){
@@ -229,14 +229,18 @@ angular.module('Q.controllers', [
   $rootScope.rooms;
   Rooms.getRooms().then(function(response){
     console.log(response.data)
-    $rootScope.rooms = response.data;
+    $rootScope.rooms = response.data.map(function(element){
+      return element.name.split('_').join(' ');
+    })
+    
   });
 
   // joinRooom function (initated when Join Room is clicked on landing page)
   $scope.joinRoom = function(roomName){
-    console.log(roomName)
+    roomName = roomName.split(' ').join('_');
     console.log("attempting to join room " + roomName);
     Rooms.joinRoom(roomName, socket.id).then(function(response) {
+      console.log(response, 'repsonse')
       if (response.data === 'room does not exist') {
         $rootScope.showAlert('Room does not exist');
       } 
@@ -244,16 +248,15 @@ angular.module('Q.controllers', [
         $rootScope.roomName =  roomName;
         socket.emit("join_room", roomName);
         localStorage.setItem("qRoom", roomName);
-        $state.go('playlist');  
-        $rootScope.isUserAHost = false;
+        $state.go('playlist', {roomName: roomName}, {location: true});  
+        
         
       }
       else if (response.data === 'user is a host') {
         $rootScope.roomName = roomName;
         socket.emit("join_room", roomName);
         localStorage.setItem("qRoom", roomName);
-        $state.go('playlist');  
-        $rootScope.isUserAHost = true;
+        $state.go('playlist', {roomName: roomName}, {location: true});  
       }
     });
     
