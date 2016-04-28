@@ -13,16 +13,13 @@ module.exports = {
   createRoom: function(req, res, next) {
     console.log(req.sessionID)
     console.log('attempting to create room: ', req.body.random_roomname, 'with location ', req.body.location.longitude)
-    var newRoom = new Room({
+    var newRoom = {
       name: req.body.random_roomname,
-      host: req.sessionID,
       userCount: 1,
-      guests: [],
-      location: req.body.location,
-      queue: []
-    });
-    newRoom.save().then(function(){
-      console.log('successfully created room', newRoom)
+      location: req.body.location
+    }
+    Room.forge(newRoom).save().then(function(){
+      console.log('successfully created room', newRoom.name)
       req.session.hostRoom = req.body.random_roomname;
       console.log('created session', req.session.hostRoom)
       res.json(newRoom);
@@ -34,27 +31,35 @@ module.exports = {
 
   // gets room from db
   getRooms: function (req, res, next) {
-    Room.find().then(function(rooms){
+    Room.fetchAll().then(function(rooms){
       res.json(rooms)
     })
   },
 
+  findRoomsForUser: function (req, res, next) {
+    var rooms;
+    Room.find({
+      host: req.sessionId
+    });
+  },
+
   // joins guest to room
   joinRoom: function(req, res, next){
-    console.log("finding room", req.body.roomName);
-    Room.findOne({name:req.body.roomName}).then(function(room){
+    Room.forge({name:req.body.roomName}).fetch().then(function(room){
       if(room) {
-        if(room.host !== req.body.socketId){
-          room.guests.push(req.body.socketId);
-          room.userCount++;
-          room.save().then(function(){
+        if(room.attributes.name !== req.session.hostRoom){
+          var updatedUserCount = room.attributes.userCount + 1;
+          var roomAttr = {
+            userCount: updatedUserCount
+          }
+          room.set(roomAttr).save().then(function(){
             console.log('successfully added user to room as guest');
-            res.json('successfully joined room as guest');
+            res.status(201).json('successfully joined room as guest');
           }).catch(function(error){
             next(error);
           });
         } else {
-          console.log('user is a host');
+          console.log('user is a host, already in room');
           res.json('user is a host');
         }
       } else {
@@ -94,7 +99,6 @@ module.exports = {
 
   // checks if joining user is a host 
   checkHost: function(req, res, next){
-    console.log('session room name' ,req.session.hostRoom)
     res.send(req.session.hostRoom);
   },
 
@@ -102,16 +106,25 @@ module.exports = {
   addSong: function(room, song, callback) {
     console.log('attempting to add song to room: ', room);
     delete song['$$hashKey'];
-    Room.findOne({name: room}).then(function(room){
+    Room.forge({name: room}).fetch().then(function(room){
+      console.log(song)
       if(room) {
-        if(room.queue.map(function(element){return element.id}).indexOf(song.id)) {
-          room.queue.push(song);
-          room.save().then(function(){
-            console.log('successfully added song: ', song.title, ', to room: ', room.name);
-           callback(room.queue);
-          }).catch(function(error){
-            console.log('error adding song:', error);
-          });
+        if(!room.attributes.queue) {
+          var queue = [];
+        } else {
+          var queue = room.attributes.queue;
+        }
+        
+        if(queue.map(function(element){return element.id}).indexOf(song.id)) {
+          queue.push(song);
+          var roomAttr = {
+            queue: queue
+          }
+
+          room.set(roomAttr).save().then(function(){
+            console.log('successfully added song: ', song.title, ', to room: ', room.attributes.name);
+           callback(queue);
+          })
         } else {
           console.log('song already exists');
         }
@@ -124,9 +137,9 @@ module.exports = {
   // gets queue from room
   getQueue: function(room, callback) {
     console.log('gettting queue from db for room', room);
-    Room.findOne({name: room}, function(err, result) {
-      if(!result) return;
-      callback(err, result.queue);
+    Room.forge({name: room}).fetch().then(function(room) {
+      
+      callback(null, room.attributes.queue);
     });
   },
 

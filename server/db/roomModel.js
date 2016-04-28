@@ -1,14 +1,12 @@
-var mongoose = require('mongoose');
-
-var roomSchema = mongoose.Schema({
-	name: String,
-	host: String,
-	guests: [],
-    userCount: Number,
-    location: {},
-    queue: [],
-}, { timestamps: true });
-
-var Room = mongoose.model('Room', roomSchema);
-
+var db = require('./dbConfig');
+var User = require('./userModel');
+var Room = db.Model.extend({
+  tableName: 'rooms',
+  host: function() {
+    return this.belongsTo(User, 'user_id');
+  },
+  guests: function() {
+    return this.belongsToMany(User, 'id');
+  }
+});
 module.exports = Room;

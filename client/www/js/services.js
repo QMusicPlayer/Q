@@ -86,17 +86,16 @@ angular.module('Q.services', [
       method: 'PUT',
       url: '/api/rooms',
       data: {
-        roomName: roomName,
-        socketId: socketId
+        roomName: roomName
       }
     }).then(function(result){
       return result;
     })
   };
 
-  var createRoom = function(host, location){
+  var createRoom = function(location){
     return $http ({
-      mehtod: "GET",
+      method: "GET",
       url:'/api/generateRoomName'
     }).then(function(roomName){
       return $http ({
@@ -104,13 +103,21 @@ angular.module('Q.services', [
         url: '/api/rooms',
         data: {
           random_roomname: roomName.data,
-          host: host,
           location: {longitude: location.coords.longitude, latitude: location.coords.latitude}
         }
       }).then(function(room){
         return room;
       });
      })
+  };
+
+  var doesUserBelongToOtherRoom = function () {
+    return $http ({
+      method: 'GET',
+      url: '/api/roomListForUser'
+    }).then(function(result) {
+      console.log(result);
+    })
   }
 
   return {
@@ -121,10 +128,11 @@ angular.module('Q.services', [
 })
 .factory('Host', function ($http){
   var isUserAHost = function (roomName) {
+    console.log('in factory')
     return $http ({
       method: 'GET',
       url: '/api/host',
-    }).then(function(result){
+    }).then(function(result){ 
       return result.data === roomName;
     })
   }

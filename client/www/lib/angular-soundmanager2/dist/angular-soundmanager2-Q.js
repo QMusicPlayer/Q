@@ -4982,14 +4982,17 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 });
 
                 socket.on('getQueue', function (queue) {
+                  console.log(socket.id)
                     console.log('queue from server', queue);
                     angularPlayer.clearPlaylist(function(bool){
 
                     });
-                    console.log('test', queue)
-                    queue.forEach(function(song) {
+                    if(queue !== null) {
+                      console.log('adding songs to soundmanager')
+                      queue.forEach(function(song) {
                         angularPlayer.addToPlaylist(song);
-                    });
+                      });
+                    }
                     // angularPlayer.sortByVotes();
                 });
 

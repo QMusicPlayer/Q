@@ -1,10 +1,11 @@
-var mongoose = require('mongoose');
-
-var userSchema = mongoose.Schema({
-	socketId: String,
-    rooms: []
-}, { timestamps: true });
-
-var User = mongoose.model('User', userSchema);
+var db = require('./dbConfig');
+var Room = require('./roomModel');
+var User = db.Model.extend({
+  tableName: 'users',
+  hostRoom: function() {
+    return this.belongsTo(Room, 'name');
+  }
+});
+ 
 
 module.exports = User;

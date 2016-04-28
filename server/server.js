@@ -93,7 +93,8 @@ io.on('connection', function (socket) {
       console.log('got queue', queue.map(function(element){
         return element.title;
       }))
-      io.to(socket.id).emit('getQueue', queue);
+      // console.log(socket.id)
+      // io.to(socket.id).brodcast.emit('getQueue', queue);
     });
       
 
@@ -148,7 +149,6 @@ io.on('connection', function (socket) {
   });
 
   socket.on('newGuest', function(room) {
-    console.log("newGuest", room);
     Room.getQueue(room, function(err, queue) {
       socket.emit('getQueue', queue);
     });
@@ -158,25 +158,24 @@ io.on('connection', function (socket) {
     Room.addSong(roomFinder(socket), newSong, function(queue) {
       // socket.emit('newSong', newSong);
       // socket.broadcast.emit('newSong', newSong);
-      console.log(roomFinder(socket))
       io.to(roomFinder(socket)).emit('newSong', newSong);
       // User.getQueue(function(queue) {
       // });
     });
   });
 
-  socket.on('updateVotes', function(songData) {
-    User.updateVotes(socket.room, songData, function() {
-      io.to(socket.room).emit('newVotes', songData);
-    });
-  });
+  // socket.on('updateVotes', function(songData) {
+  //   User.updateVotes(socket.room, songData, function() {
+  //     io.to(socket.room).emit('newVotes', songData);
+  //   });
+  // });
 
-  socket.on('deleteSong', function (target, roomname) {
+  // socket.on('deleteSong', function (target, roomname) {
 
-    User.deleteSong(socket.room, target.song, function() {
-      io.to(socket.room).emit('deleteSong', target);
-    });
-  });
+  //   User.deleteSong(socket.room, target.song, function() {
+  //     io.to(socket.room).emit('deleteSong', target);
+  //   });
+  // });
 
   socket.on('progress', function (data) {
     console.log(data);
@@ -206,11 +205,11 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function(){
 
     console.log('disconnecting')
-    User.updateRoomCount(socket.room, 'subtract', function(err, userCount){  
-      console.log('disconnting socket', userCount);
-      io.sockets.in(socket.room).emit('userCount', userCount);
-      socket.leave(socket.room);
-    });
+    // User.updateRoomCount(socket.room, 'subtract', function(err, userCount){  
+    //   console.log('disconnting socket', userCount);
+    //   io.sockets.in(socket.room).emit('userCount', userCount);
+    //   socket.leave(socket.room);
+    // });
       
 
   });

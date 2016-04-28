@@ -17,10 +17,10 @@ angular.module('Q.controllers', [
   $rootScope.roomName = $stateParams.roomName;
   $rootScope.room_name = $rootScope.roomName.split('_').join(' ');
   $rootScope.location;
-  $rootScope.refreshed = false; // variable to check if page was accessed without going through create or join room (for refresh)
+  $rootScope.refreshed; // variable to check if page was accessed without going through create or join room (for refresh)
   
   // if page was refreshed, user is taken back to landing page
-  if(!$rootScope.refresh) {
+  if($rootScope.refreshed === undefined) {
     $state.go('landing');
   }
 
@@ -28,7 +28,7 @@ angular.module('Q.controllers', [
   Host.isUserAHost($rootScope.roomName).then(function(isHost) {
     $rootScope.isUserAHost = isHost;
   });
-
+  console.log($rootScope.refreshed, 'testing host')
   // initializing playistController for host or guest
   if($rootScope.isUserAHost) {
     console.log("initalized playlist controller as host");
@@ -100,13 +100,12 @@ angular.module('Q.controllers', [
   // createRoom function (initiated when Create Room button is clicked on landing page)
   $rootScope.createRoom = function(){
     console.log('attempting to create new room for', socket.id);
-    // Rooms.doesUserBelongToOtherRoom()
-    Rooms.createRoom(socket.id, $rootScope.location).then(function(response){
+    Rooms.createRoom($rootScope.location).then(function(response){
       console.log('successfully created room: ', response.data.name);
       $rootScope.roomName = response.data.name;
       socket.emit("create_room", $rootScope.roomName);
-      $rootScope.refresh = true;
       $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
+      $rootScope.refreshed = false;
     }).catch(function(error){
       console.log('failed to create room', error)
     });    
@@ -138,14 +137,14 @@ angular.module('Q.controllers', [
       else if (response.data === 'successfully joined room as guest') {
         $rootScope.roomName =  roomName;
         socket.emit("join_room", roomName);
-        $rootScope.refresh = true;
         $state.go('playlist', {roomName: roomName}, {location: true});          
+        $rootScope.refreshed = false;
       }
       else if (response.data === 'user is a host') {
         $rootScope.roomName = roomName;
         socket.emit("join_room", roomName);
-        $rootScope.refresh = true;
         $state.go('playlist', {roomName: roomName}, {location: true});  
+        $rootScope.refreshed = false;
       }
     });
   };
@@ -157,7 +156,7 @@ angular.module('Q.controllers', [
       console.log('successfully created room: ', response.data.name);
       $rootScope.roomName = response.data.name;
       socket.emit("create_room", $rootScope.roomName);
-      $rootScope.refresh = true;
+      $rootScope.refreshed = false;
       $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
     }).catch(function(error){
       console.log('failed to create room', error)
