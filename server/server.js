@@ -34,7 +34,7 @@ server.listen(port);
 console.log('listening on port...', port)
 
 io.on('connection', function (socket) {
-  User.addUser(socket.id);
+  io.to(socket.id).emit('addUser');
   socket.on("create_room", function(roomName){
     socket.join(roomName)
     io.to(socket.id).emit('getQueue', []);

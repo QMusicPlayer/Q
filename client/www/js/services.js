@@ -127,17 +127,30 @@ angular.module('Q.services', [
   }
 })
 .factory('User', function ($http){
-  var isUserAHost = function (roomName) {
+
+  var isUserAHost = function (roomName, socketId) {
+    console.log('in services')
     return $http ({
       method: 'GET',
-      url: '/api/host',
+      url: '/api/host/' + socketId,
     }).then(function(result){ 
       return result.data === roomName;
     })
   }
 
+  var addUser = function(socketId) {
+    return $http ({
+      method: 'POST',
+      url: '/api/host',
+      data: {
+        socketId: socketId
+      }
+    }).then(function(result) {
+      return result.data;
+    })
+  }
+
   var makeHost = function(roomName, hostId) {
-    console.log('in services')
     return $http ({
       method: 'PUT',
       url: '/api/host',
@@ -150,8 +163,24 @@ angular.module('Q.services', [
     })
   }
 
+  var makeGuest = function(roomName, guestId) {
+    return $http ({
+      method: 'PUT',
+      url: '/api/guest',
+      data: {
+        roomName: roomName,
+        guestId: guestId
+      }
+    }).then(function(result) {
+      console.log(result)
+      return result.data;
+    })
+  }
+
   return {
     isUserAHost: isUserAHost,
-    makeHost: makeHost
+    makeHost: makeHost,
+    makeGuest: makeGuest,
+    addUser: addUser
   }  
 })

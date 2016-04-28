@@ -2,18 +2,20 @@ var mongoose = require('mongoose');
 var User = require('./userModel');
 
 module.exports = {
-  addUser: function(id) {
-    User.forge({socketId: id.split('/#')[1]}).save().then(function() {
+  addUser: function(req, res, next) {
+    User.forge({socketId: req.body.socketId}).save().then(function(user) {
       console.log('added user to db');
+      res.status(200).json(user);
     }).catch(function(err){
       console.log('error adding user', err);
+      next(err);
     });
   },
 
   makeHost: function(req, res, next) {
     User.forge({socketId: req.body.hostId}).fetch().then(function(user){
       if(user) {
-        user.set({hostRoom: req.body.roomName}).save().then(function(){
+        user.set({hostRoom: req.body.roomName, guestRoom: null}).save().then(function(){
           res.status(201).json('successfully made user host')
         }).catch(function(error) {
           next(error);
@@ -24,7 +26,41 @@ module.exports = {
     }).catch(function(error) {
       console.log('error making user host', error)
     })
-  }
+  },
+
+  makeGuest: function(req, res, next) {
+    User.forge({socketId: req.body.guestId}).fetch().then(function(user){
+      if(user) {
+        if(user.attributes.hostRoom !== req.body.roomName) {
+          console.log(user)
+          user.set({guestRoom: req.body.roomName}).save().then(function(){
+            res.status(201).json('guest')
+          }).catch(function(error) {
+            next(error);
+          });          
+        } else {
+          res.status(201).json('host');
+        }
+      } else {
+        res.status(400).json('user not found')
+      }
+    }).catch(function(error) {
+      console.log('error making user guest', error)
+    })
+  },
+
+  // checks if joining user is a host 
+  checkHost: function(req, res, next){
+    User.forge({socketId: req.params.socketId}).fetch().then(function(user) {
+      if(user){
+        console.log('got user')
+        res.status(200).json(user.attributes.hostRoom)  
+      }
+    }).catch(function(error){
+      console.log('error getting user information', error)
+      next(error)
+    })
+  },
 
   // getRoom: function(room, callback){
   //   console.log("getRoom", room);

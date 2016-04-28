@@ -20,8 +20,6 @@ module.exports = {
     }
     Room.forge(newRoom).save().then(function(){
       console.log('successfully created room', newRoom.name)
-      req.session.hostRoom = req.body.random_roomname;
-      console.log('created host session for room: ', req.session.hostRoom)
       res.json(newRoom);
     })
     .catch(function(error) {
@@ -97,10 +95,7 @@ module.exports = {
         
   },
 
-  // checks if joining user is a host 
-  checkHost: function(req, res, next){
-    res.send(req.session.hostRoom);
-  },
+  
 
   // adds song to playlist within room
   addSong: function(room, song, callback) {
@@ -139,7 +134,10 @@ module.exports = {
     console.log('gettting queue from db for room', room);
     Room.forge({name: room}).fetch().then(function(room) {
       callback(null, room.attributes.queue);
-    });
+    }).catch(function(error) {
+      console.log('error finding room', error)
+      callback(error)
+    })
   },
 
 
