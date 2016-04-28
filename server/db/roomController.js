@@ -21,7 +21,7 @@ module.exports = {
     Room.forge(newRoom).save().then(function(){
       console.log('successfully created room', newRoom.name)
       req.session.hostRoom = req.body.random_roomname;
-      console.log('created session', req.session.hostRoom)
+      console.log('created host session for room: ', req.session.hostRoom)
       res.json(newRoom);
     })
     .catch(function(error) {
@@ -138,7 +138,6 @@ module.exports = {
   getQueue: function(room, callback) {
     console.log('gettting queue from db for room', room);
     Room.forge({name: room}).fetch().then(function(room) {
-      
       callback(null, room.attributes.queue);
     });
   },

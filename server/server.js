@@ -34,10 +34,9 @@ server.listen(port);
 console.log('listening on port...', port)
 
 io.on('connection', function (socket) {
-  console.log(socket.id, 'is connected')
+  User.addUser(socket.id);
   socket.on("create_room", function(roomName){
     socket.join(roomName)
-      
     io.to(socket.id).emit('getQueue', []);
    
  
@@ -90,11 +89,9 @@ io.on('connection', function (socket) {
       if(err) {
         console.log('error getting queue', err);
       }
-      console.log('got queue', queue.map(function(element){
-        return element.title;
-      }))
+      console.log('got queue')
       // console.log(socket.id)
-      // io.to(socket.id).brodcast.emit('getQueue', queue);
+      io.to(socket.id).emit('getQueue', queue);
     });
       
 

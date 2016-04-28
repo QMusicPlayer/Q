@@ -2,34 +2,29 @@ var mongoose = require('mongoose');
 var User = require('./userModel');
 
 module.exports = {
-  // addUser: function(id, room, callback) {
-  //   console.log('finding user with id: ' + id)
-  //   User.findOne({socketId: id}, function(err, result) {
-  //     if(err) {
-  //       console.log('error finding user. Error: ' + err);
-  //       callback(err);
-  //     } else {
-  //       if(result !== null) {
-  //         console.log('user found', result)
-  //         result.rooms.push(room);
-  //         console.log('sucessfullt added room to existing user', result)
-  //       } else {
-  //         console.log('no user found, adding new user')
-  //         newUser = new User({
-  //           socketId: id,
-  //           rooms: [room]
-  //         })
-  //         newUser.save(function(err, result){
-  //           if(err) {
-  //             console.log('error adding user', err);
-  //           } else {
-  //             console.log('add user success', newUser)
-  //           }
-  //         })
-  //       }
-  //     }
-  //   });
-  // },
+  addUser: function(id) {
+    User.forge({socketId: id.split('/#')[1]}).save().then(function() {
+      console.log('added user to db');
+    }).catch(function(err){
+      console.log('error adding user', err);
+    });
+  },
+
+  makeHost: function(req, res, next) {
+    User.forge({socketId: req.body.hostId}).fetch().then(function(user){
+      if(user) {
+        user.set({hostRoom: req.body.roomName}).save().then(function(){
+          res.status(201).json('successfully made user host')
+        }).catch(function(error) {
+          next(error);
+        })
+      } else {
+        res.status(400).json('user not found')
+      }
+    }).catch(function(error) {
+      console.log('error making user host', error)
+    })
+  }
 
   // getRoom: function(room, callback){
   //   console.log("getRoom", room);

@@ -126,9 +126,8 @@ angular.module('Q.services', [
     createRoom: createRoom
   }
 })
-.factory('Host', function ($http){
+.factory('User', function ($http){
   var isUserAHost = function (roomName) {
-    console.log('in factory')
     return $http ({
       method: 'GET',
       url: '/api/host',
@@ -137,7 +136,22 @@ angular.module('Q.services', [
     })
   }
 
+  var makeHost = function(roomName, hostId) {
+    console.log('in services')
+    return $http ({
+      method: 'PUT',
+      url: '/api/host',
+      data: {
+        roomName: roomName,
+        hostId: hostId
+      }
+    }).then(function(result) {
+      return result.data;
+    })
+  }
+
   return {
-    isUserAHost: isUserAHost
+    isUserAHost: isUserAHost,
+    makeHost: makeHost
   }  
 })

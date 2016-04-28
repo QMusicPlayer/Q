@@ -4832,29 +4832,31 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
             clearPlaylist: function(callback) {
                 $log.debug('clear playlist');
                 this.resetProgress();
+                console.log('clearing playlist')
                 //unload and destroy soundmanager sounds
                 var smIdsLength = soundManager.soundIDs.length;
-                this.asyncLoop({
-                    length: smIdsLength,
-                    functionToLoop: function(loop, i) {
-                        setTimeout(function() {
-                            //custom code
-                            soundManager.destroySound(soundManager.soundIDs[0]);
-                            //custom code
-                            console.log('should happen first' + i);
-                            loop();
-                        }, 100);
-                    },
-                    callback: function() {
-                        //callback custom code
-                        $log.debug('All done!');
-                        //clear playlist
-                        playlist = [];
-                        callback(true);
-                        $rootScope.$broadcast('player:playlist', playlist);
-                        //callback custom code
-                    }
-                });
+                playlist = [];
+                
+                $rootScope.$broadcast('player:playlist', playlist);
+                // this.asyncLoop({
+                //     length: smIdsLength,
+                //     functionToLoop: function(loop, i) {
+                //         setTimeout(function() {
+                //             //custom code
+                //             soundManager.destroySound(soundManager.soundIDs[0]);
+                //             //custom code
+                //             console.log('should happen first' + i);
+                //             loop();
+                //         }, 100);
+                //     },
+                //     callback: function() {
+                //         //callback custom code
+                //         $log.debug('All done!');
+                //         //clear playlist
+         
+                //         //callback custom code
+                //     }
+                // });
             },
             sortByVotes: function() {
                 var currentSong = this.getCurrentSong();
@@ -4984,9 +4986,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 socket.on('getQueue', function (queue) {
                   console.log(socket.id)
                     console.log('queue from server', queue);
-                    angularPlayer.clearPlaylist(function(bool){
-
-                    });
+                    angularPlayer.clearPlaylist();
                     if(queue !== null) {
                       console.log('adding songs to soundmanager')
                       queue.forEach(function(song) {

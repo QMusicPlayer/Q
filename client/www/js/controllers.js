@@ -7,7 +7,7 @@ angular.module('Q.controllers', [
 
 //:::::::::::::::::::CONTROLLER FOR PLAYLIST::::::::::::::::::::::::::::::::::::::::
 
-.controller('playlistController', function($scope, $rootScope, $location, Playlist, Rooms, Host, $state, $ionicPopup, $stateParams) {
+.controller('playlistController', function($scope, $rootScope, $location, Playlist, Rooms, User, $state, $ionicPopup, $stateParams) {
   
   // rootScope variables made available to all controllers
   $rootScope.isUserAHost;
@@ -25,17 +25,17 @@ angular.module('Q.controllers', [
   }
 
   // when playlistController is initialized, we must check if that user is a host of the room
-  Host.isUserAHost($rootScope.roomName).then(function(isHost) {
+  User.isUserAHost($rootScope.roomName).then(function(isHost) {
     $rootScope.isUserAHost = isHost;
+    if($rootScope.isUserAHost) {
+      console.log("initalized playlist controller as host");
+    } else {
+      socket.emit('newGuest', $scope.roomName)
+      console.log("initalized playlist controller as guest");  
+    }
   });
-  console.log($rootScope.refreshed, 'testing host')
   // initializing playistController for host or guest
-  if($rootScope.isUserAHost) {
-    console.log("initalized playlist controller as host");
-  } else {
-    socket.emit('newGuest', $scope.roomName)
-    console.log("initalized playlist controller as guest");  
-  }
+  
 
   //search song function (soundcloud)
   $scope.searchSong = function (){
@@ -83,7 +83,7 @@ angular.module('Q.controllers', [
 //:::::::::::::::::::CONTROLLER FOR LANDING PAGE::::::::::::::::::::::::::::::::::::::::
 
 
-.controller('landingPageController', function($scope, $location, $state, Playlist, Rooms, $ionicPopup, $timeout, $state, $rootScope){
+.controller('landingPageController', function($scope, $location, $state, Playlist, Rooms, User, $ionicPopup, $timeout, $state, $rootScope){
   console.log("INITIALIZED LANDING PAGE CONTROLLER");
 
   // set geo location for user 
@@ -102,10 +102,15 @@ angular.module('Q.controllers', [
     console.log('attempting to create new room for', socket.id);
     Rooms.createRoom($rootScope.location).then(function(response){
       console.log('successfully created room: ', response.data.name);
-      $rootScope.roomName = response.data.name;
-      socket.emit("create_room", $rootScope.roomName);
-      $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
-      $rootScope.refreshed = false;
+       $rootScope.roomName = response.data.name;
+      User.makeHost(response.data.name, socket.id).then(function(response){
+        console.log('successfully added host')
+        socket.emit("create_room", $rootScope.roomName);
+        $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
+        $rootScope.refreshed = false;
+      }).catch(function(err){
+        console.log('error making user a host')
+      });
     }).catch(function(error){
       console.log('failed to create room', error)
     });    

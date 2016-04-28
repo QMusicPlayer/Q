@@ -28,10 +28,9 @@ var db = require('bookshelf')(knex);
 var createUsersTable = function () {
   return db.knex.schema.createTable('users', function (user) {
     user.increments('id').primary();
-    user.string('sessionID', 255);
-    user.integer('hostRoom').unsigned().references('rooms.name').onDelete('CASCADE');
-    user.integer('guestRoom').unsigned().references('rooms.name').onDelete('CASCADE');
-    user.json('location');
+    user.string('socketId', 255);
+    user.string('hostRoom').unsigned().references('rooms.name');
+    user.string('guestRoom').unsigned().references('rooms.name');
     user.timestamps();
   }).then(function (table) {
     console.log('Created user Table');
@@ -41,16 +40,21 @@ var createUsersTable = function () {
 var createRoomsTable = function () {
   return db.knex.schema.createTable('rooms', function (room) {
     room.increments('id').primary();
-    room.string('name', 255);
+    room.string('name', 255).unique();
     room.json('location');
     room.integer('userCount');
-    room.specificType('queue', 'json[]')
+    room.specificType('queue', 'json[]');
     room.timestamps();
   }).then(function (table) {
     console.log('Created room Table');
   });
 };
 
+db.knex.schema.hasTable('rooms').then(function(exists) {
+  if (!exists) {
+    createRoomsTable();
+  }
+});
 // Create challenges table with id, name, prompt, and test_suite
 db.knex.schema.hasTable('users').then(function(exists) {
   if (!exists) {
@@ -59,10 +63,6 @@ db.knex.schema.hasTable('users').then(function(exists) {
 });
 
 // Create challenges table with id, user_id, opponent_id, win
-db.knex.schema.hasTable('rooms').then(function(exists) {
-  if (!exists) {
-    createRoomsTable();
-  }
-});
+
 
 module.exports = db;
