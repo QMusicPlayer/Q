@@ -33,45 +33,14 @@ angular.module('Q.services', [
     });
   }
 
-  
-
-  // isHostData in factory stores whether or not the current user is the host
-  
-  var isHostData = false;
-
-  var isHost = function(){
-    return isHostData;
-  }
-
-  var makeHost = function () {
-    return true;
-  }
-
-  var makeGuest = function(){
-    return false;
-  }
-
-  var roomEntered = false;
-  var isRoomEntered = function(){
-    return roomEntered;
-  }
-
-  var enterRoom = function(){
-    roomEntered = true;
-  }
-
   return {
     getSongs: getSongs,
     addSong: addSong,
     searchSongs: searchSongs,
-    makeHost: makeHost,
-    makeGuest: makeGuest,
-    isHost: isHost,
-    isRoomEntered: isRoomEntered,
-    enterRoom: enterRoom
   }
 })
 .factory('Rooms', function ($http){
+
   var getRooms = function () {
     return $http ({
       method: 'GET',
@@ -111,25 +80,27 @@ angular.module('Q.services', [
      })
   };
 
-  var doesUserBelongToOtherRoom = function () {
+  var getListenerCount = function (roomName) {
     return $http ({
       method: 'GET',
-      url: '/api/roomListForUser'
-    }).then(function(result) {
-      console.log(result);
+      url: '/api/listeners/' + roomName
+    }).then(function(count) {
+      return count;
+    }).catch(function(error) {
+      console.log('ajax error getting listeners', error);
     })
   }
 
   return {
     getRooms: getRooms,
     joinRoom: joinRoom,
-    createRoom: createRoom
+    createRoom: createRoom,
+    getListenerCount: getListenerCount
   }
 })
 .factory('User', function ($http){
 
   var isUserAHost = function (roomName, socketId) {
-    console.log('in services')
     return $http ({
       method: 'GET',
       url: '/api/host/' + socketId,
@@ -172,7 +143,6 @@ angular.module('Q.services', [
         guestId: guestId
       }
     }).then(function(result) {
-      console.log(result)
       return result.data;
     })
   }

@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var User = require('./userModel');
+var Room = require('./roomModel');
 
 module.exports = {
   addUser: function(req, res, next) {
@@ -32,8 +33,19 @@ module.exports = {
     User.forge({socketId: req.body.guestId}).fetch().then(function(user){
       if(user) {
         if(user.attributes.hostRoom !== req.body.roomName) {
-          console.log(user)
           user.set({guestRoom: req.body.roomName}).save().then(function(){
+            Room.forge({name: req.body.roomName}).fetch().then(function(room){
+              if(room) {
+                var newRoom = {
+                  userCount: room.attributes.userCount + 1
+                }
+                room.set(newRoom).save().then(function(room){
+                  console.log('success updating userCount');
+                }).catch(function(error) {
+                  console.log('error updating userCount', error);
+                })
+              }
+            });
             res.status(201).json('guest')
           }).catch(function(error) {
             next(error);
@@ -46,7 +58,7 @@ module.exports = {
       }
     }).catch(function(error) {
       console.log('error making user guest', error)
-    })
+    });
   },
 
   // checks if joining user is a host 
@@ -61,6 +73,20 @@ module.exports = {
       next(error)
     })
   },
+
+  deleteUser: function(id) {
+    User.forge({socketId: id}).fetch().then(function(user) {
+      if(user) {
+        user.destroy().then(function() {
+          console.log('successfully deleted user')
+        }).catch(function(error) {
+          console.log('error deleting user', error)
+        })
+      }
+    }).catch(function(error) {
+      console.log('error finding user to delete', error)
+    })
+  }
 
   // getRoom: function(room, callback){
   //   console.log("getRoom", room);

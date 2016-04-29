@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Room = require('./roomModel');
 var Sentencer = require('sentencer');
-
+var User = require('./userModel');
 module.exports = {
 
   // generates random room name for user
@@ -39,34 +39,6 @@ module.exports = {
     Room.find({
       host: req.sessionId
     });
-  },
-
-  // joins guest to room
-  joinRoom: function(req, res, next){
-    Room.forge({name:req.body.roomName}).fetch().then(function(room){
-      if(room) {
-        if(room.attributes.name !== req.session.hostRoom){
-          var updatedUserCount = room.attributes.userCount + 1;
-          var roomAttr = {
-            userCount: updatedUserCount
-          }
-          room.set(roomAttr).save().then(function(){
-            console.log('successfully added user to room as guest');
-            res.status(201).json('successfully joined room as guest');
-          }).catch(function(error){
-            next(error);
-          });
-        } else {
-          console.log('user is a host, already in room');
-          res.json('user is a host');
-        }
-      } else {
-        res.json('room does not exist');
-      }
-    }).catch(function(error){
-      next(error);
-    });
-        
   },
 
   leaveRoom: function(req, res, next){
@@ -139,6 +111,15 @@ module.exports = {
       callback(error)
     })
   },
+
+  getListenerCount: function(req, res, next) {
+    console.log('getting listener count from db for room', req.params.roomName)
+    Room.forge({name: req.params.roomName}).fetch().then(function(room){
+      res.status(200).json(room.attributes.userCount);
+    }).catch(function(error){
+      console.log('error getting user count');
+    })
+  }
 
 
   // saveQueue: function(room, updatedQueue, callback) {

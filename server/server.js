@@ -202,6 +202,9 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function(){
 
     console.log('disconnecting')
+    
+    User.deleteUser(socket.id.split('/#')[1]);
+    // socket.leave(roomFinder(socket))
     // User.updateRoomCount(socket.room, 'subtract', function(err, userCount){  
     //   console.log('disconnting socket', userCount);
     //   io.sockets.in(socket.room).emit('userCount', userCount);

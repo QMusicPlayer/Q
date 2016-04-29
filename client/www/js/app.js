@@ -10,7 +10,7 @@ angular.module('Q', [
   'angularSoundManager'
 ])
 
-.run(function($ionicPlatform, $rootScope) {
+.run(function($ionicPlatform, $rootScope, $window, $ionicPopup) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -27,6 +27,19 @@ angular.module('Q', [
     }
   });
 
+  window.onbeforeunload = function (evt) {
+    var message = 'Are you sure you want to leave? If you leave your session will be destroyed and you will no longer be a host or guest of any room you are currently in.';
+    
+    if (typeof evt == 'undefined') {
+      evt = window.event;
+    }
+    if (evt) {
+      evt.returnValue = message;
+    }
+    return message;
+
+   
+  }
  
 
 })

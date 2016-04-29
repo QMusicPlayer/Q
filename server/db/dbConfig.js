@@ -28,7 +28,7 @@ var db = require('bookshelf')(knex);
 var createUsersTable = function () {
   return db.knex.schema.createTable('users', function (user) {
     user.increments('id').primary();
-    user.string('socketId', 255)
+    user.string('socketId', 255);
     user.string('hostRoom').unsigned().references('rooms.name');
     user.string('guestRoom').unsigned().references('rooms.name');
     user.timestamps();

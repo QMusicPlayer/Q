@@ -13,7 +13,7 @@ angular.module('Q.controllers', [
   $rootScope.isUserAHost;
   $rootScope.songs= [];  
   $rootScope.customPlaylist;
-  $rootScope.friendCount;
+  $rootScope.listenerCount;
   $rootScope.roomName = $stateParams.roomName;
   $rootScope.room_name = $rootScope.roomName.split('_').join(' ');
   $rootScope.location;
@@ -24,6 +24,11 @@ angular.module('Q.controllers', [
     $state.go('landing');
   }
 
+  Rooms.getListenerCount($rootScope.roomName).then(function(response) {
+    $rootScope.listenerCount = response.data;
+  }).catch(function(error) {
+    console.log('error getting listener count', error);
+  });
   // when playlistController is initialized, we must check if that user is a host of the room
   User.isUserAHost($rootScope.roomName, socket.id).then(function(isHost) {
     console.log(isHost, 'host test')
@@ -135,7 +140,6 @@ angular.module('Q.controllers', [
   // Get list of rooms
   $rootScope.rooms;
   Rooms.getRooms().then(function(response){
-    console.log(response.data)
     $rootScope.rooms = response.data.map(function(element){
       return element.name.split('_').join(' ');
     })
