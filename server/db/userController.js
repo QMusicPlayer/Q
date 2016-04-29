@@ -77,6 +77,32 @@ module.exports = {
   deleteUser: function(id) {
     User.forge({socketId: id}).fetch().then(function(user) {
       if(user) {
+        // decrease user count
+        console.log(user)
+        var roomName = user.attributes.guestRoom || user.attributes.hostRoom;
+        if(roomName){
+          Room.forge({name: roomName}).fetch().then(function(room){
+            if(room) {
+              // room deletion if there are zero users
+              if(room.attributes.userCount === 1) {
+                room.destroy().then(function(){
+                  console.log('empty room, deleted');
+                }).catch(function(error) {
+                  console.log('error deleting room', error);
+                });
+              } else {
+                var newRoom = {
+                  userCount: room.attributes.userCount - 1
+                }
+                room.set(newRoom).save().then(function(room){
+                  console.log('success updating userCount');
+                }).catch(function(error) {
+                  console.log('error updating userCount', error);
+                });
+              }
+            }
+          });
+        }
         user.destroy().then(function() {
           console.log('successfully deleted user')
         }).catch(function(error) {

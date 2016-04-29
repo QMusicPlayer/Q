@@ -38,7 +38,6 @@ io.on('connection', function (socket) {
   socket.on("create_room", function(roomName){
     socket.join(roomName)
     io.to(socket.id).emit('getQueue', []);
-   
  
     
     // io.sockets.in(roomName).emit('userCount', userCount);
@@ -92,64 +91,16 @@ io.on('connection', function (socket) {
       console.log('got queue')
       // console.log(socket.id)
       io.to(socket.id).emit('getQueue', queue);
+ 
     });
-      
-
-    // console.log(roomName)
-    // if(typeof roomname === 'object'){
-    //   var host = roomname.q_host; 
-    //   var roomname = roomname.q_room;  
-    // }    
-
-    // Room.getRoom(roomName, function(err, result){
-    //   if(err){
-    //     console.log(err)
-    //   } else {
-    //     console.log('found room from db: ', result)
-    //     socket.join(result.name);
-    //     io.to(socket.id).emit('roomjoined', result.name);
-    //   }
-
-    // })
-    // console.log('id', socket.id);
-
-    // User.getRoom(roomname, function(err, result){
-    //   if(err || result === null){
-    //     console.log(err, result);
-    //     console.log("no room");
-    //     socket.emit('roomjoined', null);
-    //   } else {
-    //     console.log(' socket room:', socket.room)
-    //     socket.leave(socket.room);
-    //     socket.join(roomname);
-    //     socket.room = roomname;
-    //     console.log(socket.room);
-    //     console.log("room joined");
-        
-    //     //adding user count
-    //     User.updateRoomCount(roomname, 'add', function(err, userCount){
-    //       console.log('join room room count', userCount)
-    //       io.sockets.in(roomname).emit('userCount', userCount);
-    //     })
-
-    //     //check if session continuation
-    //     if (host === roomname) {
-    //       io.to(socket.id).emit('roomjoined', socket.room, host);
-    //     } else {
-    //       io.to(socket.id).emit('roomjoined', socket.room);
-          
-    //     }
-
-    //   }
-    // });
-
+    io.to(roomName).emit('updateUserCount', null);
   });
 
-  socket.on('newGuest', function(room) {
-    Room.getQueue(room, function(err, queue) {
-      socket.emit('getQueue', queue);
-    });
-  });
+  // socket.on('newGuest', function(room) {
+  //   Room.getQueue(room, function(err, queue) {
+  //     socket.emit('getQueue', queue);
+  //   });
+  // });
 
   socket.on('addSong', function (newSong) {
     Room.addSong(roomFinder(socket), newSong, function(queue) {
@@ -181,28 +132,26 @@ io.on('connection', function (socket) {
   socket.on('currentlyPlaying', function (data) {
     // socket.emit('currentlyPlaying', data);
     // socket.broadcast.emit('currentlyPlaying', data);
-    io.to(socket.room).emit('currentlyPlaying', data);
+    io.to(roomFinder(room)).emit('currentlyPlaying', data);
   });
 
   socket.on('currentTrackPosition', function (data) {
     // socket.emit('currentTrackPosition', data);
-    io.to(socket.room).emit('currentTrackPosition', data);
+    io.to(roomFinder(room)).emit('currentTrackPosition', data);
   });
 
   socket.on('currentTrackDuration', function (data) {
     // socket.emit('currentTrackDuration', data);
-    io.to(socket.room).emit('currentTrackDuration', data);
+    io.to(roomFinder(room)).emit('currentTrackDuration', data);
   });
 
   socket.on('isPlaying', function (data) {
     // socket.emit('isPlaying', data);
-     io.to(socket.room).emit('isPlaying', data);
+     io.to(roomFinder(room)).emit('isPlaying', data);
   });
 
   socket.on('disconnect', function(){
-
     console.log('disconnecting')
-    
     User.deleteUser(socket.id.split('/#')[1]);
     // socket.leave(roomFinder(socket))
     // User.updateRoomCount(socket.room, 'subtract', function(err, userCount){  

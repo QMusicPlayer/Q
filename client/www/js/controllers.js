@@ -36,7 +36,7 @@ angular.module('Q.controllers', [
     if($rootScope.isUserAHost) {
       console.log("initalized playlist controller as host");
     } else {
-      socket.emit('newGuest', $scope.roomName)
+      // socket.emit('newGuest', $scope.roomName)
       console.log("initalized playlist controller as guest");  
     }
   });
@@ -84,7 +84,13 @@ angular.module('Q.controllers', [
   }
 
 
-
+  socket.on('updateUserCount', function() {
+    Rooms.getListenerCount($rootScope.roomName).then(function(response) {
+      $rootScope.listenerCount = response.data;
+    }).catch(function(error) {
+      console.log('error getting listener count', error);
+    });
+  })
 })
 
 
@@ -99,11 +105,6 @@ angular.module('Q.controllers', [
     $rootScope.location = position;
   })
 
-  socket.on('userCount', function(friendCount) {
-    console.log('created, here i am...', friendCount);
-    $rootScope.friendCount = friendCount;
-  
-  });
 
   socket.on('addUser', function(){
     User.addUser(socket.id).then(function(response){
