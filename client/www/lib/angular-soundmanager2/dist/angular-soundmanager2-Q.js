@@ -4676,6 +4676,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 return track.id;
             },
             removeSong: function(song, index) {
+              console.log(song)
                 //if this song is playing stop it
                 if(song === currentTrack) {
                     this.stop();

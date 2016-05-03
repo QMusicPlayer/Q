@@ -118,8 +118,9 @@ module.exports = {
       console.log(index, 'index')
       if(index >= 0) {
         var queue = room.attributes.queue;
+        queue.splice(index, 1);
         var newRoom = {
-          queue: queue.splice(index, 1)
+          queue: queue
         }
         room.set(newRoom).save().then(function(room){
           console.log('success deleting song');

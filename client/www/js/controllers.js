@@ -93,7 +93,7 @@ angular.module('Q.controllers', [
 
   socket.on('deleteSongFromQueue', function (target) {
     Rooms.deleteSong($rootScope.roomName, target).then(function(response){
-      socket.emit('deleteSong', Number(response.data));
+      socket.emit('deleteSongsFromGuests', Number(response.data));
     });
   })
 })
