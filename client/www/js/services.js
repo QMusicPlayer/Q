@@ -91,11 +91,36 @@ angular.module('Q.services', [
     })
   }
 
+  var changeListenerCount = function(roomName, amount) {
+    return $http ({
+      method: 'PUT',
+      url: '/api/listeners/' + roomName,
+      data: {
+        roomName: roomName,
+        amount: amount
+      }
+    }).then(function(result){
+      return result;
+    })
+  }
+
+  var deleteSong = function(roomName, target) {
+    console.log('in services')
+    return $http ({
+      method: 'DELETE',
+      url: '/api/songs/' + roomName + '/' + target.song
+    }).then(function(result) {
+      console.log(result)
+      return result;
+    })
+  }
   return {
     getRooms: getRooms,
     joinRoom: joinRoom,
     createRoom: createRoom,
-    getListenerCount: getListenerCount
+    getListenerCount: getListenerCount,
+    changeListenerCount: changeListenerCount,
+    deleteSong: deleteSong
   }
 })
 .factory('User', function ($http){
@@ -140,7 +165,7 @@ angular.module('Q.services', [
       url: '/api/guest',
       data: {
         roomName: roomName,
-        guestId: guestId
+        guestId: guestId,
       }
     }).then(function(result) {
       return result.data;

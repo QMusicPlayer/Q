@@ -7,7 +7,7 @@ angular.module('Q.controllers', [
 
 //:::::::::::::::::::CONTROLLER FOR PLAYLIST::::::::::::::::::::::::::::::::::::::::
 
-.controller('playlistController', function($scope, $rootScope, $location, Playlist, Rooms, User, $state, $ionicPopup, $stateParams) {
+.controller('playlistController', function($scope, $rootScope, $location, Playlist, Rooms, User, $state, $ionicPopup, $stateParams, $window) {
   
   // rootScope variables made available to all controllers
   $rootScope.isUserAHost;
@@ -24,11 +24,7 @@ angular.module('Q.controllers', [
     $state.go('landing');
   }
 
-  Rooms.getListenerCount($rootScope.roomName).then(function(response) {
-    $rootScope.listenerCount = response.data;
-  }).catch(function(error) {
-    console.log('error getting listener count', error);
-  });
+  
   // when playlistController is initialized, we must check if that user is a host of the room
   User.isUserAHost($rootScope.roomName, socket.id).then(function(isHost) {
     console.log(isHost, 'host test')
@@ -72,6 +68,8 @@ angular.module('Q.controllers', [
     }    
   }
 
+
+  
   // clears search results
   $scope.clearResults = function (){
     $scope.query = '';
@@ -86,9 +84,16 @@ angular.module('Q.controllers', [
 
   socket.on('updateUserCount', function() {
     Rooms.getListenerCount($rootScope.roomName).then(function(response) {
+      console.log(response)
       $rootScope.listenerCount = response.data;
     }).catch(function(error) {
       console.log('error getting listener count', error);
+    });
+  })
+
+  socket.on('deleteSongFromQueue', function (target) {
+    Rooms.deleteSong($rootScope.roomName, target).then(function(response){
+      socket.emit('deleteSong', Number(response.data));
     });
   })
 })
@@ -122,9 +127,14 @@ angular.module('Q.controllers', [
       $rootScope.roomName = response.data.name;
       User.makeHost($rootScope.roomName, socket.id).then(function(response){
         console.log('successfully added host')
-        socket.emit("create_room", $rootScope.roomName);
-        $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
-        $rootScope.refreshed = false;
+        Rooms.getListenerCount($rootScope.roomName).then(function(response) {
+          $rootScope.listenerCount = response.data;
+          socket.emit("create_room", $rootScope.roomName);
+          $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
+          $rootScope.refreshed = false;
+        }).catch(function(error) {
+          console.log('error getting listener count', error);
+        });
       }).catch(function(error){
         console.log('error making user a host', error)
       });
@@ -152,14 +162,42 @@ angular.module('Q.controllers', [
     $rootScope.roomName = roomName.split(' ').join('_');
     console.log("attempting to join room " + roomName);
     User.makeGuest($rootScope.roomName, socket.id).then(function(response) {
-      if(response === 'guest') {
+      console.log(response)
+      if(response.status === 'guest') {
         console.log('successfully made user guest');
-      } else {
-        console.log('user is already host');
+        Rooms.changeListenerCount($rootScope.roomName, 1).then(function(response){
+          $rootScope.listenerCount = response.data;
+        }).catch(function(error) {
+          console.log('error changing listener count', error);
+        })
       } 
+      else if(response.status === 'relinquishing host') {
+        Rooms.changeListenerCount($rootScope.roomName, 1).then(function(response){
+          $rootScope.listenerCount = response.data;
+        }).catch(function(error) {
+          console.log('error changing listener count', error);
+        })
+        // TODO: notify guests of previous room of host leaving
+      } 
+
+      else if (response.status === 'already guest') {
+        console.log('user already guest');
+      } else {
+        console.log('user not found')
+      }
+
+      if(response.previousRoom){
+        Rooms.changeListenerCount(response.previousRoom, -1).then(function(count){
+          socket.emit("leaveRoom", response.previousRoom);
+        }).catch(function(error) {
+          console.log('error changing listener count', error);
+        })
+      }
+
       socket.emit("join_room", $rootScope.roomName);
       $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});          
       $rootScope.refreshed = false;
+      
     }).catch(function(error) {
       console.log('error making guest', error)
     })
@@ -182,5 +220,5 @@ angular.module('Q.controllers', [
       }).catch(function(error){
         console.log('failed to create room', error)
       });    
-    };
+  };
 })

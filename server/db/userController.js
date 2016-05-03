@@ -32,29 +32,49 @@ module.exports = {
   makeGuest: function(req, res, next) {
     User.forge({socketId: req.body.guestId}).fetch().then(function(user){
       if(user) {
-        if(user.attributes.hostRoom !== req.body.roomName) {
-          user.set({guestRoom: req.body.roomName}).save().then(function(){
-            Room.forge({name: req.body.roomName}).fetch().then(function(room){
-              if(room) {
-                var newRoom = {
-                  userCount: room.attributes.userCount + 1
-                }
-                room.set(newRoom).save().then(function(room){
-                  console.log('success updating userCount');
-                }).catch(function(error) {
-                  console.log('error updating userCount', error);
-                })
-              }
-            });
-            res.status(201).json('guest')
+        if(user.attributes.hostRoom !== req.body.roomName && user.attributes.guestRoom !== req.body.roomName) {
+          // user joins as guest-- not the host and different room than previous
+          var previousRoom = user.attributes.guestRoom;
+          user.set({guestRoom: req.body.roomName}).save().then(function(user){
+            var response = {
+              status: 'guest',
+              previousRoom: previousRoom
+            }
+            res.status(201).json(response)
           }).catch(function(error) {
             next(error);
           });          
-        } else {
-          res.status(201).json('host');
+        } 
+        // user is already host of room
+        else if (user.attributes.hostRoom === req.body.roomName){
+          var response = {
+              status: 'host'
+            }
+          res.status(201).json(response);
+        }
+        // if user is a host of another room and is trying to join as guest
+        else if (user.attributes.hostRoom && user.attributes.hostRoom !== req.body.roomName) {
+          var previousRoom = user.attributes.hostRoom
+          var response = {
+            status: 'relinquishing host',
+            previousRoom: previousRoom
+          }
+
+          res.status(201).json(response);
+        }
+        // if user is already a guest of the room they are trying to join
+        else if (user.attribtues.guestRoom && user.attribtues.guestRoom === req.body.roomName) {
+          var response = {
+            status: 'already guest'
+          }
+
+          res.status(201).json(repsonse);
         }
       } else {
-        res.status(400).json('user not found')
+        var response = {
+          status: 'user not found'
+        }
+        res.status(400).json(response)
       }
     }).catch(function(error) {
       console.log('error making user guest', error)
@@ -74,18 +94,18 @@ module.exports = {
     })
   },
 
-  deleteUser: function(id) {
+  deleteUser: function(id, callback) {
     User.forge({socketId: id}).fetch().then(function(user) {
       if(user) {
         // decrease user count
-        console.log(user)
         var roomName = user.attributes.guestRoom || user.attributes.hostRoom;
         if(roomName){
           Room.forge({name: roomName}).fetch().then(function(room){
             if(room) {
+              console.log(room)
               // room deletion if there are zero users
               if(room.attributes.userCount === 1) {
-                room.destroy().then(function(){
+                room.destroy().then(function(room){
                   console.log('empty room, deleted');
                 }).catch(function(error) {
                   console.log('error deleting room', error);
@@ -96,6 +116,7 @@ module.exports = {
                 }
                 room.set(newRoom).save().then(function(room){
                   console.log('success updating userCount');
+                  callback(room);
                 }).catch(function(error) {
                   console.log('error updating userCount', error);
                 });
@@ -103,7 +124,7 @@ module.exports = {
             }
           });
         }
-        user.destroy().then(function() {
+        user.destroy().then(function(user) {
           console.log('successfully deleted user')
         }).catch(function(error) {
           console.log('error deleting user', error)

@@ -31,6 +31,7 @@ var createUsersTable = function () {
     user.string('socketId', 255);
     user.string('hostRoom').unsigned().references('rooms.name');
     user.string('guestRoom').unsigned().references('rooms.name');
+    user.specificType('votes', 'json[]');
     user.timestamps();
   }).then(function (table) {
     console.log('Created user Table');
