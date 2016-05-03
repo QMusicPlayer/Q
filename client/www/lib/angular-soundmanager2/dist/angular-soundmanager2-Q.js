@@ -4676,17 +4676,20 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 return track.id;
             },
             removeSong: function(song, index) {
+              console.log(song)
                 //if this song is playing stop it
                 if(song === currentTrack) {
                     this.stop();
                 }
-                //unload from soundManager
-
-                //remove from playlist
+               //unload from soundManager
+               soundManager.destroySound(song);
+               //remove from playlist
+               playlist.splice(index, 1);
 
                 //once all done then broadcast
                 console.log('removed song,', song, 'removed index', index)
-                socket.emit('deleteSong', {song: song, index: index});
+                socket.emit('deleteSongFromDb', {song: song, index: index});
+                $rootScope.$broadcast('player:playlist', playlist);
 
             },
             initPlayTrack: function(trackId, isResume) {
@@ -4832,29 +4835,31 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
             clearPlaylist: function(callback) {
                 $log.debug('clear playlist');
                 this.resetProgress();
+                console.log('clearing playlist')
                 //unload and destroy soundmanager sounds
                 var smIdsLength = soundManager.soundIDs.length;
-                this.asyncLoop({
-                    length: smIdsLength,
-                    functionToLoop: function(loop, i) {
-                        setTimeout(function() {
-                            //custom code
-                            soundManager.destroySound(soundManager.soundIDs[0]);
-                            //custom code
-                            console.log('should happen first' + i);
-                            loop();
-                        }, 100);
-                    },
-                    callback: function() {
-                        //callback custom code
-                        $log.debug('All done!');
-                        //clear playlist
-                        playlist = [];
-                        callback(true);
-                        $rootScope.$broadcast('player:playlist', playlist);
-                        //callback custom code
-                    }
-                });
+                playlist = [];
+                
+                $rootScope.$broadcast('player:playlist', playlist);
+                // this.asyncLoop({
+                //     length: smIdsLength,
+                //     functionToLoop: function(loop, i) {
+                //         setTimeout(function() {
+                //             //custom code
+                //             soundManager.destroySound(soundManager.soundIDs[0]);
+                //             //custom code
+                //             console.log('should happen first' + i);
+                //             loop();
+                //         }, 100);
+                //     },
+                //     callback: function() {
+                //         //callback custom code
+                //         $log.debug('All done!');
+                //         //clear playlist
+         
+                //         //callback custom code
+                //     }
+                // });
             },
             sortByVotes: function() {
                 var currentSong = this.getCurrentSong();
@@ -4983,26 +4988,26 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
 
                 socket.on('getQueue', function (queue) {
                     console.log('queue from server', queue);
-                    angularPlayer.clearPlaylist(function(bool){
-
-                    });
-                    console.log('test', queue)
-                    queue.forEach(function(song) {
+                    angularPlayer.clearPlaylist();
+                    if(queue !== null) {
+                      console.log('adding songs to soundmanager')
+                      queue.forEach(function(song) {
                         angularPlayer.addToPlaylist(song);
-                    });
+                      });
+                    }
                     // angularPlayer.sortByVotes();
                 });
 
           
 
-                socket.on('deleteSong', function (targetObj) {
-                    console.log("socket delete emit received, target:", targetObj);
-                    soundManager.destroySound(targetObj.song);
+                socket.on('deleteSong', function (song) {
+                    console.log("socket delete emit received, target:", song);
+                    soundManager.destroySound(song);
                     var playlist = scope.playlist;
                     var index = undefined;
                     for(var i = 0; i < playlist.length; i++){
                         var track = playlist[i];
-                        if(track.id === targetObj.song){
+                        if(track.id === song){
                             index = i;
                             break;
                         }
@@ -5101,12 +5106,15 @@ ngSoundManager.directive('musicPlayer', ['angularPlayer', '$log',
                 var addToPlaylist = function() {
                     var trackId = angularPlayer.addTrack(scope.song);
                     //if request to play the track
+                    socket.emit('addSongToDb', scope.song)
                     if(attrs.musicPlayer === 'play') {
                         angularPlayer.playTrack(trackId);
                     }
                 };
                 element.bind('click', function() {
+                  
                     $log.debug('adding song to playlist');
+                    // socket.emit('addSong')
                     addToPlaylist();
                 });
             }

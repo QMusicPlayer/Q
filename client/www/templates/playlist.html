@@ -3,17 +3,17 @@
 <ion-header-bar ng-class="isHost() ? 'bar bar-header bar-royal' : 'bar bar-header bar-positive'">
 <!-- <img ng-click='logOut()'src='./img/icon2.png' height='40' width='40'> -->
   <div class='row'>
-    <div class='col col-30'>
+    <span class='col'>
       <!-- still need to properly binding updated count -->
       <i class="icon ion-person-stalker"></i>
       Listeners
-      {{friendCount}}
-    </div>
+      {{listenerCount}}
+    </span>
     
-    <div class='col col-20 right'>
+    <spal class='col right'>
       <i class="icon ion-ios-pricetag"></i>
       {{room_name}}
-    </div>
+    </span>
   </div>
 
 
@@ -50,8 +50,6 @@
 <!-- CONTENT -->
 <!-- Playlist View: If you are the host -->
 <ion-content class="has-header has-footer has-subheader" ng-show="isHost()">
- 
-<!--   <div style="height:100%; margin-right:auto; margin-left:auto; width:100%"> -->
     <div class="center" ng-show="playlist.length === 0" style="height:100%; margin-right:auto; margin-left:auto; width:100%">
       <center>
         <br>
@@ -62,7 +60,6 @@
 
     <ion-list>
       <ion-item class='row' ng-repeat="song in playlist track by $index" on-hold="viewSong(song.title)" >
-        <!-- mp: can't do pop vie song for guest-->
         <div class="col-80 center">
           <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
             <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
@@ -95,9 +92,9 @@
 
       <ion-item class='row' ng-repeat="song in playlist track by $index ">
         <div class="col-80 center">
-          <div ng-class="currentPlaying.id === song.id ? 'button button-positive button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'" up-vote="song" data-index="{{$index}}" style="position:relative">
+          <div ng-class="currentPlaying.id === song.id ? 'button button-positive button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'" up-vote="song" data-index="{{$index}}">
           <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
-          <div class="songinfo" style="padding-left: 30px; text-align: left;">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
+          <div class="songinfo" style="padding-left: 30px; text-align: center;">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
           </div>
         </div>
       </ion-item>
@@ -121,7 +118,7 @@
   <div ng-class="isHost() ? 'nowplayingHost center' : 'nowplaying center'">
     <span ng-show='currentPlaying.title' class='marquee center small'>
       <p>
-        <img height="28" width="28" style="float: left; margin-right:5px" class="rounded" src={{currentPlaying.image}}> 
+     <!--    <img height="28" width="28" style="float: left; margin-right:5px" class="rounded" src={{currentPlaying.image}}>  -->
         <span class='center small'>{{ currentPlaying.title }} by {{ currentPlaying.artist }}  {{ currentPostion }} / {{ currentDuration }}
         </span>
       </p>

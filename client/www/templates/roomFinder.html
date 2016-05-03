@@ -1,13 +1,20 @@
 <!-- HEADER -->
 <ion-header-bar ng-class="isHost() ? 'bar bar-header bar-royal' : 'bar bar-header bar-positive'">
- <div class='center'> <img src='./img/icon2.png' height='40' width='40' class='center'></div> 
+ <div class='center'> <img src='./img/icon2.png' height='35' width='35' class='center'></div> 
 </ion-header-bar>
 
 <!-- LANDING BODY -->
 <div id="landingbody">
+	<div class='center widthmobile verticalPadding' ng-show='rooms.length === 0'>
+	<h2>Sorry, there are no rooms available in your location.</h2>
+	<h4>Click the button below to create a room.</h4>
+	<div class="list center list-inset">
+			<a ng-click="createRoom()" class="button widthmobile button-positive">Create Room</a>
+		</div>
+	</div>
 	<div ng-repeat='room in rooms'>
 		<div class="list center list-inset">
-			<a ng-click='joinRoom(room)' class="button widthmobile button-positive">{{room}} </a>
+			<a ng-click='joinRoom(room)' class="button widthmobile button-positive">{{room}}</a>
 		</div>
 	</div>
 </div>

@@ -5,68 +5,41 @@ angular.module('Q.controllers', [
 'angularSoundManager',
 ])
 
-.controller('playlistController', function($scope, $rootScope, $location, Playlist, Host, $state, $ionicPopup, $stateParams) {
+//:::::::::::::::::::CONTROLLER FOR PLAYLIST::::::::::::::::::::::::::::::::::::::::
+
+.controller('playlistController', function($scope, $rootScope, $location, Playlist, Rooms, User, $state, $ionicPopup, $stateParams, $window) {
   
- 
+  // rootScope variables made available to all controllers
   $rootScope.isUserAHost;
   $rootScope.songs= [];  
   $rootScope.customPlaylist;
-  $rootScope.friendCount;
+  $rootScope.listenerCount;
   $rootScope.roomName = $stateParams.roomName;
   $rootScope.room_name = $rootScope.roomName.split('_').join(' ');
   $rootScope.location;
-  $rootScope.refreshed = false;
-  if(!$rootScope.refresh) {
+  $rootScope.refreshed; // variable to check if page was accessed without going through create or join room (for refresh)
+  
+  // if page was refreshed, user is taken back to landing page
+  if($rootScope.refreshed === undefined) {
     $state.go('landing');
   }
-  Host.isUserAHost($rootScope.roomName).then(function(isHost) {
+
+  
+  // when playlistController is initialized, we must check if that user is a host of the room
+  User.isUserAHost($rootScope.roomName, socket.id).then(function(isHost) {
+    console.log(isHost, 'host test')
     $rootScope.isUserAHost = isHost;
+    if($rootScope.isUserAHost) {
+      console.log("initalized playlist controller as host");
+    } else {
+      // socket.emit('newGuest', $scope.roomName)
+      console.log("initalized playlist controller as guest");  
+    }
   });
-  if($rootScope.isUserAHost) {
-    console.log("initalized playlist controller as host");
-  } else {
-    socket.emit('newGuest', $scope.roomName)
-    console.log("initalized playlist controller as guest");  
-  }
+  // initializing playistController for host or guest
+  
 
-
-  // checks if user is host of entered room
-  // if(localStorage.getItem('qHost') === localStorage.getItem('qRoom')){
-  //   $rootScope.isUserAHost = Playlist.makeHost();
-  // }
-
-  // if(!Playlist.isRoomEntered()){
-
-  //   if(localStorage.getItem('qRoom')){
-  //     // console.log(localStorage.getItem('qRoom'));
-  //     // console.log("join room emitted");
-  //     // console.log(localStorage.getItem('qHost'), localStorage.getItem('qRoom'));
-
-
-  //     socket.emit("join room", localStorage.getItem('qRoom'));
-  //     socket.on('roomjoined', function(roomname){
-  //       if(roomname){
-  //         console.log('succesful room join on', roomname);
-  //         window.socket.emit('newGuest');
-
-  //       } else {
-  //         console.log("no such room");
-  //         $scope.showAlert('Room does not exist');
-  //         return
-  //       }
-  //     });
-  //   }
-  // } else {
-  //   window.socket.emit('newGuest');
-  // }
-
-  $scope.logOut = function() {
-    localStorage.removeItem('qHost');
-    localStorage.removeItem('qRoom');
-    $state.go('landing')
-  }
-
-  //search song function
+  //search song function (soundcloud)
   $scope.searchSong = function (){
     $rootScope.songs= [];
     if($scope.query === '') {
@@ -95,172 +68,157 @@ angular.module('Q.controllers', [
     }    
   }
 
+
+  
+  // clears search results
   $scope.clearResults = function (){
     $scope.query = '';
     $rootScope.songs = [];
   }
 
+  // used for templating (ng-show) to serve host or guest template
   $scope.isHost = function(){
     return $rootScope.isUserAHost;
   }
 
-  $scope.clearResults = function (){
-    $scope.query = '';
-    $rootScope.songs = [];
-  }
 
-  $scope.showAlert = function(alertMessage){
-    var alertPopup = $ionicPopup.alert({
-      title: 'sorry...',
-      template: alertMessage
+  socket.on('updateUserCount', function() {
+    Rooms.getListenerCount($rootScope.roomName).then(function(response) {
+      console.log(response)
+      $rootScope.listenerCount = response.data;
+    }).catch(function(error) {
+      console.log('error getting listener count', error);
     });
-    alertPopup.then(function(res){
-      console.log('thanks for trying')
+  })
+
+  socket.on('deleteSongFromQueue', function (target) {
+    Rooms.deleteSong($rootScope.roomName, target).then(function(response){
+      socket.emit('deleteSongsFromGuests', Number(response.data));
     });
-  }
-
-  $scope.viewSong = function(alertMessage){
-    var alertPopup = $ionicPopup.alert({
-      title: 'Song title:',
-      template: alertMessage
-    });
-
-  }
-
-  $scope.showSong = function(title) {
-    $scope.viewSong(title)
-  }
-
+  })
 })
 
-.controller('landingPageController', function($scope, $location, $state, Playlist, $ionicPopup, $timeout, $state, $rootScope){
-  console.log("INIT LANDING PAGE CONTROLLER");
+
+//:::::::::::::::::::CONTROLLER FOR LANDING PAGE::::::::::::::::::::::::::::::::::::::::
+
+
+.controller('landingPageController', function($scope, $location, $state, Playlist, Rooms, User, $ionicPopup, $timeout, $state, $rootScope){
+  console.log("INITIALIZED LANDING PAGE CONTROLLER");
+
+  // set geo location for user 
   navigator.geolocation.getCurrentPosition(function(position){
     $rootScope.location = position;
   })
-  localStorage.removeItem('qRoom');
-  socket.on('userCount', function(friendCount) {
-    console.log('created, here i am...', friendCount);
-    $rootScope.friendCount = friendCount;
-  
-  });
 
-  $rootScope.showAlert = function(alertMessage){
-    var alertPopup = $ionicPopup.alert({
-      title: 'sorry...',
-      template: alertMessage
-    });
-    alertPopup.then(function(res){
-      console.log('thanks for trying')
-    });
-  }
 
-  $scope.makeHost = function(){
-
-    // Note: this is a temporary fix for the demo, and should not be used as actual authentication
-    if($scope.createRoomPassword === "test"){
-      Playlist.makeHost();
-      $state.go('playlist');
-    }
-  }
-
-  // socket.on('roomcreated', function(roomname){
-  //   // console.log('controller side room created', roomname);
-  //   if(roomname){
-  //     $rootScope.roomName = roomname;
-  //     Playlist.makeHost();
-  //     $state.go('playlist');
-  //   } else {
-  //     console.log("Error creating room");
-  //     $scope.showAlert("Room already exists");
-  //   }
-  // });
- 
-  socket.on('roomjoined', function(roomName){
-    // if(roomName){
-    //   console.log('succesfully joined room', roomName) ;
-    //   $rootScope.roomName = roomName;
-    //   $rootScope.isUserAHost = Playlist.makeGuest();
-    //   $state.go('playlist');
-    //   Playlist.getQueue(roomName);
-    // } else {
-    //   console.log("no such room");
-    //   $scope.showAlert('Room does not exist');
-    //   return
-    // }
-  });
+  socket.on('addUser', function(){
+    User.addUser(socket.id).then(function(response){
+      console.log('successfully added user', response);
+    }).catch(function(error){
+      console.log('error adding user', error);
+    })
+  })
 
   // createRoom function (initiated when Create Room button is clicked on landing page)
   $scope.createRoom = function(){
-      console.log('attempting to create new room for', socket.id);
-    Playlist.createRoom(socket.id, $rootScope.location).then(function(response){
-      
+    console.log('attempting to create new room for', socket.id);
+    Rooms.createRoom($rootScope.location).then(function(response){
       console.log('successfully created room: ', response.data.name);
       $rootScope.roomName = response.data.name;
-      // localStorage.setItem("qRoom", $rootScope.roomName);
-      // localStorage.setItem('qHost', $rootScope.roomName);
-      socket.emit("create_room", $rootScope.roomName);
-      // socket.disconnect();
-      $rootScope.refresh = true;
-      $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
-      // $rootScope.isUserAHost = true;    
-
-      // Playlist.enterRoom();
+      User.makeHost($rootScope.roomName, socket.id).then(function(response){
+        console.log('successfully added host')
+        Rooms.getListenerCount($rootScope.roomName).then(function(response) {
+          $rootScope.listenerCount = response.data;
+          socket.emit("create_room", $rootScope.roomName);
+          $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
+          $rootScope.refreshed = false;
+        }).catch(function(error) {
+          console.log('error getting listener count', error);
+        });
+      }).catch(function(error){
+        console.log('error making user a host', error)
+      });
     }).catch(function(error){
       console.log('failed to create room', error)
     });    
   };
-
-  
-
-  $scope.navToFindRoom = function () {
-    console.log('nav to find room page')
-    $state.go('roomFinder'); 
-  }
-
-  $scope.makeGuest = function(){
-    Playlist.makeGuest();
-    $state.go('playlist');
-  }
-
-  $scope.attemptHost = false; //??
-  $scope.createRoomPassword; //??
 })
-.controller('roomFinderController', function($scope, $location, $state, Rooms, $ionicPopup, $timeout, $state, $rootScope){
+
+//:::::::::::::::::::CONTROLLER FOR ROOM FINDER PAGE::::::::::::::::::::::::::::::::::::::::
+
+.controller('roomFinderController', function($scope, $location, $state, Playlist, Rooms, User, $ionicPopup, $timeout, $state, $rootScope){
   console.log('initializing roomFinder controller')
+  // Get list of rooms
   $rootScope.rooms;
   Rooms.getRooms().then(function(response){
-    console.log(response.data)
     $rootScope.rooms = response.data.map(function(element){
       return element.name.split('_').join(' ');
     })
     
   });
 
-  // joinRooom function (initated when Join Room is clicked on landing page)
+  // joinRooom function (initated when Join Room is clicked on roomFinder page)
   $scope.joinRoom = function(roomName){
-    roomName = roomName.split(' ').join('_');
+    $rootScope.roomName = roomName.split(' ').join('_');
     console.log("attempting to join room " + roomName);
-    Rooms.joinRoom(roomName, socket.id).then(function(response) {
-      console.log(response, 'repsonse')
-      if (response.data === 'room does not exist') {
-        $rootScope.showAlert('Room does not exist');
+    User.makeGuest($rootScope.roomName, socket.id).then(function(response) {
+      console.log(response)
+      if(response.status === 'guest') {
+        console.log('successfully made user guest');
+        Rooms.changeListenerCount($rootScope.roomName, 1).then(function(response){
+          $rootScope.listenerCount = response.data;
+        }).catch(function(error) {
+          console.log('error changing listener count', error);
+        })
       } 
-      else if (response.data === 'successfully joined room as guest') {
-        $rootScope.roomName =  roomName;
-        socket.emit("join_room", roomName);
-        $rootScope.refresh = true;
-        $state.go('playlist', {roomName: roomName}, {location: true});  
-        
-        
+      else if(response.status === 'relinquishing host') {
+        Rooms.changeListenerCount($rootScope.roomName, 1).then(function(response){
+          $rootScope.listenerCount = response.data;
+        }).catch(function(error) {
+          console.log('error changing listener count', error);
+        })
+        // TODO: notify guests of previous room of host leaving
+      } 
+
+      else if (response.status === 'already guest') {
+        console.log('user already guest');
+      } else {
+        console.log('user not found')
       }
-      else if (response.data === 'user is a host') {
-        $rootScope.roomName = roomName;
-        socket.emit("join_room", roomName);
-        $rootScope.refresh = true;
-        $state.go('playlist', {roomName: roomName}, {location: true});  
+
+      if(response.previousRoom){
+        Rooms.changeListenerCount(response.previousRoom, -1).then(function(count){
+          socket.emit("leaveRoom", response.previousRoom);
+        }).catch(function(error) {
+          console.log('error changing listener count', error);
+        })
       }
-    });
-    
+
+      socket.emit("join_room", $rootScope.roomName);
+      $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});          
+      $rootScope.refreshed = false;
+      
+    }).catch(function(error) {
+      console.log('error making guest', error)
+    })
+  };
+
+  // createRoom function (initiated when Create Room button is clicked on roomFinder page)
+  $scope.createRoom = function(){
+      console.log('attempting to create new room for', socket.id);
+      Rooms.createRoom($rootScope.location).then(function(response){
+        console.log('successfully created room: ', response.data.name);
+        $rootScope.roomName = response.data.name;
+        User.makeHost($rootScope.roomName, socket.id).then(function(response){
+          console.log('successfully added host')
+          socket.emit("create_room", $rootScope.roomName);
+          $state.go('playlist', {roomName: $rootScope.roomName}, {location: true});
+          $rootScope.refreshed = false;
+        }).catch(function(error){
+          console.log('error making user a host', error)
+        });
+      }).catch(function(error){
+        console.log('failed to create room', error)
+      });    
   };
 })

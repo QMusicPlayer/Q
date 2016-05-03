@@ -21,29 +21,6 @@ angular.module('Q.services', [
     });
   }
 
-  var createRoom = function(host, location){
-
-    return $http ({
-      mehtod: "GET",
-      url:'/api/generateRoomName'
-    }).then(function(roomName){
-      return $http ({
-        method: 'POST',
-        url: '/api/rooms',
-        data: {
-          random_roomname: roomName.data,
-          host: host,
-          location: {longitude: location.coords.longitude, latitude: location.coords.latitude}
-        }
-      }).then(function(room){
-        return room;
-      });
-     })
-    }
-
-  
-
-
   var searchSongs = function(query){
     SC.initialize({
       client_id: 'f270bdc572dc8380259d38d8015bdbe7'
@@ -56,46 +33,14 @@ angular.module('Q.services', [
     });
   }
 
-  
-
-  // isHostData in factory stores whether or not the current user is the host
-  
-  var isHostData = false;
-
-  var isHost = function(){
-    return isHostData;
-  }
-
-  var makeHost = function () {
-    return true;
-  }
-
-  var makeGuest = function(){
-    return false;
-  }
-
-  var roomEntered = false;
-  var isRoomEntered = function(){
-    return roomEntered;
-  }
-
-  var enterRoom = function(){
-    roomEntered = true;
-  }
-
   return {
     getSongs: getSongs,
     addSong: addSong,
-    createRoom: createRoom, 
     searchSongs: searchSongs,
-    makeHost: makeHost,
-    makeGuest: makeGuest,
-    isHost: isHost,
-    isRoomEntered: isRoomEntered,
-    enterRoom: enterRoom
   }
 })
 .factory('Rooms', function ($http){
+
   var getRooms = function () {
     return $http ({
       method: 'GET',
@@ -110,30 +55,127 @@ angular.module('Q.services', [
       method: 'PUT',
       url: '/api/rooms',
       data: {
+        roomName: roomName
+      }
+    }).then(function(result){
+      return result;
+    })
+  };
+
+  var createRoom = function(location){
+    return $http ({
+      method: "GET",
+      url:'/api/generateRoomName'
+    }).then(function(roomName){
+      return $http ({
+        method: 'POST',
+        url: '/api/rooms',
+        data: {
+          random_roomname: roomName.data,
+          location: {longitude: location.coords.longitude, latitude: location.coords.latitude}
+        }
+      }).then(function(room){
+        return room;
+      });
+     })
+  };
+
+  var getListenerCount = function (roomName) {
+    return $http ({
+      method: 'GET',
+      url: '/api/listeners/' + roomName
+    }).then(function(count) {
+      return count;
+    }).catch(function(error) {
+      console.log('ajax error getting listeners', error);
+    })
+  }
+
+  var changeListenerCount = function(roomName, amount) {
+    return $http ({
+      method: 'PUT',
+      url: '/api/listeners/' + roomName,
+      data: {
         roomName: roomName,
-        socketId: socketId
+        amount: amount
       }
     }).then(function(result){
       return result;
     })
   }
 
+  var deleteSong = function(roomName, target) {
+    console.log('in services')
+    return $http ({
+      method: 'DELETE',
+      url: '/api/songs/' + roomName + '/' + target.song
+    }).then(function(result) {
+      console.log(result)
+      return result;
+    })
+  }
   return {
     getRooms: getRooms,
-    joinRoom: joinRoom
+    joinRoom: joinRoom,
+    createRoom: createRoom,
+    getListenerCount: getListenerCount,
+    changeListenerCount: changeListenerCount,
+    deleteSong: deleteSong
   }
 })
-.factory('Host', function ($http){
-  var isUserAHost = function (roomName) {
+.factory('User', function ($http){
+
+  var isUserAHost = function (roomName, socketId) {
     return $http ({
       method: 'GET',
-      url: '/api/host',
-    }).then(function(result){
+      url: '/api/host/' + socketId,
+    }).then(function(result){ 
       return result.data === roomName;
     })
   }
 
+  var addUser = function(socketId) {
+    return $http ({
+      method: 'POST',
+      url: '/api/host',
+      data: {
+        socketId: socketId
+      }
+    }).then(function(result) {
+      return result.data;
+    })
+  }
+
+  var makeHost = function(roomName, hostId) {
+    return $http ({
+      method: 'PUT',
+      url: '/api/host',
+      data: {
+        roomName: roomName,
+        hostId: hostId
+      }
+    }).then(function(result) {
+      return result.data;
+    })
+  }
+
+  var makeGuest = function(roomName, guestId) {
+    return $http ({
+      method: 'PUT',
+      url: '/api/guest',
+      data: {
+        roomName: roomName,
+        guestId: guestId,
+      }
+    }).then(function(result) {
+      return result.data;
+    })
+  }
+
   return {
-    isUserAHost: isUserAHost
+    isUserAHost: isUserAHost,
+    makeHost: makeHost,
+    makeGuest: makeGuest,
+    addUser: addUser
   }  
 })

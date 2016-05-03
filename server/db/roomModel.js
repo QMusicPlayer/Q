@@ -1,14 +1,13 @@
-var mongoose = require('mongoose');
-
-var roomSchema = mongoose.Schema({
-	name: String,
-	host: String,
-	guests: [],
-    userCount: Number,
-    location: {},
-    queue: [],
-}, { timestamps: true });
-
-var Room = mongoose.model('Room', roomSchema);
-
-module.exports = Room;
+var db = require('./dbConfig');
+db.plugin('registry');
+var User = require('./userModel');
+var Room = db.Model.extend({
+  tableName: 'rooms',
+  host: function() {
+    return this.hasOne('User', 'socketId');
+  },
+  guests: function() {
+    return this.hasMany('User', 'socketId');
+  }
+});
+module.exports = db.model('Room', Room);;
