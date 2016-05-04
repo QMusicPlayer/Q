@@ -45,13 +45,13 @@ module.exports = function(io) {
 	    });
 	  });
 
+	  socket.on('updateVotesToAllClients', function(songData) {
+	      io.to(roomFinder(socket)).emit('newVotes', songData);
+	  });
 
-
-	  // socket.on('updateVotes', function(songData) {
-	  //   User.updateVotes(socket.room, songData, function() {
-	  //     io.to(socket.room).emit('newVotes', songData);
-	  //   });
-	  // });
+	  socket.on('votedForSong', function(songData) {
+	    io.to(socket.id).emit('updateVotesInDb', songData);
+	  });
 
 		socket.on('deleteSongFromDb', function(target) {
 			io.to(socket.id).emit('deleteSongFromQueue', target);
@@ -64,25 +64,25 @@ module.exports = function(io) {
 	    console.log(data);
 	  });
 
-	  socket.on('currentlyPlaying', function (data) {
+	  socket.on('currentlyPlayingToServer', function (data) {
 	    // socket.emit('currentlyPlaying', data);
 	    // socket.broadcast.emit('currentlyPlaying', data);
-	    io.to(roomFinder(room)).emit('currentlyPlaying', data);
+	    io.to(roomFinder(socket)).emit('currentlyPlaying', data);
 	  });
 
 	  socket.on('currentTrackPosition', function (data) {
 	    // socket.emit('currentTrackPosition', data);
-	    io.to(roomFinder(room)).emit('currentTrackPosition', data);
+	    io.to(roomFinder(socket)).emit('currentTrackPosition', data);
 	  });
 
 	  socket.on('currentTrackDuration', function (data) {
 	    // socket.emit('currentTrackDuration', data);
-	    io.to(roomFinder(room)).emit('currentTrackDuration', data);
+	    io.to(roomFinder(socket)).emit('currentTrackDuration', data);
 	  });
 
 	  socket.on('isPlaying', function (data) {
 	    // socket.emit('isPlaying', data);
-	     io.to(roomFinder(room)).emit('isPlaying', data);
+	     io.to(roomFinder(socket)).emit('isPlaying', data);
 	  });
 
 	  socket.on('disconnecting', function(){

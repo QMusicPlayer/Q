@@ -3,24 +3,6 @@ angular.module('Q.services', [
 ])
 .factory('Playlist', function($http){
 
-  var getSongs = function(){
-      return $http ({
-        method: 'GET',
-        url: '/'
-      }).then(function(response){
-        return response.data;
-      });
-  }
-
-  var addSong = function (song){
-    console.log("adding song: " + song);
-    return $http ({
-      method: 'POST',
-      url: '/',
-      data: song
-    });
-  }
-
   var searchSongs = function(query){
     SC.initialize({
       client_id: 'f270bdc572dc8380259d38d8015bdbe7'
@@ -33,10 +15,35 @@ angular.module('Q.services', [
     });
   }
 
+  var deleteSong = function(roomName, target) {
+    console.log('in services')
+    return $http ({
+      method: 'DELETE',
+      url: '/api/songs/' + roomName + '/' + target.song
+    }).then(function(result) {
+      console.log(result)
+      return result;
+    })
+  }
+
+  var updateVotes = function (roomName, songData) {
+    console.log('in services', songData)
+    return $http ({
+      method: 'PUT', 
+      url: '/api/songs',
+      data: {
+        roomName: roomName,
+        songData: songData
+      }
+    }).then(function(result) {
+      return result;
+    })
+  }
+
   return {
-    getSongs: getSongs,
-    addSong: addSong,
     searchSongs: searchSongs,
+    deleteSong: deleteSong,
+    updateVotes: updateVotes
   }
 })
 .factory('Rooms', function ($http){
@@ -104,23 +111,13 @@ angular.module('Q.services', [
     })
   }
 
-  var deleteSong = function(roomName, target) {
-    console.log('in services')
-    return $http ({
-      method: 'DELETE',
-      url: '/api/songs/' + roomName + '/' + target.song
-    }).then(function(result) {
-      console.log(result)
-      return result;
-    })
-  }
+  
   return {
     getRooms: getRooms,
     joinRoom: joinRoom,
     createRoom: createRoom,
     getListenerCount: getListenerCount,
-    changeListenerCount: changeListenerCount,
-    deleteSong: deleteSong
+    changeListenerCount: changeListenerCount
   }
 })
 .factory('User', function ($http){
@@ -155,7 +152,7 @@ angular.module('Q.services', [
         hostId: hostId
       }
     }).then(function(result) {
-      return result.data;
+      return result;
     })
   }
 

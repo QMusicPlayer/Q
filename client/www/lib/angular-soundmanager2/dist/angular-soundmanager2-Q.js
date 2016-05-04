@@ -4521,18 +4521,18 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                             $rootScope.$broadcast('currentTrack:duration', this.duration);
                         },
                         onfinish: function() {
-                            soundManager._writeDebug(this.id + ' finished playing');
+                            // soundManager._writeDebug(this.id + ' finished playing');
                             if(autoPlay === true) {
-                                //play next track if autoplay is on
-                                //get your angular app
+                            //     //play next track if autoplay is on
+                            //     //get your angular app
                                 var elem = angular.element(document.querySelector('[ng-app]'));
                                 //get the injector.
                                 var injector = elem.injector();
                                 //get the service.
                                 var angularPlayer = injector.get('angularPlayer');
-                                socket.emit('deleteSong', {song: currentTrack, index: 0});
                                 angularPlayer.nextTrack();
-                                $rootScope.$broadcast('track:id', currentTrack);
+                                angularPlayer.removeSong(this.id, 0);
+                                 // $rootScope.$broadcast('player:playlist', playlist);
                             }
                         }
                     }
@@ -4676,7 +4676,6 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 return track.id;
             },
             removeSong: function(song, index) {
-              console.log(song)
                 //if this song is playing stop it
                 if(song === currentTrack) {
                     this.stop();
@@ -4699,9 +4698,10 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                     //set new track as current track
                     this.setCurrentTrack(trackId);
                 }
+
                 //play it
                 soundManager.play(trackId);
-                console.log('line 4689: initplay, track id', trackId)
+                console.log('initializing track id', trackId)
                 $rootScope.$broadcast('track:id', trackId);
                 //set as playing
                 isPlaying = true;
@@ -4739,6 +4739,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 soundManager.unload(this.getCurrentTrack());
             },
             playTrack: function(trackId) {
+              console.log('inside playTrack', trackId)
                 this.initPlayTrack(trackId);
             },
             nextTrack: function() {
@@ -4862,61 +4863,85 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 // });
             },
             sortByVotes: function() {
-                var currentSong = this.getCurrentSong();
-                if (!currentTrack && !currentSong) {
-                var tempPlayList = playlist.slice();
-                    this.clearPlaylist(function() {
-                        playlist = tempPlayList.sort(function(a, b) {
-                            return b.votes - a.votes ;
-                        });
-                        console.log('should happen last');
-                        playlist.forEach(function(song) {
-                            soundManager.createSound({
-                            id: song.id,
-                            url: song.url
-                            });
-                        });
-                    });
-                } else {
-                    console.log("sortByVotes");
-                    console.dir(playlist);
-                    var currentID = this.getCurrentTrack();
-                    console.log(currentID);
-                    if(!currentID){
-                        currentID = currentSong;
-                        console.log(currentSong);
-                    }
-                    var currentIndex = 0;
-                    for(var i = 0; i < playlist.length; i++){
-                      var track = playlist[i];
-                      if(currentID === track.id){
-                        currentIndex = i;
-                        break;
-                      }
-                    }
-                    var tempPlayList = playlist.slice();
-                    var currentSong = tempPlayList.splice(currentIndex,1);
-                    console.log('temp length: ' + tempPlayList.length);
-                    for (var i = soundManager.soundIDs.length - 1; i >= 0; i--) {
-                        if(currentID !== soundManager.soundIDs[i]){
-                            soundManager.destroySound(soundManager.soundIDs[i]);
-                        }
-                    }
-                    tempPlayList.sort(function(a, b) {
-                        return b.votes - a.votes;
-                    });
-                    tempPlayList.forEach(function(song) {
-                        soundManager.createSound({
-                            id: song.id,
-                            url: song.url
-                        });
-                    });
-                    console.log('posttemp length: ' + tempPlayList.length);
-                    playlist = currentSong.concat(tempPlayList);
-                    console.log('playlist length: ' + playlist.length);
-                    $rootScope.$broadcast('player:playlist', playlist);
+              var current = this.getCurrentTrack();
+              var tempPlaylist = playlist.slice();
 
-                }
+              if(current) {
+                current = tempPlaylist.shift();
+              } 
+
+              tempPlaylist.sort(function(a,b) {
+                return b.votes-a.votes;
+              })
+
+              if(current) {
+                tempPlaylist.unshift(current);
+              }
+
+              console.log(tempPlaylist, 'tempPlayilst')
+
+
+              var smIdsLength = soundManager.soundIDs.length;
+              $rootScope.$broadcast('player:playlist', tempPlaylist);
+
+
+              // playlist = 
+
+                // var currentSong = this.getCurrentSong();
+                // if (!currentTrack && !currentSong) {
+                // var tempPlayList = playlist.slice();
+                // console.log()
+                //     this.clearPlaylist(function() {
+                //         playlist = tempPlayList.sort(function(a, b) {
+                //             return b.votes - a.votes ;
+                //         });
+                //         playlist.forEach(function(song) {
+                //             soundManager.createSound({
+                //             id: song.id,
+                //             url: song.url
+                //             });
+                //         });
+                //     });
+                // } else {
+                //     console.log("sortByVotes");
+                //     console.dir(playlist);
+                //     var currentID = this.getCurrentTrack();
+                //     console.log(currentID);
+                //     if(!currentID){
+                //         currentID = currentSong;
+                //         console.log(currentSong);
+                //     }
+                //     var currentIndex = 0;
+                //     for(var i = 0; i < playlist.length; i++){
+                //       var track = playlist[i];
+                //       if(currentID === track.id){
+                //         currentIndex = i;
+                //         break;
+                //       }
+                //     }
+                //     var tempPlayList = playlist.slice();
+                //     var currentSong = tempPlayList.splice(currentIndex,1);
+                //     console.log('temp length: ' + tempPlayList.length);
+                //     for (var i = soundManager.soundIDs.length - 1; i >= 0; i--) {
+                //         if(currentID !== soundManager.soundIDs[i]){
+                //             soundManager.destroySound(soundManager.soundIDs[i]);
+                //         }
+                //     }
+                //     tempPlayList.sort(function(a, b) {
+                //         return b.votes - a.votes;
+                //     });
+                //     tempPlayList.forEach(function(song) {
+                //         soundManager.createSound({
+                //             id: song.id,
+                //             url: song.url
+                //         });
+                //     });
+                //     console.log('posttemp length: ' + tempPlayList.length);
+                //     playlist = currentSong.concat(tempPlayList);
+                //     console.log('playlist length: ' + playlist.length);
+                    // $rootScope.$broadcast('player:playlist', playlist);
+
+                // }
             },
             resetProgress: function() {
                 trackProgress = 0;
@@ -4932,11 +4957,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
               return currentSong;
             },
             setCurrentSong: function(songID){
-              currentSong = songID;
-              var self = this;
-              setTimeout(function(){
-                self.sortByVotes();
-                },100);
+              currentTrack = songID;
           }
         };
     }
@@ -4956,15 +4977,9 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 //init and load sound manager 2
                 angularPlayer.init();
 
-                // angularPlayer.socket().on('getState', function(currentState) {
-                //     scope.$apply(function() {
-                //         console.log(currentState);
-                //     });
-                // });
                 var socket = angularPlayer.socket();
 
                 socket.on('isPlaying', function(data){
-                    console.log("isPlaying", data);
                     angularPlayer.setPlaying(data);
                     // angularPlayer.sortByVotes();
                 });
@@ -4995,6 +5010,8 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                         angularPlayer.addToPlaylist(song);
                       });
                     }
+
+                    $rootScope.$broadcast('player:playlist', playlist);
                     // angularPlayer.sortByVotes();
                 });
 
@@ -5023,9 +5040,10 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 });
 
                 socket.on('currentlyPlaying', function(currentTrack) {
+                  
                     scope.$apply(function() {
                         scope.currentPlaying = currentTrack;
-                        if(angularPlayer.getCurrentSong() !== currentTrack.id){
+                        if(currentTrack && angularPlayer.getCurrentSong() !== currentTrack.id){
                             angularPlayer.setCurrentSong(currentTrack.id);
                         }
                     });
@@ -5048,7 +5066,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                 });
 
                 scope.$on('track:progress', function(event, data) {
-                    socket.emit('currentlyPlaying', angularPlayer.currentTrackData());
+                    socket.emit('currentlyPlayingToServer', angularPlayer.currentTrackData());
                 });
                 scope.$on('track:id', function(event, data) {
                     // angularPlayer.socket().emit('currentlyPlaying', angularPlayer.currentTrackData());
@@ -5086,8 +5104,8 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                     });
                 });
                 scope.$on('voted', function(event, data) {
-                    console.log('song data after vote: ' + data);
-                    socket.emit('updateVotes', data);
+                    console.log(data);
+                    socket.emit('votedForSong', data);
                 });
 
             }
@@ -5150,8 +5168,6 @@ ngSoundManager.directive('upVote', ['angularPlayer', '$rootScope', function (ang
         link: function (scope, element, attrs) {
             element.bind('click', function (event) {
                 scope.song.votes += 1;
-                console.log('i voted');
-                console.log(scope.song);
                 var songData = {
                     votes: scope.song.votes,
                     id: scope.song.id,
@@ -5175,8 +5191,9 @@ ngSoundManager.directive('playFromPlaylist', ['angularPlayer', function (angular
             },
             link: function (scope, element, attrs) {
                 element.bind('click', function (event) {
+                  console.log('playFromPlaylist')
                     angularPlayer.playTrack(scope.song.id);
-                    angularPlayer.sortByVotes();
+                    // angularPlayer.sortByVotes();
                 });
             }
         };

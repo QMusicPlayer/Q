@@ -19,6 +19,7 @@ module.exports = function (app, express) {
   //generates random room name
   app.get('/api/generateRoomName', roomController.generateRoomName);
   app.delete('/api/songs/:roomName/:song', roomController.deleteSong);
+  app.put('/api/songs', roomController.updateVotes);
 };
 
 

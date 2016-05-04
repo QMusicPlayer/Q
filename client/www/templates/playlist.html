@@ -62,7 +62,6 @@
       <ion-item class='row' ng-repeat="song in playlist track by $index" on-hold="viewSong(song.title)" >
         <div class="col-80 center">
           <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
-            <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
             <div class="songinfo" style="padding-left: 30px; text-align: left, ">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
           </div>
         </div>
@@ -92,9 +91,13 @@
 
       <ion-item class='row' ng-repeat="song in playlist track by $index ">
         <div class="col-80 center">
-          <div ng-class="currentPlaying.id === song.id ? 'button button-positive button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'" up-vote="song" data-index="{{$index}}">
-          <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
-          <div class="songinfo" style="padding-left: 30px; text-align: center;">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
+          <div ng-show="currentPlaying.id !== song.id" ng-class="currentPlaying.id === song.id ? 'button button-positive button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'" up-vote="song" data-index="{{$index}}">
+            <div class="thumbs" style="position: absolute; left: 10px; width: 30px"><i class="fa fa-thumbs-up" ></i></div>
+            <div class="songinfo" style="padding-left: 30px; text-align: center;">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
+          </div>
+
+          <div ng-show="currentPlaying.id === song.id" ng-class="currentPlaying.id === song.id ? 'button button-positive button-block playlistItem' : 'button button-outline button-stable button-block playlistItem'">
+            <div class="songinfo" style="padding-left: 30px; text-align: center;">{{ song.title }} by {{song.artist}}</div>
           </div>
         </div>
       </ion-item>
@@ -107,7 +110,7 @@
 <div class="bar bar-footer row row-center bar-stable">
 
   <!-- Player Control Buttons: Only for host -->
-  <div class="col-20" style="margin-left: auto; margin-right: auto; float:left; min-width:160px" ng-show="isHost()">
+  <div class="col-10" style="margin-left: auto; margin-right: auto; float:left; min-width:160px" ng-show="isHost()">
     <button play-music class="ion-play button button-outline button-royal circle bottomButton"></button>
     <button pause-music class="ion-pause button button-outline button-royal bottomButton"></button>
     <button prev-track class="ion-skip-backward button button-outline button-royal bottomButton"></button>
@@ -116,12 +119,13 @@
 
   <!-- Now Playing: Seen by host and guest -->
   <div ng-class="isHost() ? 'nowplayingHost center' : 'nowplaying center'">
-    <span ng-show='currentPlaying.title' class='marquee center small'>
-      <p>
-     <!--    <img height="28" width="28" style="float: left; margin-right:5px" class="rounded" src={{currentPlaying.image}}>  -->
-        <span class='center small'>{{ currentPlaying.title }} by {{ currentPlaying.artist }}  {{ currentPostion }} / {{ currentDuration }}
-        </span>
-      </p>
+    <span class='marquee small'>
+    <p>
+          <img height="28" width="28" style="margin-right:5px" class="rounded" src={{currentPlaying.image}}> 
+         <span class='marqueeText'> {{ currentPlaying.title }} by {{ currentPlaying.artist }}  {{ currentPostion }} / {{ currentDuration }}
+         </span>
+     
+     </p>
     </span>
   </div>
 </div>
