@@ -42,11 +42,13 @@ div.center{
 .nowplaying{
   border-radius:5px;
   white-space:nowrap;
+  display:table-cell;
+  vertical-align: middle;
   text-overflow: ellipsis;
-  font-size: 10px;
+  font-size: 12px;
   position: relative;
   height:35px;
-  width:90%;
+  width:100%;
   padding:5px;
   color:#387EF5;
   border: 1px solid #387EF5;
@@ -56,12 +58,14 @@ div.center{
 
 .nowplayingHost{
   border-radius:5px;
+  display: table-cell;
+  vertical-align: middle;
   white-space:nowrap;
   text-overflow: ellipsis;
-  font-size: 10px;
+  font-size: 12px;
   position: relative;
   height:35px;
-  width:90%;
+  width:100%;
   padding:5px;
   color:#886aea;
   border: 1px solid #886aea;
@@ -74,6 +78,10 @@ div.center{
   top: 5rem;
   z-index:10;
 }
+
+/*.songinfo {
+  font-size: 14px;
+}*/
 
 .searchResultsItem{
   position: relative;
@@ -124,18 +132,26 @@ img.small {
 }
 
 .marquee p{
-    position: absolute;
+    position: relative;
+    display: table-cell;
+    vertical-align: middle;
     font-family: Tahoma, Arial, sans-serif;
     width: 100%;
     height: 100%;
+    top: -2px;
     margin: 0;
     overflow:hidden;
     transform:translateX(100%);
     transform:translateY(100%);
 }
 
+.marqueeText {
+  position: relative;
+  top: -10px;
+}
+
 .marquee p:nth-child(1) {
-    -webkit-animation: up 2s forwards, across 35s 5000ms linear infinite;
+    -webkit-animation: up 2s forwards, across 15s 5000ms linear infinite;
 }
 
 @font-face {
@@ -155,10 +171,11 @@ img.small {
 }
 @keyframes across {
     0%  {
-        transform:translateX(100%);
+        transform:translateX(200%);
 
     }
     100% {
-        transform:translateX(-100%);
-    }
+        transform:translateX(-200%);
+    } 
+
 }

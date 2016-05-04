@@ -16,11 +16,46 @@ module.exports = {
   makeHost: function(req, res, next) {
     User.forge({socketId: req.body.hostId}).fetch().then(function(user){
       if(user) {
-        user.set({hostRoom: req.body.roomName, guestRoom: null}).save().then(function(){
-          res.status(201).json('successfully made user host')
-        }).catch(function(error) {
-          next(error);
-        })
+        // if user is host of another room
+        if(user.attributes.hostRoom && !user.attributes.guestRoom) {
+          var previousRoom = user.attributes.hostRoom;
+          user.set({hostRoom: req.body.roomName, guestRoom: null}).save().then(function(room){
+            var response = {
+              status: 'host of another room',
+              previousRoom: previousRoom
+            }
+            console.log('user is already host of', previousRoom);
+            res.status(201).json(response);
+          }).catch(function(error) {
+            next(error);
+          });
+        }
+        // if user is guest of another room
+        else if (user.attributes.guestRoom && !user.attributes.hostRoom) {
+          var previousRoom = user.attributes.guestRoom;
+          user.set({hostRoom: req.body.roomName, guestRoom: null}).save().then(function(room){
+            var response = {
+              status: 'guest of another room',
+              previousRoom: previousRoom
+            }
+            console.log('user is already a guest of', previousRoom);
+            res.status(201).json(response);
+          }).catch(function(error) {
+            next(error);
+          });
+        }
+        // if user is not a guest or a host of anothe room
+        else if (!user.attributes.hostRoom && !user.attributes.guestRoom) {
+          user.set({hostRoom: req.body.roomName, guestRoom: null}).save().then(function(room){
+            var response = {
+              status: 'host'
+            }
+            console.log('successfully created host', room.attributes.name);
+            res.status(201).json(response);
+          }).catch(function(error) {
+            next(error);
+          });
+        }
       } else {
         res.status(400).json('user not found')
       }
@@ -135,71 +170,6 @@ module.exports = {
     })
   }
 
-  // getRoom: function(room, callback){
-  //   console.log("getRoom", room);
-  //   User.findOne({hash:room}, function(err, result){
-  //     console.log(err, result);
-  //     if(err){
-  //       console.log(err);
-  //       callback(err);
-  //     } else{
-  //       console.log(result);
-  //       callback(err, result);
-  //     }
-  //   });
-  // },
-
-  // getQueue: function(room, callback) {
-  //   console.log('getQueue', room);
-  //   User.findOne({hash: room}, function(err, result) {
-  //     if(!result) return;
-  //     console.log(result);
-  //     callback(err, result.queue);
-  //   });
-  // },
-
-  // saveQueue: function(room, updatedQueue, callback) {
-  //   updatedQueue = updatedQueue.map(function(song) {
-  //     delete song['$$hashKey'];
-  //     return song;
-  //   });
-  //   User.findOne({hash: room}, function(err, result) {
-  //     console.log("saveQueue", result);
-
-  //     if(!result){
-  //     }
-  //     console.log(updatedQueue)
-  //     result.queue = updatedQueue;
-  //     result.save(function(err) {
-  //       console.error(err);
-  //       callback();
-  //     });
-  //   });io.to(socket.id).emit('roomjoined', result.name);
-  // },
-
-  // addSong: function(room, data, callback) {
-  //   console.log("addSong, room:", room);
-  //   delete data['$$hashKey'];
-  //   User.findOne({hash: room}, function(err, result) {
-  //     console.log("addSong", result);
-  //     if(!result) return;
-  //     var alreadyAdded = false;
-  //     result.queue.forEach(function(song) {
-  //       if (data.id === song.id) {
-  //         alreadyAdded = true;
-  //       }
-  //     });
-  //     if (!alreadyAdded) {
-  //       result.queue.push(data);
-  //       result.save(function(err) {
-  //         console.error(err);
-  //         callback();
-  //       });
-  //     } else {
-  //       return;
-  //     }
-  //   });
-  // },
 
   // updateVotes: function(room, data, callback) {
   //   console.log('update votes in userController');
@@ -246,28 +216,6 @@ module.exports = {
   //   });
   // },
 
-  // updateRoomCount: function(room, changeDir, callback) {
-  //   console.log('update roomCount in userController');
-
-
-  //   User.findOne({'hash': room}, function(err, doc){
-  //     console.log('update room count');
-
-  //     if(doc !== null ){ 
-
-  //       if(changeDir === 'add'){
-  //         doc.userCount++;
-  //       } else if (changeDir === 'subtract'){
-  //         console.log('subtracting...', doc)
-  //         doc.userCount--;
-  //       }
-  //       doc.save();
-  //       callback(err, doc.userCount)
-  //     }
-
-  //   });
-    
-  // },
 
 
 };
