@@ -4839,6 +4839,9 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 console.log('clearing playlist')
                 //unload and destroy soundmanager sounds
                 var smIdsLength = soundManager.soundIDs.length;
+                playlist.forEach(function(element) {
+                  soundManager.destroySound(element);
+                })
                 playlist = [];
                 
                 $rootScope.$broadcast('player:playlist', playlist);
@@ -4880,9 +4883,22 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
 
               console.log(tempPlaylist, 'tempPlayilst')
 
-
               var smIdsLength = soundManager.soundIDs.length;
-              $rootScope.$broadcast('player:playlist', tempPlaylist);
+              
+              for (var i = soundManager.soundIDs.length - 1; i >= 0; i--) {
+                if(current.id !== soundManager.soundIDs[i]){
+                    soundManager.destroySound(soundManager.soundIDs[i]);
+                }
+              }
+              tempPlaylist.forEach(function(song) {
+                soundManager.createSound({
+                id: song.id,
+                url: song.url
+                });
+              });
+
+              playlist = tempPlaylist;
+              $rootScope.$broadcast('player:playlist', playlist);
 
 
               // playlist = 
@@ -5010,9 +5026,6 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                         angularPlayer.addToPlaylist(song);
                       });
                     }
-
-                    $rootScope.$broadcast('player:playlist', playlist);
-                    // angularPlayer.sortByVotes();
                 });
 
           
