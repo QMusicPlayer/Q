@@ -61,7 +61,7 @@
     <ion-list>
       <ion-item class='row' ng-repeat="song in playlist track by $index" on-hold="viewSong(song.title)" >
         <div class="col-80 center">
-          <div play-from-playlist="song" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
+          <div ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
             <div class="songinfo" style="padding-left: 30px; text-align: left, ">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
           </div>
         </div>
@@ -113,8 +113,7 @@
   <div class="col-10" style="margin-left: auto; margin-right: auto; float:left; min-width:160px" ng-show="isHost()">
     <button play-music class="ion-play button button-outline button-royal circle bottomButton"></button>
     <button pause-music class="ion-pause button button-outline button-royal bottomButton"></button>
-    <button prev-track class="ion-skip-backward button button-outline button-royal bottomButton"></button>
-    <button next-track class="ion-skip-forward button button-outline button-royal bottomButton"></button>
+   
   </div>
 
   <!-- Now Playing: Seen by host and guest -->

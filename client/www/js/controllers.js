@@ -182,7 +182,6 @@ angular.module('Q.controllers', [
     $rootScope.roomName = roomName.split(' ').join('_');
     console.log("attempting to join room " + roomName);
     User.makeGuest($rootScope.roomName, socket.id).then(function(response) {
-      console.log(response)
       if(response.status === 'guest') {
         console.log('successfully made user guest in db');
         Rooms.changeListenerCount($rootScope.roomName, 1).then(function(response){

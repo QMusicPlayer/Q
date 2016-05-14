@@ -16,18 +16,17 @@ angular.module('Q.services', [
   }
 
   var deleteSong = function(roomName, target) {
-    console.log('in services')
+
     return $http ({
       method: 'DELETE',
       url: '/api/songs/' + roomName + '/' + target.song
     }).then(function(result) {
-      console.log(result)
+
       return result;
     })
   }
 
   var updateVotes = function (roomName, songData) {
-    console.log('in services', songData)
     return $http ({
       method: 'PUT', 
       url: '/api/songs',
