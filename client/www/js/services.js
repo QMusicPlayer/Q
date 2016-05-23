@@ -26,13 +26,14 @@ angular.module('Q.services', [
     })
   }
 
-  var updateVotes = function (roomName, songData) {
+  var updateVotes = function (roomName, songData, client_id) {
     return $http ({
       method: 'PUT', 
       url: '/api/songs',
       data: {
         roomName: roomName,
-        songData: songData
+        songData: songData,
+        client_id: client_id
       }
     }).then(function(result) {
       return result;

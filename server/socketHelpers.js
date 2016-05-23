@@ -53,12 +53,16 @@ module.exports = function(io) {
 	    io.to(socket.id).emit('updateVotesInDb', songData);
 	  });
 
+	  socket.on('playedSong', function(){
+	  	socket.broadcast.to(roomFinder(socket)).emit('playSong')
+	  })
+
 		socket.on('deleteSongFromDb', function(target) {
 			socket.broadcast.to(roomFinder(socket)).to(socket.id).emit('deleteSong', target);
 		})
-	  // socket.on('deleteSongsFromGuests', function (target) {
-   //    socket.broadcast.to(roomFinder(socket)).emit('deleteSong', target);
-	  // });
+	  socket.on('deleteSongsFromGuests', function (target) {
+      socket.broadcast.to(roomFinder(socket)).emit('deleteSong', target);
+	  });
 
 	  socket.on('progress', function (data) {
 	    console.log(data);

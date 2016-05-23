@@ -95,7 +95,8 @@ angular.module('Q.controllers', [
   })
 
   socket.on('updateVotesInDb', function(songData) {
-    Playlist.updateVotes($rootScope.roomName, songData).then(function(response) {
+    Playlist.updateVotes($rootScope.roomName, songData, socket.id).then(function(response) {
+      console.log('contrklsad', response.data)
       socket.emit('updateVotesToAllClients', response.data);
     })
   })

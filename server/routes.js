@@ -19,7 +19,24 @@ module.exports = function (app, express) {
   //generates random room name
   app.get('/api/generateRoomName', roomController.generateRoomName);
   app.delete('/api/songs/:roomName/:song', roomController.deleteSong);
-  app.put('/api/songs', roomController.updateVotes);
+  app.put('/api/songs', function(req, res) {
+    userController.castVote(req.body.songData, req.body.client_id, function(err, alreadyVoted) {
+      if(err) {
+        res.status(500).send(err);
+      }
+
+      if(!alreadyVoted) {
+        roomController.updateVotes(req, res, function(err, songData) {
+          if(err) {
+            res.status(500).send(err)
+          }
+          console.log(songData, 'updated song data')
+          res.status(201).json(songData);   
+        }) 
+      }
+    })
+    
+  });
 };
 
 

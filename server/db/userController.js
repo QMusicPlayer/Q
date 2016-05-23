@@ -168,6 +168,34 @@ module.exports = {
     }).catch(function(error) {
       console.log('error finding user to delete', error)
     })
+  }, 
+
+  castVote: function(songData, id, callback) {
+    User.forge({socketId: id}).fetch().then(function(user) {
+      if(user){
+        
+        var voted = user.attributes.votes || [];
+        if(voted.indexOf(songData.id) >= 0) {
+          console.log('user has already voted')
+          callback(null, true);
+        } else {
+          voted.push(songData.id);
+          var updatedUser = {
+            votes: voted
+          }
+          user.set(updatedUser).save().then(function(user) {
+            console.log('successfully updated user votes')
+            callback(null, false);
+          }).catch(function(err) {
+            console.log('error updating votes for user')
+            callback(error, null)
+          })
+        }
+      }
+    }).catch(function(error){
+      console.log('error getting user information', error)
+      callback(error, null)
+    })
   }
 
 
