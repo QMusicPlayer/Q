@@ -23,7 +23,7 @@
  * Alternately, serve this file with gzip for 75% compression savings (~30KB over HTTP.)
  *
  * You may notice <d> and </d> comments in this source; these are delimiters for
- * debug blocks which are removed in the -nodebug builds, further optimizing code size.
+ * debug blocks which are removed i fn the -nodebug builds, further optimizing code size.
  *
  * Also, as you may note: Whoa, reliable cross-platform/device audio support is hard! ;)
  */

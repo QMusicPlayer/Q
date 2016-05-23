@@ -135,20 +135,21 @@ module.exports = {
   },
 
   updateVotes: function (req, res, next) {
-    console.log('in controller', req.body);
     Room.forge({name: req.body.roomName}).fetch().then(function(room) {
     console.log(req.body.songData)
-      var queue = room.attributes.queue;
-      queue[req.body.songData.index].votes = req.body.songData.votes;
+      var queue = room.attributes.queue || [];
+      queue[queue.map(function(element){return element.id}).indexOf(req.body.songData.id)].votes = req.body.songData.votes + 1;
       var newRoom = {
         queue: queue
       }
       room.set(newRoom).save().then(function(room){
         console.log('success updating votes');
-        res.status(201).json(req.body.songData);
+        var songData = req.body.songData;
+        songData.votes++;
+        next(null, songData);
       }).catch(function(error) {
         console.log('error updating votes', error);
-        res.json(error);
+        next(error, null, null);
       })
     })
   }

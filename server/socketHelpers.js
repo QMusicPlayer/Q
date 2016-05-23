@@ -6,7 +6,6 @@ var roomFinder = require('./roomFinder');
 
 module.exports = function(io) {
 	io.on('connection', function (socket) {
-
 		//creates user in db
 	  io.to(socket.id).emit('addUser');
 	  // joins user to new room with an empty queue
@@ -36,7 +35,8 @@ module.exports = function(io) {
 
 	  // adds song to room
 	  socket.on('addSong', function (newSong) {
-	    io.to(roomFinder(socket)).emit('newSong', newSong);
+
+	    socket.broadcast.to(roomFinder(socket)).emit('newSong', newSong);
 	  });
 
 	  socket.on('addSongToDb', function (newSong) {
@@ -53,8 +53,12 @@ module.exports = function(io) {
 	    io.to(socket.id).emit('updateVotesInDb', songData);
 	  });
 
+	  socket.on('playedSong', function(){
+	  	socket.broadcast.to(roomFinder(socket)).emit('playSong')
+	  })
+
 		socket.on('deleteSongFromDb', function(target) {
-			io.to(socket.id).emit('deleteSongFromQueue', target);
+			socket.broadcast.to(roomFinder(socket)).to(socket.id).emit('deleteSong', target);
 		})
 	  socket.on('deleteSongsFromGuests', function (target) {
       socket.broadcast.to(roomFinder(socket)).emit('deleteSong', target);

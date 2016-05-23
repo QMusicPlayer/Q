@@ -95,7 +95,8 @@ angular.module('Q.controllers', [
   })
 
   socket.on('updateVotesInDb', function(songData) {
-    Playlist.updateVotes($rootScope.roomName, songData).then(function(response) {
+    Playlist.updateVotes($rootScope.roomName, songData, socket.id).then(function(response) {
+      console.log('contrklsad', response.data)
       socket.emit('updateVotesToAllClients', response.data);
     })
   })
@@ -182,7 +183,6 @@ angular.module('Q.controllers', [
     $rootScope.roomName = roomName.split(' ').join('_');
     console.log("attempting to join room " + roomName);
     User.makeGuest($rootScope.roomName, socket.id).then(function(response) {
-      console.log(response)
       if(response.status === 'guest') {
         console.log('successfully made user guest in db');
         Rooms.changeListenerCount($rootScope.roomName, 1).then(function(response){
