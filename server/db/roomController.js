@@ -86,13 +86,16 @@ module.exports = {
   },
 
   changeListenerCount: function(req, res, next) {
+    console.log('here in room controller')
     Room.forge({name: req.body.roomName}).fetch().then(function(room){
+      console.log(room, 'room in room 91')
       if(room) {
         var newRoom = {
           userCount: room.attributes.userCount + req.body.amount
         }
 
         if(newRoom.userCount === 0) {
+          console.log(newRoom.userCount, 'user count')
           room.destroy().then(function(){
             console.log('empty room, deleted');
           }).catch(function(error) {

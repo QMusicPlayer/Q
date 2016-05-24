@@ -130,7 +130,8 @@ angular.module('Q.controllers', [
       console.log('successfully created room: ', response.data.name);
       $rootScope.roomName = response.data.name;
       User.makeHost($rootScope.roomName, socket.id).then(function(response){
-        if(response.data.status === 'host of another room ' && response.data.previousRoom) {
+         console.log(response.data, 'in controllers')
+        if(response.data.status === 'host of another room' && response.data.previousRoom) {
           Rooms.changeListenerCount(response.data.previousRoom, -1).then(function(count){
             socket.emit("leaveRoom", response.data.previousRoom);
             // TODO send message to room to take over host control
