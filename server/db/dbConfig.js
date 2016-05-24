@@ -25,19 +25,6 @@ if (process.env.DEPLOYED) {
 
 var db = require('bookshelf')(knex);
 
-var createUsersTable = function () {
-  return db.knex.schema.createTable('users', function (user) {
-    user.increments('id').primary();
-    user.string('socketId', 255);
-    user.string('hostRoom').unsigned().references('rooms.name');
-    user.string('guestRoom').unsigned().references('rooms.name');
-    user.specificType('votes', 'json[]');
-    user.timestamps();
-  }).then(function (table) {
-    console.log('Created user Table');
-  });
-};
-
 var createRoomsTable = function () {
   return db.knex.schema.createTable('rooms', function (room) {
     room.increments('id').primary();
@@ -50,6 +37,21 @@ var createRoomsTable = function () {
     console.log('Created room Table');
   });
 };
+
+var createUsersTable = function () {
+  return db.knex.schema.createTable('users', function (user) {
+    user.increments('id').primary();
+    user.string('socketId', 255);
+    user.string('hostRoom').unsigned().references('name').inTable('rooms');
+    user.string('guestRoom').unsigned().references('name').inTable('rooms');
+    user.specificType('votes', 'json[]');
+    user.timestamps();
+  }).then(function (table) {
+    console.log('Created user Table');
+  });
+};
+
+
 
 db.knex.schema.hasTable('rooms').then(function(exists) {
   if (!exists) {
