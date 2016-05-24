@@ -9,4 +9,4 @@ qplayer:
    - mongo
 
 mongo:
-  image: mongo
+  image: postgres
