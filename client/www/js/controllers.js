@@ -110,17 +110,19 @@ angular.module('Q.controllers', [
   console.log("INITIALIZED LANDING PAGE CONTROLLER");
 
   // set geo location for user 
-  navigator.geolocation.getCurrentPosition(function(position){
-    $rootScope.location = position;
-  })
-
 
   socket.on('addUser', function(){
-    User.addUser(socket.id).then(function(response){
-      console.log('successfully added user', response);
-    }).catch(function(error){
-      console.log('error adding user', error);
+
+    navigator.geolocation.getCurrentPosition(function(position){
+      console.log(position, 'position found')
+      $rootScope.location = position;
+      User.addUser(socket.id).then(function(response){
+        console.log('successfully added user', response);
+      }).catch(function(error){
+        console.log('error adding user', error);
+      })
     })
+
   })
 
   // createRoom function (initiated when Create Room button is clicked on landing page)

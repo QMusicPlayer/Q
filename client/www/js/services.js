@@ -70,6 +70,11 @@ angular.module('Q.services', [
   };
 
   var createRoom = function(location){
+    //temporary fix for testing
+    if(!location) {
+      var location.coords.longitude = -76;
+      var location.coords.latitude = 33;
+    }
     return $http ({
       method: "GET",
       url:'/api/generateRoomName'
