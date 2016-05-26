@@ -72,8 +72,12 @@ angular.module('Q.services', [
   var createRoom = function(location){
     //temporary fix for testing
     if(!location) {
-      var location.coords.longitude = -76;
-      var location.coords.latitude = 33;
+      var location = {
+        coords: {
+          latitude: -76,
+          longitude: 36
+        }
+      }
     }
     return $http ({
       method: "GET",

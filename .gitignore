@@ -7,3 +7,5 @@ client/plugins/
 
 build/
 dist/
+
+!node_modules/socket.io
