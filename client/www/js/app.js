@@ -5,9 +5,8 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('Q', [
   'ionic',
-  'Q.services',
-  'Q.controllers',
-  'angularSoundManager'
+  'angularSoundManager',
+  'Q.services'
 ])
 
 .run(function($ionicPlatform, $rootScope, $window, $ionicPopup) {
@@ -48,17 +47,17 @@ angular.module('Q', [
         .state('playlist', {
           url: '/playlist/:roomName',
           templateUrl:'../templates/playlist.html',
-          controller:'playlistController'
+          controller:'PlaylistController'
         })
         .state('landing', {
           url: '/landing',
           templateUrl: '../templates/landingPage.html',
-          controller: 'landingPageController'
+          controller: 'LandingPageController'
         })
         .state('roomFinder', {
           url:'/roomFinder',
           templateUrl: '../templates/roomFinder.html',
-          controller: 'roomFinderController'
+          controller: 'RoomFinderController'
         })
     $urlRouterProvider.otherwise('/landing');
 });
