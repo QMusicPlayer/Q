@@ -35,7 +35,6 @@
     "node-soundcloud": "0.0.4",
     "node-static": "^0.7.7",
     "sentencer": "^0.1.5",
-    "socket.io": "^1.4.0"
   },
   "devDependencies": {
     "morgan": "^1.7.0",
