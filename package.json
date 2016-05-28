@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "./node_modules/bower/bin/bower install",
-    "start": "sudo nodemon server/server.js"
+    "start": " TESTING=true node server/server.js"
   },
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "mongoose": "^4.3.4",
     "node-soundcloud": "0.0.4",
     "node-static": "^0.7.7",
-    "sentencer": "^0.1.5",
+    "sentencer": "^0.1.5"
   },
   "devDependencies": {
     "morgan": "^1.7.0",
