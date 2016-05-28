@@ -1,5 +1,6 @@
 var userController = require('./db/userController');
 var roomController = require('./db/roomController')
+var db = require('./db/dbConfig')
 module.exports = function (app, express) {
   app.post('/api/rooms', roomController.createRoom);
   app.get('/api/rooms', roomController.getRooms);
@@ -37,8 +38,18 @@ module.exports = function (app, express) {
       }
     })
   });
+
   app.get('/api/testing', function(request, response) {
     response.status(200).send(process.env)
+  })
+
+  app.get('/api/resetDb', function(request, response) {
+    db.resetEverythingPromise().then(function(){
+      response.status(201).send('successfully reset db with data');
+    }).catch(function(err){
+      response.status(500).send(err);
+      return;
+    });
   })
 };
 

@@ -65,10 +65,37 @@ db.knex.schema.hasTable('users').then(function(exists) {
   }
 });
 
-var resetUserTable = function () {
+var resetUsersTable = function () {
   return db.knex.schema.dropTable('users').then(createUsersTable);
 };
 
+var resetRoomsTable = function () {
+  return db.knex.schema.dropTable('rooms').then(createRoomsTable);
+};
+
+var resetRoomsAndUsersTable = function () {
+  return db.knex.schema.dropTable('users').then(function () {
+    return db.knex.schema.dropTable('rooms').then(function () {
+      createRoomsTable();
+      createUsersTable();
+      
+    })
+  })
+}
+
+
+db.resetEverything = function (req, res) {
+  resetRoomsAndUsersTable().then(function() {
+    res.status(201).end();
+  });
+};
+
+db.resetEverythingPromise = function () {
+  return resetRoomsAndUsersTable().then(function() {
+  }).catch(function(e) {
+    console.log(e);
+  });
+};
 
 
 module.exports = db;
