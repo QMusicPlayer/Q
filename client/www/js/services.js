@@ -1,13 +1,17 @@
 angular.module('Q.services', [
 'ionic'
 ])
+
+/*=======================================
+=            Playist Factory            =
+=======================================*/
 .factory('Playlist', function($http){
 
+  /*----------  search songs from soundcloud (does not hit api)   ----------*/
   var searchSongs = function(query){
     SC.initialize({
       client_id: 'f270bdc572dc8380259d38d8015bdbe7'
     });
-
     return SC.get('/tracks', {
       q: query,
     }).then(function(tracks) {
@@ -15,17 +19,17 @@ angular.module('Q.services', [
     });
   }
 
+  /*----------  DELETE: delete song from db  ----------*/
   var deleteSong = function(roomName, target) {
-
     return $http ({
       method: 'DELETE',
       url: '/api/songs/' + roomName + '/' + target.song
     }).then(function(result) {
-
       return result;
     })
   }
 
+  /*----------  PUT: casts vote for specific song by specific user  ----------*/
   var updateVotes = function (roomName, songData, client_id) {
     return $http ({
       method: 'PUT', 
@@ -40,14 +44,22 @@ angular.module('Q.services', [
     })
   }
 
+  /*----------  export functions  ----------*/
   return {
     searchSongs: searchSongs,
     deleteSong: deleteSong,
     updateVotes: updateVotes
   }
 })
+/*=====  End of Playist Factory  ======*/
+
+
+/*=====================================
+=            Rooms Factory            =
+=====================================*/
 .factory('Rooms', function ($http){
 
+  /*----------  GET: gets all rooms from db  ----------*/
   var getRooms = function () {
     return $http ({
       method: 'GET',
@@ -57,6 +69,8 @@ angular.module('Q.services', [
     })
   };
 
+  /*----------  PUT: not used?  ----------*/
+  
   var joinRoom = function(roomName, socketId) {
     return $http ({
       method: 'PUT',
@@ -69,6 +83,7 @@ angular.module('Q.services', [
     })
   };
 
+  /*----------  POST: creates room in db with random room name ----------*/
   var createRoom = function(location){
     //temporary fix for testing
     if(!location) {
@@ -129,6 +144,12 @@ angular.module('Q.services', [
     changeListenerCount: changeListenerCount
   }
 })
+
+
+/*=====  End of Rooms Factory  ======*/
+
+
+
 .factory('User', function ($http){
 
   var isUserAHost = function (roomName, socketId) {
@@ -184,4 +205,23 @@ angular.module('Q.services', [
     makeGuest: makeGuest,
     addUser: addUser
   }  
+})
+
+.factory('Testing', function ($http){
+
+  var getProcessEnvironment = function () {
+    return $http({
+      method:'GET',
+      url:'/api/testing'
+    }).then(function(result) {
+      return result;
+    }).catch(function(error) {
+      return error;
+    });
+  }
+
+  return {
+    getProcessEnvironment: getProcessEnvironment
+  }
+
 })

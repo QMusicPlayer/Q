@@ -6,7 +6,6 @@
     $rootScope.listenerCount;
     $rootScope.roomName = $stateParams.roomName;
     $rootScope.room_name = $rootScope.roomName.split('_').join(' ');
-    $rootScope.location;
     $rootScope.refreshed; // variable to check if page was accessed without going through create or join room (for refresh)
     
     // if page was refreshed, user is taken back to landing page

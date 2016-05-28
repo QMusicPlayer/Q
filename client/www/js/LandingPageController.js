@@ -1,23 +1,29 @@
 (function() {
   angular.module("Q")
-  .controller('LandingPageController', function($scope, $location, $state, Playlist, Rooms, User, $ionicPopup, $timeout, $state, $rootScope) {
-    console.log("INITIALIZED LANDING PAGE CONTROLLER");
+  .controller('LandingPageController', function($scope, $location, $ionicLoading, $state, Playlist, Rooms, User, $ionicPopup, $timeout, $state, $rootScope) {
+    console.log(":::INITIALIZED LANDING PAGE CONTROLLER:::");
+    
+    $rootScope.environment;
+    $rootScope.location;
+    /*===============================================
+    =            Landing Page Functions            =
+    ===============================================*/
+    $scope.show = function() {
+      $ionicLoading.show({
+        template: '<ion-spinner icon="lines"></ion-spinner> <br> Finding rooms close by',
+        animation: 'fade-in',
+      });
+    };
 
-    // set geo location for user 
+    $scope.hide = function(){
+      $ionicLoading.hide();
+    };
 
-    socket.on('addUser', function(){
-
-      navigator.geolocation.getCurrentPosition(function(position){
-        console.log(position, 'position found')
-        $rootScope.location = position;
-        User.addUser(socket.id).then(function(response){
-          console.log('successfully added user', response);
-        }).catch(function(error){
-          console.log('error adding user', error);
-        })
-      })
-
-    })
+    $scope.getEnvironment = function () {
+    	Testing.getProcessEnvironment().then(function(response) {
+    		$rootScope.environment = repsonse.data;
+    	})
+    }
 
     // createRoom function (initiated when Create Room button is clicked on landing page)
     $scope.createRoom = function(){
@@ -60,5 +66,26 @@
         console.log('failed to create room', error)
       });    
     };
+  
+ 
+  /*=====  End of Landing Page Functions  ======*/
+    
+  /*=====================================================
+  =            Landing Page Socket Listeners            =
+  =====================================================*/
+	  socket.on('addUser', function(){
+	  	$scope.show($ionicLoading);
+	    navigator.geolocation.getCurrentPosition(function(position){
+	      console.log(position, 'position found')
+	      $rootScope.location = position;
+	      User.addUser(socket.id).then(function(response){
+	        console.log('successfully added user', response);
+	        $scope.hide($ionicLoading);
+	      }).catch(function(error){
+	        console.log('error adding user', error);
+	      })
+	    })
+	  });
+	  /*=====  End of Landing Page Socket Listeners  ======*/
   });
 })();
