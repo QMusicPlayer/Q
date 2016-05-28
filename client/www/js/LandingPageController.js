@@ -1,6 +1,6 @@
 (function() {
   angular.module("Q")
-  .controller('LandingPageController', function($scope, $location, $ionicLoading, $state, Playlist, Rooms, User, $ionicPopup, $timeout, $state, $rootScope) {
+  .controller('LandingPageController', function($scope, $location, $ionicLoading, $state, Playlist, Rooms, User, Testing, $ionicPopup, $timeout, $state, $rootScope) {
     console.log(":::INITIALIZED LANDING PAGE CONTROLLER:::");
     
     $rootScope.environment;
@@ -21,7 +21,8 @@
 
     $scope.getEnvironment = function () {
     	Testing.getProcessEnvironment().then(function(response) {
-    		$rootScope.environment = repsonse.data;
+    		$rootScope.environment = response.data;
+    		return $rootScope.environment;
     	})
     }
 
@@ -74,18 +75,34 @@
   =            Landing Page Socket Listeners            =
   =====================================================*/
 	  socket.on('addUser', function(){
+  		
 	  	$scope.show($ionicLoading);
-	    navigator.geolocation.getCurrentPosition(function(position){
-	      console.log(position, 'position found')
-	      $rootScope.location = position;
-	      User.addUser(socket.id).then(function(response){
-	        console.log('successfully added user', response);
-	        $scope.hide($ionicLoading);
-	      }).catch(function(error){
-	        console.log('error adding user', error);
-	      })
-	    })
-	  });
+	  	Testing.getProcessEnvironment().then(function(response){
+	  		$rootScope.environment = response.data;
+		  	if($rootScope.environment.TESTING) {
+
+		  		$rootScope.location = {
+		  			coords: {
+		  				latitude: 36.88,
+		  				longitude: -76.33
+		  			}
+		  		}
+		  		$scope.hide($ionicLoading);
+		  	} else {
+			    navigator.geolocation.getCurrentPosition(function(position){
+			      console.log(position, 'position found')
+			      $rootScope.location = position;
+			      $scope.hide($ionicLoading);
+			    })
+		  	}
+
+		  	User.addUser(socket.id).then(function(response){
+		  	  console.log('successfully added user', response);
+		  	}).catch(function(error){
+		  	  console.log('error adding user', error);
+		  	})
+		  });
+	  })
 	  /*=====  End of Landing Page Socket Listeners  ======*/
   });
 })();

@@ -58,14 +58,17 @@ db.knex.schema.hasTable('rooms').then(function(exists) {
     createRoomsTable();
   }
 });
-// Create challenges table with id, name, prompt, and test_suite
+
 db.knex.schema.hasTable('users').then(function(exists) {
   if (!exists) {
     createUsersTable();
   }
 });
 
-// Create challenges table with id, user_id, opponent_id, win
+var resetUserTable = function () {
+  return db.knex.schema.dropTable('users').then(createUsersTable);
+};
+
 
 
 module.exports = db;
