@@ -6,6 +6,7 @@ WORKDIR app
 
 # TODO: ADD all the application code into /app
 ADD . /app
+RUN echo '{ "allow_root": true }' > /root/.bowerrc
 
 # TODO: RUN `npm install`
 RUN npm install
