@@ -9,6 +9,8 @@ ADD . /app
 
 # TODO: RUN `npm install`
 RUN npm install
+RUN npm install -g bower
+RUN bower install
 
 EXPOSE 8000 
 CMD ["npm", "start"] 
