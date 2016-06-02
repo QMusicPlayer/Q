@@ -4,6 +4,7 @@
     // rootScope variables made available to all controllers
     $rootScope.isUserAHost; 
     $rootScope.listenerCount;
+    $rootScope.votesToSkip;
     $rootScope.roomName = $stateParams.roomName;
     $rootScope.room_name = $rootScope.roomName.split('_').join(' ');
     $rootScope.refreshed; // variable to check if page was accessed without going through create or join room (for refresh)
