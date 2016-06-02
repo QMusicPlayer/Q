@@ -4536,7 +4536,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                                 angularPlayer.nextTrack();
                                 angularPlayer.removeSong(this.id, 0);
                                 console.log('track finished', this.id, 0)
-                                socket.emit('deleteSongsFromGuests', {id: this.id, index: 0})
+                                socket.emit('deleteSongFromDb', {song: {id: this.id, index: 0}})
                                  // $rootScope.$broadcast('player:playlist', playlist);
                                  
                             }
@@ -4686,6 +4686,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 return track.id;
             },
             removeSong: function(song, index) {
+                console.log(song, index, 'removing Song')
                 //if this song is playing stop it
                 if(song === currentTrack) {
                     this.stop();
@@ -4696,9 +4697,10 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                playlist.splice(index, 1);
 
                 //once all done then broadcast
-                console.log('removed song,', song, 'removed index', index)
+                // console.log('removed song,', song, 'removed index', index)
                 $rootScope.$broadcast('player:playlist', playlist);
                 console.log(playlist , 'after remove')
+                console.log(soundManager.soundIDs)
 
             },
             initPlayTrack: function(trackId, isResume, guest) {
@@ -4726,7 +4728,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
 
                 var trackToPlay = null;
                 //check if no track loaded, else play loaded track
-                if(this.getCurrentTrack() === null) {
+                
                     if(soundManager.soundIDs.length === 0) {
                         $log.debug('playlist is empty!');
                         return;
@@ -4734,13 +4736,7 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                     trackToPlay = soundManager.soundIDs[0];
                     console.log('track to play', trackToPlay)
                     this.initPlayTrack(trackToPlay);
-                } else {
-                  if(!guest) {}
-                    trackToPlay = soundManager.soundIDs[0];
-                    // trackToPlay = this.getCurrentTrack();
-                    console.log(trackToPlay, 'in play')
-                    this.initPlayTrack(trackToPlay, true);
-                }
+                
 
             },
             pause: function() {
@@ -5067,7 +5063,7 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
 
                 socket.on('deleteSong', function (song) {
                     console.log("socket delete emit received, target:", song);
-                    angularPlayer.removeSong(song.id, song.index);
+                    angularPlayer.removeSong(Number(song.id), song.index.toString());
                 });
 
                 socket.on('newSong', function (newSong) {

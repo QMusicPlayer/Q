@@ -58,7 +58,8 @@ module.exports = function(io) {
 	  })
 
 		socket.on('deleteSongFromDb', function(target) {
-			socket.broadcast.to(roomFinder(socket)).to(socket.id).emit('deleteSong', target);
+			console.log('in socket helpers', target)
+			io.to(socket.id).emit('deleteSongFromQueue', target);
 		})
 	  socket.on('deleteSongsFromGuests', function (target) {
       socket.broadcast.to(roomFinder(socket)).emit('deleteSong', target);

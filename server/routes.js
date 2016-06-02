@@ -20,7 +20,7 @@ module.exports = function (app, express) {
   //generates random room name
   app.get('/api/generateRoomName', roomController.generateRoomName);
   // deletes song from db
-  app.delete('/api/songs/:roomName/:song', roomController.deleteSong);
+  app.delete('/api/songs/:roomName/:song/:index', roomController.deleteSong);
   app.put('/api/songs', function(request, response) {
     userController.castVote(request.body.songData, request.body.client_id, function(err, alreadyVoted) {
       if(err) {

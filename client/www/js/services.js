@@ -21,9 +21,10 @@ angular.module('Q.services', [
 
   /*----------  DELETE: delete song from db  ----------*/
   var deleteSong = function(roomName, target) {
+    console.log(target)
     return $http ({
       method: 'DELETE',
-      url: '/api/songs/' + roomName + '/' + target.song
+      url: '/api/songs/' + roomName + '/' + target.song.id + '/' + target.index
     }).then(function(result) {
       return result;
     })

@@ -116,6 +116,7 @@ module.exports = {
   },
 
   deleteSong: function (req, res, next) {
+    console.log('in room controller', req.params.song)
     Room.forge({name: req.params.roomName}).fetch().then(function(room) {
       var index = room.attributes.queue.map(function(element){return element.id.toString()}).indexOf(req.params.song);
       console.log(index, 'index')
@@ -127,7 +128,7 @@ module.exports = {
         }
         room.set(newRoom).save().then(function(room){
           console.log('success deleting song');
-          res.status(201).json(req.params.song);
+          res.status(201).json({id:req.params.song, index:req.params.index});
         }).catch(function(error) {
           console.log('error deleting song', error);
           res.json(error);

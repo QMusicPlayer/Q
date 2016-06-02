@@ -80,8 +80,9 @@
     })
 
     socket.on('deleteSongFromQueue', function (target) {
+      console.log('in controller')
       Playlist.deleteSong($rootScope.roomName, target).then(function(response){
-        socket.emit('deleteSongsFromGuests', Number(response.data));
+        socket.emit('deleteSongsFromGuests', response.data);
       });
     })
 
