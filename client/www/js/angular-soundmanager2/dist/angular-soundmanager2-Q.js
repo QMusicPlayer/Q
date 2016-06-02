@@ -4697,12 +4697,13 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
 
                 //once all done then broadcast
                 console.log('removed song,', song, 'removed index', index)
-                
-                console.log(playlist , 'after remove')
                 $rootScope.$broadcast('player:playlist', playlist);
+                console.log(playlist , 'after remove')
 
             },
             initPlayTrack: function(trackId, isResume, guest) {
+                console.log(playlist, 'in initPlayTrack')
+                console.log(trackId, 'current')
                 if(isResume !== true) {
                     //stop and unload currently playing track
                     this.stop();
@@ -4715,14 +4716,14 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
 
                   soundManager.play(trackId);
                 }
-                console.log('initializing track id', trackId)
                 $rootScope.$broadcast('track:id', trackId);
+                console.log('initializing track id', trackId)
                 //set as playing
                 isPlaying = true;
                 $rootScope.$broadcast('music:isPlaying', isPlaying);
             },
             play: function(guest) {
-              console.log('here')
+
                 var trackToPlay = null;
                 //check if no track loaded, else play loaded track
                 if(this.getCurrentTrack() === null) {
@@ -4731,10 +4732,13 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                         return;
                     }
                     trackToPlay = soundManager.soundIDs[0];
+                    console.log('track to play', trackToPlay)
                     this.initPlayTrack(trackToPlay);
                 } else {
                   if(!guest) {}
-                    trackToPlay = this.getCurrentTrack();
+                    trackToPlay = soundManager.soundIDs[0];
+                    // trackToPlay = this.getCurrentTrack();
+                    console.log(trackToPlay, 'in play')
                     this.initPlayTrack(trackToPlay, true);
                 }
 
@@ -4756,8 +4760,6 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 soundManager.unload(this.getCurrentTrack());
             },
             playTrack: function(trackId) {
-              console.log('inside playTrack', trackId)
-                
                 this.initPlayTrack(trackId);
 
             },
@@ -5294,6 +5296,7 @@ ngSoundManager.directive('playMusic', ['angularPlayer', function (angularPlayer)
             link: function (scope, element, attrs) {
 
                 element.bind('click', function (event) {
+                    console.log('in play directive')
                     angularPlayer.play();
                     socket.emit('playedSong')
                 });

@@ -79,15 +79,16 @@
 	  	$scope.show($ionicLoading);
 	  	Testing.getProcessEnvironment().then(function(response){
 	  		$rootScope.environment = response.data;
+	  		console.log(response.data, 'data')
 		  	if($rootScope.environment.TESTING) {
-
+		  		console.log(response.data)
 		  		$rootScope.location = {
 		  			coords: {
 		  				latitude: 36.88,
 		  				longitude: -76.33
 		  			}
 		  		}
-		  		$scope.hide($ionicLoading);
+		  		
 		  	} else {
 			    navigator.geolocation.getCurrentPosition(function(position){
 			      console.log(position, 'position found')
@@ -97,6 +98,7 @@
 		  	}
 
 		  	User.addUser(socket.id).then(function(response){
+		  		$scope.hide($ionicLoading);
 		  	  console.log('successfully added user', response);
 		  	}).catch(function(error){
 		  	  console.log('error adding user', error);
