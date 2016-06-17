@@ -4883,12 +4883,13 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 // });
             },
             sortByVotes: function(onEnter) {
-              // if(onEnter && playlist.length > 1) {
-              //   current = playlist[0]
-              // } else {
-                  
-              // }
-              var current = this.getCurrentTrack();
+              var current;
+              if(onEnter && playlist.length > 1) {
+                current = playlist[0];
+              } else {
+                current = this.getCurrentTrack();
+              }
+              
              
               var tempPlaylist = playlist.slice();
               if(current) {
