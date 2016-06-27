@@ -9,12 +9,14 @@ angular.module('Q.services', [
 
   /*----------  search songs from soundcloud (does not hit api)   ----------*/
   var searchSongs = function(query){
+
     SC.initialize({
       client_id: 'f270bdc572dc8380259d38d8015bdbe7'
     });
     return SC.get('/tracks', {
       q: query,
     }).then(function(tracks) {
+
       return tracks;
     });
   }
@@ -42,6 +44,21 @@ angular.module('Q.services', [
       }
     }).then(function(result) {
       return result;
+    });
+  }
+
+  var updateSkipVotesInDb = function (roomName, client_id) {
+    return $http({
+      method:'PUT',
+      url:'/api/rooms/skipSong',
+      data: {
+        roomName: roomName,
+        client_id: client_id
+      }
+    }).then(function(result) {
+      return result;
+    }).catch(function(error) {
+      return error;
     })
   }
 
@@ -49,7 +66,8 @@ angular.module('Q.services', [
   return {
     searchSongs: searchSongs,
     deleteSong: deleteSong,
-    updateVotes: updateVotes
+    updateVotes: updateVotes,
+    updateSkipVotesInDb: updateSkipVotesInDb
   }
 })
 /*=====  End of Playist Factory  ======*/

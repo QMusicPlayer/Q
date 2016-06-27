@@ -3,11 +3,14 @@
 <ion-header-bar ng-class="isHost() ? 'bar bar-header bar-royal' : 'bar bar-header bar-positive'">
 <!-- <img ng-click='logOut()'src='./img/icon2.png' height='40' width='40'> -->
   <div class='row'>
-    <span class='col'>
+    <span class='col col-20'>
       <!-- still need to properly binding updated count -->
       <i class="icon ion-person-stalker"></i>
       Listeners
-      {{listenerCount}}
+      {{listenerCount}} &nbsp
+      <i class="icon ion-heart-broken"></i>
+      Votes to Skip
+      {{votesToSkip}}
     </span>
     
     <spal class='col right'>
@@ -122,13 +125,17 @@
    
   </div>
 
+  <div class="col-10" style="margin-left: auto; margin-right: auto; float:left; min-width:160px" ng-show="!isHost()">
+    <button skip-song="song" class="ion-heart-broken button button-outline button-positive circle bottomButton"></button>
+  </div>
+
   <!-- Now Playing: Seen by host and guest -->
   <div ng-class="isHost() ? 'nowplayingHost center' : 'nowplaying center'">
     <span class='marquee small'>
     <p>
-          <img height="28" width="28" style="margin-right:5px" class="rounded" src={{currentPlaying.image}}> 
-         <span class='marqueeText'> {{ currentPlaying.title }} by {{ currentPlaying.artist }}  {{ currentPostion }} / {{ currentDuration }}
-         </span>
+        <img height="28" width="28" style="margin-right:5px" class="rounded" src={{currentPlaying.image}}> 
+        <span class='marqueeText'> {{ currentPlaying.title }} by {{ currentPlaying.artist }}  {{ currentPostion }} / {{ currentDuration }}
+        </span>
      
      </p>
     </span>

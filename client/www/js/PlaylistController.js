@@ -56,7 +56,12 @@
       }    
     }
 
-
+    // $scope.voteToSkip = function () {
+    //   Playlist.voteToSkip($rootScope.roomName,).then(function(response) {
+    //     $rootScope.votesToSkip = repsonse.data;
+    //     socket.emit('voteToSkip', response.data);
+    //   });
+    // }
     
     // clears search results
     $scope.clearResults = function (){
@@ -78,7 +83,22 @@
       }).catch(function(error) {
         console.log('error getting listener count', error);
       });
-    })
+    });
+
+    socket.on('updateSkipVotesInDb', function() {
+      Playlist.updateSkipVotesInDb($rootScope.roomName, socket.id).then(function(response) {
+        if(response.status === 201) {
+          $rootScope.votesToSkip = response.data;
+          socket.emit('votedToSkip', response.data);
+        }
+      });
+    });
+
+    socket.on('updateSkipVote', function(skipVotes) {
+      Rooms.getSkipVotes($rootScope.roomName).then(function(response) {
+        
+      })
+    });
 
     socket.on('deleteSongFromQueue', function (target) {
       console.log('in controller')
@@ -89,7 +109,6 @@
 
     socket.on('updateVotesInDb', function(songData) {
       Playlist.updateVotes($rootScope.roomName, songData, socket.id).then(function(response) {
-        console.log('contrklsad', response.data)
         socket.emit('updateVotesToAllClients', response.data);
       })
     })

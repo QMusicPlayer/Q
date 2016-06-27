@@ -1,32 +1,43 @@
 <!-- HEADER -->
 <ion-header-bar ng-class="isHost() ? 'bar bar-header bar-royal' : 'bar bar-header bar-positive'">
- <div class='center'> <img src='./img/icon2.png' height='35' width='35' class='center'></div> <br>
+ <!-- <div class='center'> <img src='./img/logo2white.png' height='35' width='35' class='center'></div> <br> -->
 </ion-header-bar>
 
 <!-- LANDING BODY -->
-<div id="landingbody" >
-	<div>
+<ion-content class='center'>
 <!-- 	Create Room -->
-		<div class="list center list-inset">
-			<a ng-click="createRoom()" class="button widthmobile button-positive">Create Room</a>
+	<div class='row'>
+		<div class='col'>
+			<div class='center'> <img src='./img/logo2black.png' height='207' width='207'></div> <br>
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col'>
+			<a ng-click="createRoom()" class="button button-block widthmobile button-positive">Create Room</a>
 		</div>
 	</div>
 
 <!-- Enter Room Button -->
-	<div class="list center list-inset">
-		<a ui-sref='roomFinder' class="button widthmobile button-positive">Find Room</a>
+	<div class="row">
+		<div class="col">
+			<a ui-sref='roomFinder' class="button widthmobile button-positive">Find Room</a>
+		</div>
 	</div>
 
 	
 
 	<div id='landinginfo' class="center widthmobile">
 	  <div class="col">
-		  <h1>Welcome to Q!</h1>
-		 	<p>Q allows users to collaboratively manage a playlist in a real-time environment.
-		  Pick a device to connect to a speaker and designate that device as the host. Invite guests to a room to start creating a playlist.<br><br>
-		  <strong>To host a room:</strong><br> Click the 'Create Room' button. After you enter the room, the name of a room will be presented in the top right corner of the app header. As a host, you can give this room name out to guests so they can enter the room you just created.<br><br>
-		  <strong>To join an existing room as a guest:</strong> <br> Click the Find Room button to see what rooms are available near your location.
+		 	<p>
+		  Q is a real-time collaborative playlist app. Create a playlist with your friends and vote on what songs play first! Designate your device as a host by connecting it to a speaker and creating a room. If you are a guest, find a room to join in your location.<br><br>
+		  </p>
 	  </div>
 	</div>
 
-</div>
+
+</ion-content>
+
+
+	<div class="bar bar-footer bar-stable">
+  
+	</div>
