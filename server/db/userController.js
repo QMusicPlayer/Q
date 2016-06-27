@@ -14,6 +14,7 @@ module.exports = {
   },
 
   makeHost: function(req, res, next) {
+    // TODO: empty voting history before joining or creating another room
     User.forge({socketId: req.body.hostId}).fetch().then(function(user){
       if(user) {
         // if user is host of another room
@@ -189,6 +190,31 @@ module.exports = {
           }).catch(function(err) {
             console.log('error updating votes for user')
             callback(error, null)
+          })
+        }
+      }
+    }).catch(function(error){
+      console.log('error getting user information', error)
+      callback(error, null)
+    })
+  },
+
+  castSkipVote: function(id, callback) {
+    User.forge({socketId: id}).fetch().then(function(user) {
+      if(user){
+        if(user.attributes.skipVotes) {
+          console.log('user has already voted')
+          callback(null, true);
+        } else {
+          var updatedUser = {
+            skipVotes: true
+          }
+          user.set(updatedUser).save().then(function(user) {
+            console.log('successfully updated user votes')
+            callback(null, false);
+          }).catch(function(err) {
+            console.log('error updating votes for user')
+            callback(err, null)
           })
         }
       }

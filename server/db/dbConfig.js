@@ -29,6 +29,7 @@ var createRoomsTable = function () {
   return db.knex.schema.createTable('rooms', function (room) {
     room.increments('id').primary();
     room.string('name', 255).unique();
+    room.integer('votesToSkip');
     room.json('location');
     room.integer('userCount');
     room.specificType('queue', 'json[]');
@@ -45,6 +46,7 @@ var createUsersTable = function () {
     user.string('hostRoom').unsigned().references('name').inTable('rooms');
     user.string('guestRoom').unsigned().references('name').inTable('rooms');
     user.specificType('votes', 'json[]');
+    user.boolean('skipVotes');
     user.timestamps();
   }).then(function (table) {
     console.log('Created user Table');

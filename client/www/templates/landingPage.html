@@ -6,19 +6,29 @@
 <!-- LANDING BODY -->
 <ion-content class='center'>
 <!-- 	Create Room -->
-	<div class='row'>
+	<div class='center row'>
 		<div class='col'>
-			<div class='center'> <img src='./img/logo2black.png' height='207' width='207'></div> <br>
-		</div>
-	</div>
-	<div class='row'>
-		<div class='col'>
-			<a ng-click="createRoom()" class="button button-block widthmobile button-positive">Create Room</a>
+			<br><br>
+			<h4>
+				“Without deviation from the norm, progress is not possible.” <br>
+			</h4><br>
+			<div class='center'> <img src='./img/logo2blackP.png' height='207' width='207'></div> <br>
 		</div>
 	</div>
 
+<!-- 	<div class='center row'>
+		<div class='col'>
+			<a ng-click="createRoom()" class="button button-block widthmobile button-positive">Create Room</a>
+		</div>
+	</div> -->
+
 <!-- Enter Room Button -->
-	<div class="row">
+	<div class="center row">
+		<div class="col">
+			<a ng-click="createRoom()" class="button widthmobile button-royal">Create Room</a>
+		</div>
+	</div>
+	<div class="center row">
 		<div class="col">
 			<a ui-sref='roomFinder' class="button widthmobile button-positive">Find Room</a>
 		</div>
@@ -28,9 +38,7 @@
 
 	<div id='landinginfo' class="center widthmobile">
 	  <div class="col">
-		 	<p>
-		  Q is a real-time collaborative playlist app. Create a playlist with your friends and vote on what songs play first! Designate your device as a host by connecting it to a speaker and creating a room. If you are a guest, find a room to join in your location.<br><br>
-		  </p>
+		 		<a ui-sref='roomFinder'>What is Q?</a>
 	  </div>
 	</div>
 
@@ -38,6 +46,6 @@
 </ion-content>
 
 
-	<div class="bar bar-footer bar-stable">
-  
-	</div>
+<div class="bar bar-footer bar-positive">
+
+</div>

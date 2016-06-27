@@ -3,9 +3,11 @@
   .controller('RoomFinderController', function($scope, $location, $state, Playlist, Rooms, User, $ionicPopup, $timeout, $state, $rootScope) {
     console.log('initializing roomFinder controller')
     // Get list of rooms
-    $rootScope.rooms;
+    $rootScope.roomNames;
     Rooms.getRooms().then(function(response){
-      $rootScope.rooms = response.data.map(function(element){
+      console.log(response.data)
+      $rootScope.rooms = response.data;
+      $rootScope.roomNames = response.data.map(function(element){
         return element.name.split('_').join(' ');
       })
       

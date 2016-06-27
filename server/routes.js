@@ -4,6 +4,27 @@ var db = require('./db/dbConfig')
 module.exports = function (app, express) {
   app.post('/api/rooms', roomController.createRoom);
   app.get('/api/rooms', roomController.getRooms);
+  app.put('/api/rooms/skipSong', function(request, response) {
+    console.log('in routes')
+    userController.castSkipVote(request.body.client_id, function(err, alreadyVoted) {
+      console.log(err, alreadyVoted)
+      if(err) {
+        response.status(500).send(err)
+      } else {
+        if(!alreadyVoted) {
+          roomController.voteToSkip(request.body.roomName, function(err, votes) {
+            if(err) {
+              response.status(500).send(err);
+            } else {
+              response.status(201).json(votes);
+            }
+          });
+        } else {
+          response.status(200).send('already voted');
+        }
+      }
+    });
+  });
 
   // returns host room of a specific user
   app.get('/api/host/:socketId', userController.checkHost);

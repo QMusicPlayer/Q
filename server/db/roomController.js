@@ -45,7 +45,7 @@ module.exports = {
         } else {
           var queue = room.attributes.queue;
         }
-        if(queue.map(function(element){return element.id}).indexOf(song.id)) {
+        if(queue.map(function(element){return element.id}).indexOf(song.id) < 0) {
           queue.push(song);
           var roomAttr = {
             queue: queue
@@ -140,7 +140,6 @@ module.exports = {
 
   updateVotes: function (req, res, next) {
     Room.forge({name: req.body.roomName}).fetch().then(function(room) {
-    console.log(req.body.songData)
       var queue = room.attributes.queue || [];
       queue[queue.map(function(element){return element.id}).indexOf(req.body.songData.id)].votes = req.body.songData.votes + 1;
       var newRoom = {
@@ -155,56 +154,25 @@ module.exports = {
         console.log('error updating votes', error);
         next(error, null, null);
       })
-    })
+    });
+  },
+
+  voteToSkip: function (roomName, callback) {
+    Room.forge({name: roomName}).fetch().then(function(room) {
+      var newRoom = {};
+      if(!room.attributes.votesToSkip) {
+        newRoom.votesToSkip = 1;
+      } else {
+        newRoom.votesToSkip = room.attributes.votesToSkip + 1;
+      }
+      room.set(newRoom).save().then(function(room){
+        console.log('success updating vote skip');
+        callback(null, room.attributes.votesToSkip);
+      }).catch(function(error) {
+        console.log('error updating votes', error);
+        callback(error, null);
+      })
+    });
   }
-
-
-  
-
-  // updateVotes: function(room, data, callback) {
-  //   console.log('update votes in userController');
-  //   User.update({'hash': room, 'queue.id': data.id}, {'queue.$.votes': data.votes}, callback);
-  //   // User.findOne({hash: room}, function(err, user) {
-  //   //   if (!user) return;
-  //   //   for (var i = 0; i < user.queue.length; i++) {
-  //   //     if (user.queue[i].id === data.id) {
-  //   //       console.log('match found' + user.queue[i].title);
-  //   //       user.queue[i].votes = data.votes;
-  //   //       console.log(user.queue[i].votes);
-  //   //       user.save(function(err) {
-  //   //         console.error(err);
-  //   //         callback();
-  //   //         if (!err) {
-  //   //           console.log('alegadly saved votes')
-  //   //         }
-  //   //       });
-  //   //     }
-  //   //   }
-      
-  //   // });
-  // },
-
-  // deleteSong: function(room, target, callback) {
-  //   User.findOne({hash: room}, function(err, result) {
-  //     if(!result) return;
-
-  //     console.log(target);
-  //     var deleteLocations = [];
-  //     result.queue.forEach(function(song, index) {
-  //       console.log('deleting', song)
-  //       if (song.id === target) {
-  //         deleteLocations.push(index);
-  //       }
-  //     });
-  //     deleteLocations.forEach(function(deleteLocation) {
-  //       result.queue.splice(deleteLocation, 1);
-  //       result.save(function(err) {
-  //         console.error(err);
-  //         callback();
-  //       });
-  //     });
-  //   });
-  // },
-
 
 };

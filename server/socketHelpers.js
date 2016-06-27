@@ -35,9 +35,16 @@ module.exports = function(io) {
 
 	  // adds song to room
 	  socket.on('addSong', function (newSong) {
-
 	    socket.broadcast.to(roomFinder(socket)).emit('newSong', newSong);
 	  });
+
+	  socket.on('castSkipVote', function(){
+	  	io.to(socket.id).emit('updateSkipVotesInDb', null);
+	  });
+
+	  socket.on('votedToSkip', function(skipVote) {
+	  	socket.broadcast.to(roomFinder(socket)).emit('updateSkipVote', skipVote);
+	  })
 
 	  socket.on('addSongToDb', function (newSong) {
 	    Room.addSong(roomFinder(socket), newSong, function(queue) {
