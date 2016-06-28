@@ -28,6 +28,7 @@ var db = require('bookshelf')(knex);
 var createRoomsTable = function () {
   return db.knex.schema.createTable('rooms', function (room) {
     room.increments('id').primary();
+    room.string('host');
     room.string('name', 255).unique();
     room.integer('votesToSkip');
     room.json('location');
