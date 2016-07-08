@@ -4632,7 +4632,6 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 }
             },
             addTrack: function(track) {
-                 console.log(2, 4629)
                 //check if track itself is valid and if its url is playable
                 if (!this.isTrackValid) {
                     return null;
@@ -4704,8 +4703,6 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
 
             },
             initPlayTrack: function(trackId, isResume, guest) {
-                console.log(playlist, 'in initPlayTrack')
-                console.log(trackId, 'current')
                 if(isResume !== true) {
                     //stop and unload currently playing track
                     this.stop();
@@ -4882,18 +4879,19 @@ ngSoundManager.factory('angularPlayer', ['$rootScope', '$log',
                 //     }
                 // });
             },
-            sortByVotes: function(onEnter) {
+
+            sortByVotes: function() {
+              console.log('sorting playlist...')
               var current;
-              if(onEnter && playlist.length > 1) {
-                current = playlist[0];
-              } else {
-                current = this.getCurrentTrack();
-              }
-              
+              current = this.getCurrentTrack();
+              console.log(current)
              
               var tempPlaylist = playlist.slice();
               if(current) {
-                current = tempPlaylist.shift();
+                current = tempPlaylist.splice(playlist.map(function(element) {
+                  return element.id;
+                }).indexOf(current), 1)[0];
+               
                 console.log(current, 'current')
               } 
 
@@ -5014,14 +5012,22 @@ ngSoundManager.directive('soundManager', ['$filter', 'angularPlayer',
                     angularPlayer.addTrack(newSong);
                 });
 
-                socket.on('currentlyPlaying', function(currentTrack) {
+                socket.on('currentlyPlaying', function(track) {
                   
                     scope.$apply(function() {
-                        scope.currentPlaying = currentTrack;
-                        if(currentTrack && angularPlayer.getCurrentSong() !== currentTrack.id){
-                            angularPlayer.setCurrentSong(currentTrack.id);
-                        }
+                      scope.currentPlaying = track;
                     });
+
+                    if(track) {
+
+                    console.log(angularPlayer.getCurrentTrack(), track.id)
+                    }
+                    if(track && angularPlayer.getCurrentTrack() !== track.id){
+                
+                        angularPlayer.setCurrentSong(track.id);
+                        angularPlayer.setCurrentTrack(track.id);
+                        angularPlayer.sortByVotes();
+                    }
                 });
 
                 socket.on('currentTrackPosition', function(currentTrackPosition) {
@@ -5097,7 +5103,6 @@ ngSoundManager.directive('musicPlayer', ['angularPlayer', '$log',
             },
             link: function(scope, element, attrs) {
                 var addToPlaylist = function() {
-                  console.log(1, 5140)
                     var trackId = angularPlayer.addTrack(scope.song);
                     socket.emit('addSong', scope.song)
                     //if request to play the track
