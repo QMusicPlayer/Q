@@ -3,11 +3,14 @@
 <ion-header-bar ng-class="isHost() ? 'bar bar-header bar-royal' : 'bar bar-header bar-positive'">
 <!-- <img ng-click='logOut()'src='./img/icon2.png' height='40' width='40'> -->
   <div class='row'>
-    <span class='col'>
+    <span class='col col-30'>
       <!-- still need to properly binding updated count -->
       <i class="icon ion-person-stalker"></i>
       Listeners
-      {{listenerCount}}
+      {{listenerCount}} &nbsp
+      <i class="icon ion-heart-broken"></i>
+      Skip
+      {{votesToSkip}}
     </span>
     
     <spal class='col right'>
@@ -20,29 +23,33 @@
 
 </ion-header-bar>
 
-<ion-nav-view></ion-nav-view>
+<!-- <ion-nav-view></ion-nav-view> -->
 
-<div class="bar bar-subheader item-input-inset">
+  <div class="bar bar-subheader item-input-inset">
+    <label class="item-input-wrapper">
+      <i class="icon ion-ios-search placeholder-icon"></i>
+      <input type="search" placeholder="SoundCloud search..." ng-model="query" ng-change='searchSong()'>
+    </label>
+    <button class="button button-outline button-stable" ng-click='clearResults()'>
+      Cancel
+    </button>
+  </div>
 
-  <label class="item-input-wrapper">
-    <i class="icon ion-ios-search placeholder-icon"></i>
-    <input type="search" placeholder="SoundCloud search..." ng-model="query" ng-change='searchSong()'>
-  </label>
-  <button class="button button-clear" ng-click='clearResults()'>
-    Cancel
-  </button>
-</div>
 
 <!-- adding num of users count... -->
 
 
 <!-- Search Results -->
-<div class='list list-inset searchResults'>
 
-  <div music-player="" add-song="song" ng-click='clearResults()' class="row searchResultsItem" ng-repeat='song in songs' on-hold='showSong(song.title)'>
-    <span add-song="song" class="center thumb">  <img class='rounded right small'  src={{song.image}} ></span>
-    <span class="textcenter large">  {{song.title}} by {{song.artist}}</span>
-  </div>
+<div class='list list-inset searchResults'>
+  <ion-scroll direction="y">
+    <div music-player="" add-song="song" ng-click='clearResults()' class="row center searchResultsItem" ng-repeat='song in songs' on-hold='showSong(song.title)'>
+    
+     <img class='rounded right small' style='vertical-align:middle' src={{song.image}}>
+     <span> {{song.title}} by {{song.artist}}</span>
+
+    </div>
+  </ion-scroll>
 </div>
 <!-- Sound Manager Init -->
 <sound-manager></sound-manager>
@@ -61,10 +68,16 @@
     <ion-list>
       <ion-item class='row' ng-repeat="song in playlist track by $index" on-hold="viewSong(song.title)" >
         <div class="col-80 center">
-          <div ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
+
+          <div ng-show="currentPlaying.id !== song.id" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
             <div class="songinfo" style="padding-left: 30px; text-align: left, ">{{song.votes}}  | {{ song.title }} by {{song.artist}}</div>
           </div>
+
+          <div ng-show="currentPlaying.id === song.id" ng-class="currentPlaying.id === song.id ? 'button button-royal button-block playlistItem' : 'button button-stable button-block playlistItem'">
+            <div class="songinfo" style="padding-left: 30px; text-align: left, ">{{ song.title }} by {{song.artist}}</div>
+          </div>
         </div>
+
         <div ng-show="isHost()">
           <a remove-from-playlist="song" data-index="{{$index}}" ng-class="currentPlaying.id === song.id ? 'button button-clear button-royal button-block' : 'button button-clear button-stable button-block'" >
             <i class="ion-close-round"></i>
@@ -86,7 +99,6 @@
         <h4>Use the search bar at the top to search for songs and add to the playlist.</h4>
       </center>
     </div>
-
     <ion-list>
 
       <ion-item class='row' ng-repeat="song in playlist track by $index ">
@@ -116,13 +128,17 @@
    
   </div>
 
+  <div class="col-10" style="margin-left: auto; margin-right: auto; float:left; min-width:160px" ng-show="!isHost()">
+    <button skip-song="song" class="ion-heart-broken button button-outline button-positive circle bottomButton"></button>
+  </div>
+
   <!-- Now Playing: Seen by host and guest -->
-  <div ng-class="isHost() ? 'nowplayingHost center' : 'nowplaying center'">
+  <div ng-class="isHost() ? 'nowplayingHost center col' : 'nowplaying center col'">
     <span class='marquee small'>
     <p>
-          <img height="28" width="28" style="margin-right:5px" class="rounded" src={{currentPlaying.image}}> 
-         <span class='marqueeText'> {{ currentPlaying.title }} by {{ currentPlaying.artist }}  {{ currentPostion }} / {{ currentDuration }}
-         </span>
+        <img height="28" width="28" style="margin-right:5px" class="rounded" src={{currentPlaying.image}}> 
+        <span class='marqueeText'> {{ currentPlaying.title }} by {{ currentPlaying.artist }}  {{ currentPostion }} / {{ currentDuration }}
+        </span>
      
      </p>
     </span>

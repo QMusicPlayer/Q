@@ -1,6 +1,9 @@
 <!-- HEADER -->
 <ion-header-bar ng-class="isHost() ? 'bar bar-header bar-royal' : 'bar bar-header bar-positive'">
- <div class='center'> <img src='./img/icon2.png' height='35' width='35' class='center'></div> 
+  <div class='center'> 
+  Join a room: 
+  <!-- 	<img src='./img/logo2white.png' height='35' width='35' class='center'> -->
+  	</div> <br>
 </ion-header-bar>
 
 <!-- LANDING BODY -->
@@ -12,7 +15,7 @@
 			<a ng-click="createRoom()" class="button widthmobile button-positive">Create Room</a>
 		</div>
 	</div>
-	<div ng-repeat='room in rooms'>
+	<div ng-repeat='room in roomNames'>
 		<div class="list center list-inset">
 			<a ng-click='joinRoom(room)' class="button widthmobile button-positive">{{room}}</a>
 		</div>

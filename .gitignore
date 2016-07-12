@@ -1,4 +1,5 @@
-node_modules/
+node_modules/*
+!node_modules/socket.io
 bower_components/
 client/www/lib
 client/platforms/
@@ -7,3 +8,4 @@ client/plugins/
 
 build/
 dist/
+

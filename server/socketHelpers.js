@@ -35,9 +35,16 @@ module.exports = function(io) {
 
 	  // adds song to room
 	  socket.on('addSong', function (newSong) {
-
 	    socket.broadcast.to(roomFinder(socket)).emit('newSong', newSong);
 	  });
+
+	  socket.on('castSkipVote', function(){
+	  	io.to(socket.id).emit('updateSkipVotesInDb', null);
+	  });
+
+	  socket.on('votedToSkip', function(skipVote) {
+	  	socket.broadcast.to(roomFinder(socket)).emit('updateSkipVote', skipVote);
+	  })
 
 	  socket.on('addSongToDb', function (newSong) {
 	    Room.addSong(roomFinder(socket), newSong, function(queue) {
@@ -58,7 +65,8 @@ module.exports = function(io) {
 	  })
 
 		socket.on('deleteSongFromDb', function(target) {
-			socket.broadcast.to(roomFinder(socket)).to(socket.id).emit('deleteSong', target);
+			console.log('in socket helpers', target)
+			io.to(socket.id).emit('deleteSongFromQueue', target);
 		})
 	  socket.on('deleteSongsFromGuests', function (target) {
       socket.broadcast.to(roomFinder(socket)).emit('deleteSong', target);
